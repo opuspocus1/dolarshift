@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const axios = require('axios');
 
 // CORS configuration (debe ir antes de cualquier ruta)
 app.use(cors({
@@ -41,15 +42,34 @@ app.get('/api/exchange/rates/:date', (req, res) => {
   res.json(mockRates);
 });
 
-// Ruta mock para historial de una moneda entre dos fechas
-app.get('/api/exchange/rates/:currency/:startDate/:endDate', (req, res) => {
+// Ruta real para historial de una moneda entre dos fechas usando la API del BCRA
+app.get('/api/exchange/rates/:currency/:startDate/:endDate', async (req, res) => {
   const { currency, startDate, endDate } = req.params;
-  // Devuelve un array de objetos mock para el historial
-  const mockHistory = [
-    { date: startDate, buy: 120, sell: 122 },
-    { date: endDate, buy: 123, sell: 125 }
-  ];
-  res.json(mockHistory);
+  try {
+    const url = `https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones/${currency}?fechaDesde=${startDate}&fechaHasta=${endDate}`;
+    const response = await axios.get(url);
+    const results = response.data.results || [];
+    // Mapear a formato { date, buy, sell }
+    const history = results.map(item => {
+      let buy = null;
+      let sell = null;
+      if (Array.isArray(item.detalle)) {
+        for (const d of item.detalle) {
+          if (d.tipoPase === 1) buy = d.tipoCotizacion;
+          if (d.tipoPase === 2) sell = d.tipoCotizacion;
+        }
+      }
+      return {
+        date: item.fecha,
+        buy,
+        sell
+      };
+    });
+    res.json(history);
+  } catch (err) {
+    console.error('Error fetching BCRA history:', err.message);
+    res.status(500).json({ error: 'Error fetching BCRA history' });
+  }
 });
 
 // Health check route
