@@ -9,9 +9,11 @@ import { ChartDataPoint } from '../types';
 async function getRealToday(): Promise<Date> {
   try {
     const res = await fetch(`${API_BASE_URL}/time`);
+    if (!res.ok) throw new Error('API /time not found');
     const data = await res.json();
-    return new Date(data.now);
-  } catch {
+    if (!data.time) throw new Error('No "time" field in response');
+    return new Date(data.time);
+  } catch (e) {
     // fallback a la fecha local si falla la API
     return new Date();
   }
