@@ -15,7 +15,12 @@ const Dashboard: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const today = new Date();
+        let today = new Date();
+        const now = new Date();
+        // Si la fecha de hoy es futura, usar ayer
+        if (today > now) {
+          today = subDays(now, 1);
+        }
         const thirtyDaysAgo = subDays(today, 30);
 
         // Fetch current rates

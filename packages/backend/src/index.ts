@@ -37,6 +37,20 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Middleware global para CORS en todas las respuestas (incluyendo 404)
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'https://dolarshift.netlify.app',
+    'http://localhost:5173'
+  ];
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  next();
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
