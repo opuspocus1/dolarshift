@@ -21,6 +21,7 @@ const Dashboard: React.FC = () => {
         if (today > now) {
           today = subDays(now, 1);
         }
+        console.log('Fecha que se consulta:', today.toISOString());
         const thirtyDaysAgo = subDays(today, 30);
 
         // Fetch current rates
