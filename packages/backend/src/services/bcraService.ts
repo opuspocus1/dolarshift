@@ -1,7 +1,10 @@
 import axios from 'axios';
+import https from 'https';
 import { format, subDays } from 'date-fns';
 
 const BCRA_API_BASE_URL = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0';
+
+const agent = new https.Agent({ rejectUnauthorized: false });
 
 interface BCRAExchangeRate {
   codigoMoneda: string;
@@ -51,7 +54,8 @@ export const bcraService = {
       params: { fecha: formattedDate },
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      }
+      },
+      httpsAgent: agent
     });
 
     // Procesar los datos para separar compra y venta
@@ -97,7 +101,8 @@ export const bcraService = {
       },
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      }
+      },
+      httpsAgent: agent
     });
 
     // Procesar el historial para incluir compra y venta
@@ -117,7 +122,8 @@ export const bcraService = {
     const response = await axios.get<CurrencyResponse>(`${BCRA_API_BASE_URL}/Maestros/Divisas`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      }
+      },
+      httpsAgent: agent
     });
     return response.data.results.map((currency) => ({
       code: currency.codigo,
