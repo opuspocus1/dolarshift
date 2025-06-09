@@ -48,6 +48,7 @@ app.get('/api/exchange/rates/:currency/:startDate/:endDate', async (req, res) =>
   try {
     const url = `https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Cotizaciones/${currency}?fechaDesde=${startDate}&fechaHasta=${endDate}`;
     const response = await axios.get(url);
+    console.log('BCRA RAW RESPONSE:', JSON.stringify(response.data, null, 2));
     const results = response.data.results || [];
     const history = results.map(item => {
       let buy = null;
