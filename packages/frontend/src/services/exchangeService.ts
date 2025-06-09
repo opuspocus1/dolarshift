@@ -39,8 +39,18 @@ export const exchangeService = {
     const previousFormattedDate = format(previousDate, 'yyyy-MM-dd');
     const previousResponse = await axios.get(`${API_BASE_URL}/exchange/rates/${previousFormattedDate}`);
 
-    const currentRates = response.data;
-    const previousRates = previousResponse.data;
+    // Adaptar a la respuesta actual del backend
+    const currentRatesObj = response.data.rates as Record<string, any>;
+    const previousRatesObj = previousResponse.data.rates as Record<string, any>;
+
+    const currentRates = Object.entries(currentRatesObj).map(([code, value]) => ({
+      code,
+      ...(typeof value === 'object' && value !== null ? value : {})
+    }));
+    const previousRates = Object.entries(previousRatesObj).map(([code, value]) => ({
+      code,
+      ...(typeof value === 'object' && value !== null ? value : {})
+    }));
 
     return currentRates.map((rate: ExchangeRate) => {
       const previousRate = previousRates.find((pr: ExchangeRate) => pr.code === rate.code);
