@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import axios from 'axios';
 import NodeCache from 'node-cache';
+import { bcraService } from '../services/bcraService';
+import { format, subDays } from 'date-fns';
+import { AxiosError } from 'axios';
 
 const router = Router();
 const cache = new NodeCache({ stdTTL: 300 }); // Cache for 5 minutes
-
-const BCRA_API_BASE_URL = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0';
 
 // Get all available currencies
 router.get('/currencies', async (req, res) => {
@@ -17,16 +17,13 @@ router.get('/currencies', async (req, res) => {
       return res.json(cachedData);
     }
 
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Maestros/Divisas`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      }
-    });
-    cache.set(cacheKey, response.data);
-    res.json(response.data);
+    const data = await bcraService.getCurrencies();
+    cache.set(cacheKey, data);
+    res.json(data);
   } catch (error) {
-    console.error('Error fetching currencies:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error fetching currencies', details: error.response?.data || error.message });
+    const axiosError = error as AxiosError;
+    console.error('Error fetching currencies:', axiosError.response?.data || axiosError.message);
+    res.status(500).json({ error: 'Error fetching currencies', details: axiosError.response?.data || axiosError.message });
   }
 });
 
@@ -41,17 +38,14 @@ router.get('/rates/:date', async (req, res) => {
       return res.json(cachedData);
     }
 
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Cotizaciones`, {
-      params: { fecha: date },
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      }
-    });
-    cache.set(cacheKey, response.data);
-    res.json(response.data);
+    const dateObj = new Date(date);
+    const data = await bcraService.getExchangeRates(dateObj);
+    cache.set(cacheKey, data);
+    res.json(data);
   } catch (error) {
-    console.error('Error fetching exchange rates:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error fetching exchange rates', details: error.response?.data || error.message });
+    const axiosError = error as AxiosError;
+    console.error('Error fetching exchange rates:', axiosError.response?.data || axiosError.message);
+    res.status(500).json({ error: 'Error fetching exchange rates', details: axiosError.response?.data || axiosError.message });
   }
 });
 
@@ -66,20 +60,15 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
       return res.json(cachedData);
     }
 
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
-      params: {
-        fechaDesde: startDate,
-        fechaHasta: endDate
-      },
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      }
-    });
-    cache.set(cacheKey, response.data);
-    res.json(response.data);
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+    const data = await bcraService.getExchangeRateHistory(currency, startDateObj, endDateObj);
+    cache.set(cacheKey, data);
+    res.json(data);
   } catch (error) {
-    console.error('Error fetching currency rates:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Error fetching currency rates', details: error.response?.data || error.message });
+    const axiosError = error as AxiosError;
+    console.error('Error fetching currency rates:', axiosError.response?.data || axiosError.message);
+    res.status(500).json({ error: 'Error fetching currency rates', details: axiosError.response?.data || axiosError.message });
   }
 });
 
