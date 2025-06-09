@@ -51,6 +51,8 @@ app.get('/api/time', (req, res) => {
 
 // 404 handler - debe ir después de todas las rutas
 app.use((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://dolarshift.netlify.app');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.status(404).json({ 
     error: 'Not Found',
     message: 'The requested resource does not exist',
@@ -61,6 +63,8 @@ app.use((req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  res.setHeader('Access-Control-Allow-Origin', 'https://dolarshift.netlify.app');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.status(500).json({
     error: 'Internal Server Error',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
