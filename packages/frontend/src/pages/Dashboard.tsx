@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import CurrencyCard from '../components/CurrencyCard';
 import ChartCard from '../components/ChartCard';
-import { exchangeService, ExchangeRate, ExchangeRateHistory } from '../services/exchangeService';
+import { exchangeService, ExchangeRate, ExchangeRateHistory, API_BASE_URL } from '../services/exchangeService';
 import { format, subDays } from 'date-fns';
 import { ChartDataPoint } from '../types';
 
 // Función para obtener la fecha real desde el backend
 async function getRealToday(): Promise<Date> {
   try {
-    const res = await fetch('https://dolarshift-api.onrender.com/api/time');
+    const res = await fetch(`${API_BASE_URL}/time`);
     const data = await res.json();
     return new Date(data.now);
   } catch {
