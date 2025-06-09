@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { TrendingUp, Menu, X } from 'lucide-react';
+import { TrendingUp, Menu, X, Database } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar: React.FC = () => {
@@ -27,6 +27,10 @@ const Navbar: React.FC = () => {
               <TrendingUp className="h-8 w-8 text-blue-600 dark:text-blue-400" />
               <span className="text-xl font-bold text-gray-900 dark:text-white">FX Dashboard</span>
             </Link>
+            <div className="hidden md:flex items-center ml-4 text-sm text-gray-500 dark:text-gray-400">
+              <Database className="h-4 w-4 mr-1" />
+              Powered by BCRA API
+            </div>
           </div>
 
           {/* Desktop Navigation */}
@@ -78,6 +82,10 @@ const Navbar: React.FC = () => {
                 {item.name}
               </Link>
             ))}
+            <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center">
+              <Database className="h-4 w-4 mr-1" />
+              Powered by BCRA API
+            </div>
           </div>
         </div>
       )}

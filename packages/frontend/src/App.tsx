@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/Navbar';
+import ApiStatus from './components/ApiStatus';
 import Dashboard from './pages/Dashboard';
 import Charts from './pages/Charts';
 import History from './pages/History';
@@ -19,6 +20,7 @@ function App() {
             <Route path="/history" element={<History />} />
             <Route path="/converter" element={<Converter />} />
           </Routes>
+          <ApiStatus />
         </div>
       </Router>
     </ThemeProvider>

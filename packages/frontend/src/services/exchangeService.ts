@@ -11,18 +11,23 @@ export interface Currency {
 export interface ExchangeRate {
   code: string;
   name: string;
-  rate: number;
-  change: number;
-  changePercent: number;
+  buy: number;
+  sell: number;
+  date: string;
+  change?: number;
+  changePercent?: number;
+}
+
+export interface ExchangeRateHistory {
+  date: string;
+  buy: number;
+  sell: number;
 }
 
 export const exchangeService = {
   async getCurrencies(): Promise<Currency[]> {
     const response = await axios.get(`${API_BASE_URL}/exchange/currencies`);
-    return response.data.results.map((currency: any) => ({
-      code: currency.codigo,
-      name: currency.denominacion
-    }));
+    return response.data;
   },
 
   async getExchangeRates(date: Date): Promise<ExchangeRate[]> {
@@ -34,33 +39,30 @@ export const exchangeService = {
     const previousFormattedDate = format(previousDate, 'yyyy-MM-dd');
     const previousResponse = await axios.get(`${API_BASE_URL}/exchange/rates/${previousFormattedDate}`);
 
-    const currentRates = response.data.results.detalle;
-    const previousRates = previousResponse.data.results.detalle;
+    const currentRates = response.data;
+    const previousRates = previousResponse.data;
 
-    return currentRates.map((rate: any) => {
-      const previousRate = previousRates.find((pr: any) => pr.codigoMoneda === rate.codigoMoneda);
-      const change = previousRate ? rate.tipoCotizacion - previousRate.tipoCotizacion : 0;
-      const changePercent = previousRate ? (change / previousRate.tipoCotizacion) * 100 : 0;
+    return currentRates.map((rate: ExchangeRate) => {
+      const previousRate = previousRates.find((pr: ExchangeRate) => pr.code === rate.code);
+      const buyChange = previousRate ? rate.buy - previousRate.buy : 0;
+      const sellChange = previousRate ? rate.sell - previousRate.sell : 0;
+      const buyChangePercent = previousRate ? (buyChange / previousRate.buy) * 100 : 0;
+      const sellChangePercent = previousRate ? (sellChange / previousRate.sell) * 100 : 0;
 
       return {
-        code: rate.codigoMoneda,
-        name: rate.descripcion,
-        rate: rate.tipoCotizacion,
-        change,
-        changePercent
+        ...rate,
+        change: (buyChange + sellChange) / 2,
+        changePercent: (buyChangePercent + sellChangePercent) / 2
       };
     });
   },
 
-  async getExchangeRateHistory(currency: string, startDate: Date, endDate: Date) {
+  async getExchangeRateHistory(currency: string, startDate: Date, endDate: Date): Promise<ExchangeRateHistory[]> {
     const formattedStartDate = format(startDate, 'yyyy-MM-dd');
     const formattedEndDate = format(endDate, 'yyyy-MM-dd');
     const response = await axios.get(
       `${API_BASE_URL}/exchange/rates/${currency}/${formattedStartDate}/${formattedEndDate}`
     );
-    return response.data.results.map((result: any) => ({
-      date: result.fecha,
-      rate: result.detalle[0]?.tipoCotizacion || 0
-    }));
+    return response.data;
   }
 }; 
