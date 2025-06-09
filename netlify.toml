@@ -1,0 +1,15 @@
+[build]
+  command = "cd packages/frontend && npm install && npm run build"
+  publish = "packages/frontend/dist"
+  base = "."
+
+[dev]
+  command = "cd packages/frontend && npm run dev"
+  port = 8888
+  targetPort = 5173
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://dolarshift-api.onrender.com/api/:splat"
+  status = 200
+  force = true 

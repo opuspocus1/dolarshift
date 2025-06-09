@@ -1,0 +1,23 @@
+2. Cloná tu repositorio
+
+    Abrí GitHub Desktop
+
+    Click en "File > Clone repository"
+
+    Buscá tu repo (dolarshift) y clonalo a una carpeta local
+
+3. Pegá tus carpetas y archivos
+
+    En el explorador de archivos de tu PC, pegá lo que quieras (carpetas como src/, components/, etc.) dentro de la carpeta local del repo.
+
+4. Subí los cambios
+
+    Volvé a GitHub Desktop
+
+    Vas a ver los archivos nuevos listados
+
+    Poné un mensaje de commit (ej: Add project structure)
+
+    Click en "Commit to main"
+
+    Luego, Push origin (sube a GitHub)
