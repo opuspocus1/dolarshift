@@ -2,11 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// CORS configuration
+// CORS configuration (debe ir antes de cualquier ruta)
 app.use(cors({
   origin: 'https://dolarshift.netlify.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  credentials: true // Por si en el futuro necesitás cookies/autenticación
+}));
+
+// Manejo explícito de preflight (opcional, pero ayuda con algunos proxies)
+app.options('*', cors({
+  origin: 'https://dolarshift.netlify.app',
+  credentials: true
 }));
 
 // Middleware
@@ -16,7 +21,7 @@ app.use(express.json());
 app.get('/api/exchange/rates/:date', (req, res) => {
   const { date } = req.params;
   
-  // Mock data - you can replace this with real data later
+  // Mock data - you can reemplazar esto por datos reales después
   const mockRates = {
     date,
     rates: {
@@ -44,7 +49,7 @@ app.get('/api/time', (req, res) => {
   });
 });
 
-// 404 handler - must be after all other routes
+// 404 handler - debe ir después de todas las rutas
 app.use((req, res) => {
   res.status(404).json({ 
     error: 'Not Found',
