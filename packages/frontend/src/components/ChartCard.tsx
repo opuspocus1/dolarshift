@@ -5,18 +5,21 @@ import { useTheme } from '../contexts/ThemeContext';
 
 interface ChartCardProps {
   title: string;
-  data: ChartDataPoint[];
+  data: any[];
   color?: string;
   height?: number;
+  selectedCurrencies?: string[];
 }
 
 const ChartCard: React.FC<ChartCardProps> = ({ 
   title, 
   data, 
   color = '#3b82f6', 
-  height = 300 
+  height = 300,
+  selectedCurrencies
 }) => {
   const { isDarkMode } = useTheme();
+  const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#6366f1', '#eab308', '#14b8a6', '#f43f5e'];
   
   const formatValue = (value: number) => {
     if (value > 1000) {
@@ -55,16 +58,21 @@ const ChartCard: React.FC<ChartCardProps> = ({
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                 color: isDarkMode ? '#f9fafb' : '#111827'
               }}
-              formatter={(value: number) => [formatValue(value), 'Rate']}
+              formatter={(value: number, name: string) => [formatValue(value), name]}
             />
-            <Line 
-              type="monotone" 
-              dataKey="value" 
-              stroke={color} 
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4, fill: color }}
-            />
+            {selectedCurrencies
+              ? selectedCurrencies.map((code, idx) => (
+                  <Line
+                    key={code}
+                    type="monotone"
+                    dataKey={code}
+                    stroke={colors[idx % colors.length]}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4, fill: colors[idx % colors.length] }}
+                  />
+                ))
+              : <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: color }} />}
           </LineChart>
         </ResponsiveContainer>
       </div>

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import CurrencyConverter from '../components/CurrencyConverter';
 import { Calculator, TrendingUp, Clock } from 'lucide-react';
 import { exchangeService } from '../services/exchangeService';
-import { CurrencyRate } from '../types';
+import { CurrencyRate, Currency } from '../types';
 
 const Converter: React.FC = () => {
   const [rates, setRates] = useState<CurrencyRate[]>([]);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   useEffect(() => {
     const fetchRates = async () => {
@@ -17,7 +18,13 @@ const Converter: React.FC = () => {
       })));
     };
 
+    const fetchCurrencies = async () => {
+      const data = await exchangeService.getCurrencies();
+      setCurrencies(data);
+    };
+
     fetchRates();
+    fetchCurrencies();
   }, []);
 
   const currenciesWithRates = rates.filter(currency => currency.buy !== null || currency.sell !== null);

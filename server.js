@@ -116,6 +116,21 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.get('/api/exchange/currencies', async (req, res) => {
+  try {
+    const url = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0/Maestros/Divisas';
+    const response = await axios.get(url);
+    const results = response.data.results || [];
+    const currencies = results.map(item => ({
+      code: item.codigo,
+      name: item.denominacion
+    }));
+    res.json(currencies);
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching currencies', details: err.message });
+  }
+});
+
 // Start server
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
