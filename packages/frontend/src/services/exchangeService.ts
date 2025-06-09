@@ -33,15 +33,24 @@ export const exchangeService = {
   async getExchangeRates(date: Date): Promise<ExchangeRate[]> {
     const formattedDate = format(date, 'yyyy-MM-dd');
     const response = await axios.get(`${API_BASE_URL}/exchange/rates/${formattedDate}`);
-    
+
     // Get previous day's rates for calculating changes
     const previousDate = subDays(date, 1);
     const previousFormattedDate = format(previousDate, 'yyyy-MM-dd');
-    const previousResponse = await axios.get(`${API_BASE_URL}/exchange/rates/${previousFormattedDate}`);
+    let previousRatesObj: Record<string, any> = {};
 
-    // Adaptar a la respuesta actual del backend
+    try {
+      const previousResponse = await axios.get(`${API_BASE_URL}/exchange/rates/${previousFormattedDate}`);
+      previousRatesObj = previousResponse.data.rates as Record<string, any>;
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        previousRatesObj = {};
+      } else {
+        throw err;
+      }
+    }
+
     const currentRatesObj = response.data.rates as Record<string, any>;
-    const previousRatesObj = previousResponse.data.rates as Record<string, any>;
 
     const currentRates = Object.entries(currentRatesObj).map(([code, value]) => ({
       code,
