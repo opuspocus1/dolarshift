@@ -42,6 +42,8 @@ const CurrencyConverter: React.FC = () => {
     }
   };
 
+  const currenciesWithRates = rates.filter(currency => currency.buy !== null || currency.sell !== null);
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Currency Converter</h3>
@@ -56,7 +58,7 @@ const CurrencyConverter: React.FC = () => {
               onChange={(e) => setFrom(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
             >
-              {rates.map(rate => (
+              {currenciesWithRates.map(rate => (
                 <option key={rate.code} value={rate.code}>
                   {rate.code} - {rate.name}
                 </option>
@@ -91,7 +93,7 @@ const CurrencyConverter: React.FC = () => {
               onChange={(e) => setTo(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
             >
-              {rates.map(rate => (
+              {currenciesWithRates.map(rate => (
                 <option key={rate.code} value={rate.code}>
                   {rate.code} - {rate.name}
                 </option>

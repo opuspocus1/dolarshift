@@ -84,8 +84,9 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const majorCurrencies = rates.slice(0, 4);
-  const otherCurrencies = rates.slice(4);
+  const currenciesWithRates = rates.filter(currency => currency.buy !== null || currency.sell !== null);
+  const majorCurrencies = currenciesWithRates.slice(0, 4);
+  const otherCurrencies = currenciesWithRates.slice(4);
 
   const chartData: ChartDataPoint[] = usdHistory.map(item => ({
     date: format(new Date(item.date), 'MMM dd'),
@@ -131,19 +132,19 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {rates.filter(rate => rate.changePercent && rate.changePercent > 0).length}
+                {currenciesWithRates.filter(rate => rate.changePercent && rate.changePercent > 0).length}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">Currencies Up</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {rates.filter(rate => rate.changePercent && rate.changePercent < 0).length}
+                {currenciesWithRates.filter(rate => rate.changePercent && rate.changePercent < 0).length}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">Currencies Down</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-gray-600 dark:text-gray-400">
-                {rates.filter(rate => !rate.changePercent || rate.changePercent === 0).length}
+                {currenciesWithRates.filter(rate => !rate.changePercent || rate.changePercent === 0).length}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">Unchanged</p>
             </div>

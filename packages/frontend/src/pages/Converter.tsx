@@ -20,6 +20,8 @@ const Converter: React.FC = () => {
     fetchRates();
   }, []);
 
+  const currenciesWithRates = rates.filter(currency => currency.buy !== null || currency.sell !== null);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +60,7 @@ const Converter: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {rates.map((currency) => (
+                    {currenciesWithRates.map((currency) => (
                       <tr key={currency.code} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
@@ -97,15 +99,15 @@ const Converter: React.FC = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium text-gray-900 dark:text-white">1 USD =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{rates.find(r => r.code === 'ARS')?.sell.toLocaleString()} ARS</div>
+                  <div className="text-gray-600 dark:text-gray-400">{currenciesWithRates.find(r => r.code === 'ARS')?.sell.toLocaleString()} ARS</div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium text-gray-900 dark:text-white">1 EUR =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{(1 / (rates.find(r => r.code === 'EUR')?.sell || 1)).toFixed(4)} USD</div>
+                  <div className="text-gray-600 dark:text-gray-400">{(1 / (currenciesWithRates.find(r => r.code === 'EUR')?.sell || 1)).toFixed(4)} USD</div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium text-gray-900 dark:text-white">1 BTC =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{(1 / (rates.find(r => r.code === 'BTC')?.sell || 1)).toLocaleString()} USD</div>
+                  <div className="text-gray-600 dark:text-gray-400">{(1 / (currenciesWithRates.find(r => r.code === 'BTC')?.sell || 1)).toLocaleString()} USD</div>
                 </div>
               </div>
             </div>
@@ -117,7 +119,7 @@ const Converter: React.FC = () => {
                 Top Movers
               </h3>
               <div className="space-y-3">
-                {rates.map((currency) => (
+                {currenciesWithRates.map((currency) => (
                   <div key={currency.code} className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-sm text-gray-900 dark:text-white">{currency.code}</div>
