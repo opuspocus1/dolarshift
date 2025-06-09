@@ -1,27 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRightLeft } from 'lucide-react';
-import { mockRates, convertCurrency } from '../data/mockRates';
+import { exchangeService } from '../services/exchangeService';
+import { CurrencyRate } from '../types';
 
 const CurrencyConverter: React.FC = () => {
-  const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('ARS');
-  const [amount, setAmount] = useState<string>('100');
-  const [result, setResult] = useState<number>(0);
+  const [rates, setRates] = useState<CurrencyRate[]>([]);
+  const [from, setFrom] = useState('USD');
+  const [to, setTo] = useState('ARS');
+  const [amount, setAmount] = useState('100');
+  const [result, setResult] = useState<number | null>(null);
 
-  const currencies = mockRates.map(rate => ({
-    code: rate.code,
-    name: rate.name
-  }));
+  useEffect(() => {
+    const fetchRates = async () => {
+      const data = await exchangeService.getExchangeRates(new Date());
+      setRates(data.map(rate => ({
+        ...rate,
+        change: rate.change ?? 0,
+        changePercent: rate.changePercent ?? 0
+      })));
+    };
+    fetchRates();
+  }, []);
 
   useEffect(() => {
     const numAmount = parseFloat(amount) || 0;
-    const convertedAmount = convertCurrency(numAmount, fromCurrency, toCurrency);
+    const fromRate = rates.find(r => r.code === from)?.sell || 1;
+    const toRate = rates.find(r => r.code === to)?.sell || 1;
+    const convertedAmount = (numAmount * toRate) / fromRate;
     setResult(convertedAmount);
-  }, [amount, fromCurrency, toCurrency]);
+  }, [amount, from, to, rates]);
 
   const swapCurrencies = () => {
-    setFromCurrency(toCurrency);
-    setToCurrency(fromCurrency);
+    setFrom(to);
+    setTo(from);
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,13 +52,13 @@ const CurrencyConverter: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">From</label>
           <div className="flex space-x-2">
             <select
-              value={fromCurrency}
-              onChange={(e) => setFromCurrency(e.target.value)}
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
             >
-              {currencies.map((currency) => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.code} - {currency.name}
+              {rates.map(rate => (
+                <option key={rate.code} value={rate.code}>
+                  {rate.code} - {rate.name}
                 </option>
               ))}
             </select>
@@ -76,18 +87,18 @@ const CurrencyConverter: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">To</label>
           <div className="flex space-x-2">
             <select
-              value={toCurrency}
-              onChange={(e) => setToCurrency(e.target.value)}
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
             >
-              {currencies.map((currency) => (
-                <option key={currency.code} value={currency.code}>
-                  {currency.code} - {currency.name}
+              {rates.map(rate => (
+                <option key={rate.code} value={rate.code}>
+                  {rate.code} - {rate.name}
                 </option>
               ))}
             </select>
             <div className="w-32 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-right font-medium text-gray-900 dark:text-white">
-              {result.toLocaleString('en-US', { 
+              {result?.toLocaleString('en-US', { 
                 minimumFractionDigits: 2, 
                 maximumFractionDigits: 8 
               })}
@@ -98,10 +109,10 @@ const CurrencyConverter: React.FC = () => {
         {/* Exchange Rate Info */}
         <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
           <p className="text-sm text-blue-800 dark:text-blue-300">
-            1 {fromCurrency} = {(result / (parseFloat(amount) || 1)).toLocaleString('en-US', { 
+            1 {from} = {(result ? (result / (parseFloat(amount) || 1)).toLocaleString('en-US', { 
               minimumFractionDigits: 2, 
               maximumFractionDigits: 8 
-            })} {toCurrency}
+            }) : 'Loading...')} {to}
           </p>
         </div>
       </div>

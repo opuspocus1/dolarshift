@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CurrencyConverter from '../components/CurrencyConverter';
-import { mockRates } from '../data/mockRates';
 import { Calculator, TrendingUp, Clock } from 'lucide-react';
+import { exchangeService } from '../services/exchangeService';
+import { CurrencyRate } from '../types';
 
 const Converter: React.FC = () => {
-  const topMovers = mockRates
-    .filter(rate => rate.code !== 'USD')
-    .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
-    .slice(0, 3);
+  const [rates, setRates] = useState<CurrencyRate[]>([]);
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      const data = await exchangeService.getExchangeRates(new Date());
+      setRates(data.map(rate => ({
+        ...rate,
+        change: rate.change ?? 0,
+        changePercent: rate.changePercent ?? 0
+      })));
+    };
+
+    fetchRates();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
@@ -47,7 +58,7 @@ const Converter: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {mockRates.map((currency) => (
+                    {rates.map((currency) => (
                       <tr key={currency.code} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
@@ -56,7 +67,7 @@ const Converter: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {currency.code === 'USD' ? '1.0000' : currency.rate.toLocaleString()}
+                          {currency.code === 'USD' ? '1.0000' : currency.sell.toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -86,15 +97,15 @@ const Converter: React.FC = () => {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium text-gray-900 dark:text-white">1 USD =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{mockRates.find(r => r.code === 'ARS')?.rate.toLocaleString()} ARS</div>
+                  <div className="text-gray-600 dark:text-gray-400">{rates.find(r => r.code === 'ARS')?.sell.toLocaleString()} ARS</div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium text-gray-900 dark:text-white">1 EUR =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{(1 / (mockRates.find(r => r.code === 'EUR')?.rate || 1)).toFixed(4)} USD</div>
+                  <div className="text-gray-600 dark:text-gray-400">{(1 / (rates.find(r => r.code === 'EUR')?.sell || 1)).toFixed(4)} USD</div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="font-medium text-gray-900 dark:text-white">1 BTC =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{(1 / (mockRates.find(r => r.code === 'BTC')?.rate || 1)).toLocaleString()} USD</div>
+                  <div className="text-gray-600 dark:text-gray-400">{(1 / (rates.find(r => r.code === 'BTC')?.sell || 1)).toLocaleString()} USD</div>
                 </div>
               </div>
             </div>
@@ -106,7 +117,7 @@ const Converter: React.FC = () => {
                 Top Movers
               </h3>
               <div className="space-y-3">
-                {topMovers.map((currency) => (
+                {rates.map((currency) => (
                   <div key={currency.code} className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-sm text-gray-900 dark:text-white">{currency.code}</div>

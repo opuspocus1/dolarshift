@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, TrendingUp } from 'lucide-react';
 import ChartCard from '../components/ChartCard';
-import { mockHistoricalData } from '../data/mockRates';
+import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
 
 const History: React.FC = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('USD/ARS');
   const [selectedPeriod, setSelectedPeriod] = useState('30');
+  const [history, setHistory] = useState<ExchangeRateHistory[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const currencies = mockHistoricalData.map(data => data.currency);
+  const currencies = ['USD/ARS'];
   const periods = [
     { value: '7', label: '7 Days' },
     { value: '30', label: '30 Days' },
@@ -15,15 +18,37 @@ const History: React.FC = () => {
     { value: '365', label: '1 Year' }
   ];
 
-  const selectedData = mockHistoricalData.find(data => data.currency === selectedCurrency)?.data || [];
-  
-  // Filter data based on selected period
-  const filteredData = selectedData.slice(-parseInt(selectedPeriod));
-  
-  const currentValue = filteredData[filteredData.length - 1]?.value || 0;
-  const previousValue = filteredData[0]?.value || 0;
+  const currentValue = 0;
+  const previousValue = 0;
   const change = currentValue - previousValue;
   const changePercent = previousValue !== 0 ? (change / previousValue) * 100 : 0;
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [from, to] = selectedCurrency.split('/');
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - parseInt(selectedPeriod, 10));
+        const data = await exchangeService.getExchangeRateHistory(from, start, end);
+        setHistory(data);
+      } catch (err) {
+        setError('Error loading history');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHistory();
+  }, [selectedCurrency, selectedPeriod]);
+
+  // Mapeo los datos históricos a ChartDataPoint para el gráfico
+  const chartData = history.map(item => ({
+    date: item.date,
+    value: item.sell ?? 0,
+    timestamp: Date.parse(item.date)
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
@@ -96,14 +121,14 @@ const History: React.FC = () => {
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Data Points</h3>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{filteredData.length}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{0}</p>
           </div>
         </div>
 
         {/* Chart */}
         <ChartCard
           title={`${selectedCurrency} - ${periods.find(p => p.value === selectedPeriod)?.label} History`}
-          data={filteredData}
+          data={chartData}
           color={changePercent >= 0 ? '#10b981' : '#ef4444'}
           height={400}
         />
@@ -129,17 +154,17 @@ const History: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredData.slice(-10).reverse().map((item, index) => {
-                  const previousItem = filteredData[filteredData.length - 1 - index - 1];
-                  const dailyChange = previousItem ? item.value - previousItem.value : 0;
+                {history.slice(-10).reverse().map((item, index) => {
+                  const previousItem = history[history.length - 1 - index - 1];
+                  const dailyChange = previousItem ? item.sell - previousItem.sell : 0;
                   
                   return (
-                    <tr key={item.timestamp} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <tr key={item.date} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                         {item.date}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                        {item.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                        {item.sell.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
                       </td>
                       <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
                         dailyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'

@@ -1,8 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ChartCard from '../components/ChartCard';
-import { mockHistoricalData } from '../data/mockRates';
+import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
+import { subDays } from 'date-fns';
+
+const chartPairs = [
+  { code: 'USD', label: 'USD/ARS', color: '#3b82f6' },
+  { code: 'EUR', label: 'EUR/ARS', color: '#ef4444' },
+  { code: 'GBP', label: 'GBP/ARS', color: '#10b981' },
+  { code: 'BTC', label: 'BTC/ARS', color: '#f59e0b' }
+];
 
 const Charts: React.FC = () => {
+  const [histories, setHistories] = useState<Record<string, ExchangeRateHistory[]>>({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      setLoading(true);
+      const end = new Date();
+      const start = subDays(end, 30);
+      const result: Record<string, ExchangeRateHistory[]> = {};
+      for (const pair of chartPairs) {
+        try {
+          result[pair.code] = await exchangeService.getExchangeRateHistory(pair.code, start, end);
+        } catch (e) {
+          result[pair.code] = [];
+        }
+      }
+      setHistories(result);
+      setLoading(false);
+    };
+    fetchAll();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,18 +44,21 @@ const Charts: React.FC = () => {
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {mockHistoricalData.map((data, index) => {
-            const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b'];
-            return (
-              <ChartCard
-                key={data.currency}
-                title={`${data.currency} - 30 Day Trend`}
-                data={data.data}
-                color={colors[index % colors.length]}
-                height={350}
-              />
-            );
-          })}
+          {chartPairs.map((pair, idx) => (
+            <ChartCard
+              key={pair.code}
+              title={`${pair.label} - 30 Day Trend`}
+              data={
+                (histories[pair.code] || []).map(item => ({
+                  date: item.date,
+                  value: item.sell ?? 0,
+                  timestamp: Date.parse(item.date)
+                }))
+              }
+              color={pair.color}
+              height={350}
+            />
+          ))}
         </div>
 
         {/* Chart Legend */}
