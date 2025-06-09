@@ -1,0 +1,153 @@
+import React from 'react';
+import CurrencyConverter from '../components/CurrencyConverter';
+import { mockRates } from '../data/mockRates';
+import { Calculator, TrendingUp, Clock } from 'lucide-react';
+
+const Converter: React.FC = () => {
+  const topMovers = mockRates
+    .filter(rate => rate.code !== 'USD')
+    .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+    .slice(0, 3);
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Currency Converter</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Convert between different currencies with real-time rates</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Converter */}
+          <div className="lg:col-span-2">
+            <CurrencyConverter />
+            
+            {/* Exchange Rate Table */}
+            <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors duration-200">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2" />
+                  Current Exchange Rates
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Currency
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Rate (USD)
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        24h Change
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {mockRates.map((currency) => (
+                      <tr key={currency.code} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{currency.code}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{currency.name}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          {currency.code === 'USD' ? '1.0000' : currency.rate.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            currency.changePercent >= 0 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
+                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                          }`}>
+                            {currency.changePercent >= 0 ? '+' : ''}{currency.changePercent.toFixed(2)}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Quick Converter */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Calculator className="h-5 w-5 mr-2" />
+                Quick Convert
+              </h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="font-medium text-gray-900 dark:text-white">1 USD =</div>
+                  <div className="text-gray-600 dark:text-gray-400">{mockRates.find(r => r.code === 'ARS')?.rate.toLocaleString()} ARS</div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="font-medium text-gray-900 dark:text-white">1 EUR =</div>
+                  <div className="text-gray-600 dark:text-gray-400">{(1 / (mockRates.find(r => r.code === 'EUR')?.rate || 1)).toFixed(4)} USD</div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="font-medium text-gray-900 dark:text-white">1 BTC =</div>
+                  <div className="text-gray-600 dark:text-gray-400">{(1 / (mockRates.find(r => r.code === 'BTC')?.rate || 1)).toLocaleString()} USD</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top Movers */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <TrendingUp className="h-5 w-5 mr-2" />
+                Top Movers
+              </h3>
+              <div className="space-y-3">
+                {topMovers.map((currency) => (
+                  <div key={currency.code} className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-sm text-gray-900 dark:text-white">{currency.code}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{currency.name}</div>
+                    </div>
+                    <div className={`text-sm font-semibold ${
+                      currency.changePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {currency.changePercent >= 0 ? '+' : ''}{currency.changePercent.toFixed(2)}%
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Market Status */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <Clock className="h-5 w-5 mr-2" />
+                Market Status
+              </h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Last Update:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Live</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Market:</span>
+                  <span className="font-medium text-green-600 dark:text-green-400">Open</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Data Source:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">Mock API</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Converter;
