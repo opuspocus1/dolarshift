@@ -26,6 +26,20 @@ interface ProcessedExchangeRate {
   date: string;
 }
 
+interface BCRAHistoryResponse {
+  results: Array<{
+    fecha: string;
+    detalle: BCRAExchangeRate[];
+  }>;
+}
+
+interface CurrencyResponse {
+  results: Array<{
+    codigo: string;
+    denominacion: string;
+  }>;
+}
+
 export const bcraService = {
   async getExchangeRates(date: Date): Promise<ProcessedExchangeRate[]> {
     // Asegurarnos de que la fecha sea válida
@@ -33,7 +47,7 @@ export const bcraService = {
     const targetDate = date > today ? today : date;
     
     const formattedDate = format(targetDate, "yyyy-MM-dd'T'HH:mm:ss");
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Cotizaciones`, {
+    const response = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
       params: { fecha: formattedDate },
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
@@ -76,7 +90,7 @@ export const bcraService = {
     const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
     const formattedEndDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
     
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
+    const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
       params: {
         fechaDesde: formattedStartDate,
         fechaHasta: formattedEndDate
@@ -87,7 +101,7 @@ export const bcraService = {
     });
 
     // Procesar el historial para incluir compra y venta
-    return response.data.results.map((result: any) => {
+    return response.data.results.map((result) => {
       const buyRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 1);
       const sellRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 2);
 
@@ -100,12 +114,12 @@ export const bcraService = {
   },
 
   async getCurrencies() {
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Maestros/Divisas`, {
+    const response = await axios.get<CurrencyResponse>(`${BCRA_API_BASE_URL}/Maestros/Divisas`, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
       }
     });
-    return response.data.results.map((currency: any) => ({
+    return response.data.results.map((currency) => ({
       code: currency.codigo,
       name: currency.denominacion
     }));
