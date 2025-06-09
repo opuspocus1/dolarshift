@@ -17,12 +17,16 @@ router.get('/currencies', async (req, res) => {
       return res.json(cachedData);
     }
 
-    const response = await axios.get(`${BCRA_API_BASE_URL}/Maestros/Divisas`);
+    const response = await axios.get(`${BCRA_API_BASE_URL}/Maestros/Divisas`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
+      }
+    });
     cache.set(cacheKey, response.data);
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching currencies:', error);
-    res.status(500).json({ error: 'Error fetching currencies' });
+    console.error('Error fetching currencies:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error fetching currencies', details: error.response?.data || error.message });
   }
 });
 
@@ -38,13 +42,16 @@ router.get('/rates/:date', async (req, res) => {
     }
 
     const response = await axios.get(`${BCRA_API_BASE_URL}/Cotizaciones`, {
-      params: { fecha: date }
+      params: { fecha: date },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
+      }
     });
     cache.set(cacheKey, response.data);
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching exchange rates:', error);
-    res.status(500).json({ error: 'Error fetching exchange rates' });
+    console.error('Error fetching exchange rates:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error fetching exchange rates', details: error.response?.data || error.message });
   }
 });
 
@@ -63,13 +70,16 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
       params: {
         fechaDesde: startDate,
         fechaHasta: endDate
+      },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
       }
     });
     cache.set(cacheKey, response.data);
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching currency rates:', error);
-    res.status(500).json({ error: 'Error fetching currency rates' });
+    console.error('Error fetching currency rates:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Error fetching currency rates', details: error.response?.data || error.message });
   }
 });
 
