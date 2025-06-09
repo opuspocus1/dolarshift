@@ -5,6 +5,18 @@ import { exchangeService, ExchangeRate, ExchangeRateHistory } from '../services/
 import { format, subDays } from 'date-fns';
 import { ChartDataPoint } from '../types';
 
+// Función para obtener la fecha real desde una API pública
+async function getRealToday(): Promise<Date> {
+  try {
+    const res = await fetch('https://worldtimeapi.org/api/timezone/America/Argentina/Buenos_Aires');
+    const data = await res.json();
+    return new Date(data.datetime);
+  } catch {
+    // fallback a la fecha local si falla la API
+    return new Date();
+  }
+}
+
 const Dashboard: React.FC = () => {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [usdHistory, setUsdHistory] = useState<ExchangeRateHistory[]>([]);
@@ -15,21 +27,22 @@ const Dashboard: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        let today = new Date();
-        const now = new Date();
+        const today = await getRealToday();
+        const now = today;
         // Si la fecha de hoy es futura, usar ayer
+        let safeToday = today;
         if (today > now) {
-          today = subDays(now, 1);
+          safeToday = subDays(now, 1);
         }
-        console.log('Fecha que se consulta:', today.toISOString());
-        const thirtyDaysAgo = subDays(today, 30);
+        console.log('Fecha que se consulta (real):', safeToday.toISOString());
+        const thirtyDaysAgo = subDays(safeToday, 30);
 
         // Fetch current rates
-        const currentRates = await exchangeService.getExchangeRates(today);
+        const currentRates = await exchangeService.getExchangeRates(safeToday);
         setRates(currentRates);
 
         // Fetch USD history
-        const usdData = await exchangeService.getExchangeRateHistory('USD', thirtyDaysAgo, today);
+        const usdData = await exchangeService.getExchangeRateHistory('USD', thirtyDaysAgo, safeToday);
         setUsdHistory(usdData);
 
         setError(null);
