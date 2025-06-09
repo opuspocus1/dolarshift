@@ -41,6 +41,17 @@ app.get('/api/exchange/rates/:date', (req, res) => {
   res.json(mockRates);
 });
 
+// Ruta mock para historial de una moneda entre dos fechas
+app.get('/api/exchange/rates/:currency/:startDate/:endDate', (req, res) => {
+  const { currency, startDate, endDate } = req.params;
+  // Devuelve un array de objetos mock para el historial
+  const mockHistory = [
+    { date: startDate, buy: 120, sell: 122 },
+    { date: endDate, buy: 123, sell: 125 }
+  ];
+  res.json(mockHistory);
+});
+
 // Health check route
 app.get('/api/time', (req, res) => {
   res.json({ 
