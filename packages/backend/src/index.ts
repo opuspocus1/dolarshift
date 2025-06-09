@@ -32,6 +32,11 @@ app.use(limiter);
 // Routes
 app.use('/api/exchange', exchangeRoutes);
 
+// Endpoint para obtener la fecha actual del backend
+app.get('/api/time', (req, res) => {
+  res.json({ now: new Date().toISOString() });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -5,12 +5,12 @@ import { exchangeService, ExchangeRate, ExchangeRateHistory } from '../services/
 import { format, subDays } from 'date-fns';
 import { ChartDataPoint } from '../types';
 
-// Función para obtener la fecha real desde una API pública
+// Función para obtener la fecha real desde el backend
 async function getRealToday(): Promise<Date> {
   try {
-    const res = await fetch('https://worldtimeapi.org/api/timezone/America/Argentina/Buenos_Aires');
+    const res = await fetch('https://dolarshift-api.onrender.com/api/time');
     const data = await res.json();
-    return new Date(data.datetime);
+    return new Date(data.now);
   } catch {
     // fallback a la fecha local si falla la API
     return new Date();
