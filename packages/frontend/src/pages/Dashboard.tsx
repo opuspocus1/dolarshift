@@ -1,12 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CurrencyCard from '../components/CurrencyCard';
 import ChartCard from '../components/ChartCard';
-import { mockRates, mockHistoricalData } from '../data/mockRates';
+import { exchangeService, ExchangeRate, ExchangeRateHistory } from '../services/exchangeService';
+import { format, subDays } from 'date-fns';
+import { ChartDataPoint } from '../types';
 
 const Dashboard: React.FC = () => {
-  const majorCurrencies = mockRates.slice(0, 4);
-  const usdArsData = mockHistoricalData.find(data => data.currency === 'USD/ARS')?.data || [];
-  const btcData = mockHistoricalData.find(data => data.currency === 'BTC/USD')?.data || [];
+  const [rates, setRates] = useState<ExchangeRate[]>([]);
+  const [usdHistory, setUsdHistory] = useState<ExchangeRateHistory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const today = new Date();
+        const thirtyDaysAgo = subDays(today, 30);
+
+        // Fetch current rates
+        const currentRates = await exchangeService.getExchangeRates(today);
+        setRates(currentRates);
+
+        // Fetch USD history
+        const usdData = await exchangeService.getExchangeRateHistory('USD', thirtyDaysAgo, today);
+        setUsdHistory(usdData);
+
+        setError(null);
+      } catch (err) {
+        setError('Error loading data. Please try again later.');
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-red-600 dark:text-red-400">
+            <p>{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const majorCurrencies = rates.slice(0, 4);
+  const otherCurrencies = rates.slice(4);
+
+  const chartData: ChartDataPoint[] = usdHistory.map(item => ({
+    date: format(new Date(item.date), 'MMM dd'),
+    value: item.sell,
+    timestamp: new Date(item.date).getTime()
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
@@ -28,19 +92,14 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <ChartCard
             title="USD/ARS Exchange Rate (30 Days)"
-            data={usdArsData}
+            data={chartData}
             color="#ef4444"
-          />
-          <ChartCard
-            title="BTC/USD Price Trend (30 Days)"
-            data={btcData}
-            color="#f59e0b"
           />
         </div>
 
         {/* Additional Currency Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockRates.slice(4).map((currency) => (
+          {otherCurrencies.map((currency) => (
             <CurrencyCard key={currency.code} currency={currency} />
           ))}
         </div>
@@ -51,19 +110,19 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {mockRates.filter(rate => rate.changePercent > 0).length}
+                {rates.filter(rate => rate.changePercent && rate.changePercent > 0).length}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">Currencies Up</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {mockRates.filter(rate => rate.changePercent < 0).length}
+                {rates.filter(rate => rate.changePercent && rate.changePercent < 0).length}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">Currencies Down</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-gray-600 dark:text-gray-400">
-                {mockRates.filter(rate => rate.changePercent === 0).length}
+                {rates.filter(rate => !rate.changePercent || rate.changePercent === 0).length}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">Unchanged</p>
             </div>
