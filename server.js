@@ -67,8 +67,15 @@ app.get('/api/exchange/rates/:currency/:startDate/:endDate', async (req, res) =>
     });
     res.json(history);
   } catch (err) {
-    console.error('Error fetching BCRA history:', err.message);
-    res.status(500).json({ error: 'Error fetching BCRA history' });
+    if (err.response && err.response.status === 404) {
+      // Logueo el 404 del BCRA
+      console.warn('BCRA 404 Not Found:', err.message, err.response && err.response.data);
+      res.json([]);
+    } else {
+      // Log detallado para otros errores
+      console.error('Error fetching BCRA history:', err.message, err.response && err.response.data);
+      res.status(500).json({ error: 'Error fetching BCRA history', details: err.message, bcra: err.response && err.response.data });
+    }
   }
 });
 
