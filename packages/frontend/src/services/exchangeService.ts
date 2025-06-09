@@ -54,7 +54,10 @@ export const exchangeService = {
 
     const currentRates = Object.entries(currentRatesObj).map(([code, value]) => ({
       code,
-      ...(typeof value === 'object' && value !== null ? value : {})
+      name: value.name,
+      buy: typeof value.buy === 'number' ? value.buy : null,
+      sell: typeof value.sell === 'number' ? value.sell : null,
+      date: response.data.date
     }));
     const previousRates = Object.entries(previousRatesObj).map(([code, value]) => ({
       code,

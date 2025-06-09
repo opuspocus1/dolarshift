@@ -33,17 +33,13 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">Compra</p>
             <p className="text-xl font-bold text-gray-900 dark:text-white">
-              {currency.code === 'USD' ? '$1.00' : 
-               currency.code === 'BTC' ? `₿${currency.buy.toFixed(8)}` :
-               `${currency.buy.toLocaleString()}`}
+              {currency.buy !== null && currency.buy !== undefined ? currency.code === 'BTC' ? `₿${currency.buy.toFixed(8)}` : `${currency.buy.toLocaleString()}` : 'N/A'}
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">Venta</p>
             <p className="text-xl font-bold text-gray-900 dark:text-white">
-              {currency.code === 'USD' ? '$1.00' : 
-               currency.code === 'BTC' ? `₿${currency.sell.toFixed(8)}` :
-               `${currency.sell.toLocaleString()}`}
+              {currency.sell !== null && currency.sell !== undefined ? currency.code === 'BTC' ? `₿${currency.sell.toFixed(8)}` : `${currency.sell.toLocaleString()}` : 'N/A'}
             </p>
           </div>
         </div>
