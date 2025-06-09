@@ -15,11 +15,22 @@ const allowedOrigins = [
   'http://localhost:5173'          // desarrollo local
 ];
 
-// Middleware
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+// CORS configuration
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// Apply middleware in correct order
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rate limiting
@@ -42,18 +53,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Middleware global para CORS en todas las respuestas (incluyendo 404)
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    'https://dolarshift.netlify.app',
-    'http://localhost:5173'
-  ];
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-  }
-  next();
+// Error handling middleware
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something broke!' });
+});
+
+// 404 handler
+app.use((req: express.Request, res: express.Response) => {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 // Start server
