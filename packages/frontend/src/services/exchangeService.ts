@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { format, subDays } from 'date-fns';
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dolarshift-api.onrender.com/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dolarshift.onrender.com/api';
 
 export interface Currency {
   code: string;
