@@ -51,18 +51,14 @@ app.get('/api/exchange/rates/:currency/:startDate/:endDate', async (req, res) =>
     console.log('BCRA RAW RESPONSE:', JSON.stringify(response.data, null, 2));
     const results = response.data.results || [];
     const history = results.map(item => {
-      let buy = null;
-      let sell = null;
-      if (Array.isArray(item.detalle)) {
-        for (const d of item.detalle) {
-          if (d.tipoPase === 1) buy = d.tipoCotizacion;
-          if (d.tipoPase === 2) sell = d.tipoCotizacion;
-        }
+      let value = null;
+      if (Array.isArray(item.detalle) && item.detalle.length > 0) {
+        value = item.detalle[0].tipoCotizacion;
       }
       return {
         date: item.fecha,
-        buy,
-        sell
+        buy: value,
+        sell: value
       };
     });
     res.json(history);
