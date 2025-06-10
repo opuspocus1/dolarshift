@@ -33,6 +33,7 @@ export const exchangeService = {
   async getExchangeRates(date: Date): Promise<ExchangeRate[]> {
     const formattedDate = format(date, 'yyyy-MM-dd');
     const response = await axios.get(`${API_BASE_URL}/exchange/rates/${formattedDate}`);
+    console.log('[exchangeService] Respuesta rates:', response.data);
 
     // Get previous day's rates for calculating changes
     const previousDate = subDays(date, 1);
@@ -55,8 +56,8 @@ export const exchangeService = {
     const currentRates = Object.entries(currentRatesObj).map(([code, value]) => ({
       code,
       name: value.name,
-      buy: typeof value.buy === 'number' ? value.buy : null,
-      sell: typeof value.sell === 'number' ? value.sell : null,
+      buy: typeof value.buy === 'number' && value.buy !== 0 ? value.buy : (typeof value.tipoCotizacion === 'number' ? value.tipoCotizacion : null),
+      sell: typeof value.sell === 'number' && value.sell !== 0 ? value.sell : (typeof value.tipoCotizacion === 'number' ? value.tipoCotizacion : null),
       date: response.data.date
     }));
     const previousRates = Object.entries(previousRatesObj).map(([code, value]) => ({
