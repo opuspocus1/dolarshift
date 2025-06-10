@@ -32,9 +32,9 @@ const Dashboard: React.FC = () => {
       const { now } = await timeRes.json();
       const today = new Date(now);
       let dateToUse = today;
-      if (dateOverride) {
-        // Si el usuario elige una fecha, usarla (pero nunca mayor a hoy)
-        const chosen = new Date(dateOverride);
+      if (dateOverride && /^\d{4}-\d{2}-\d{2}$/.test(dateOverride)) {
+        // Solo si el string es válido, crear el Date
+        const chosen = new Date(dateOverride + 'T00:00:00Z');
         if (chosen > today) {
           dateToUse = today;
         } else {
