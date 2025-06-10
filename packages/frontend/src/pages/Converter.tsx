@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import CurrencyConverter from '../components/CurrencyConverter';
 import { Calculator, TrendingUp, Clock } from 'lucide-react';
 import { exchangeService } from '../services/exchangeService';
 import { CurrencyRate, Currency } from '../types';
 
 const Converter: React.FC = () => {
+  const { t } = useTranslation();
   const [rates, setRates] = useState<CurrencyRate[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
@@ -34,8 +36,8 @@ const Converter: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Currency Converter</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Convert between different currencies with real-time rates</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('converter.title')}</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('converter.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -101,29 +103,16 @@ const Converter: React.FC = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                 <Calculator className="h-5 w-5 mr-2" />
-                Quick Convert
+                {t('converter.quickConvert')}
               </h3>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="font-medium text-gray-900 dark:text-white">1 USD =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{currenciesWithRates.find(r => r.code === 'ARS')?.sell.toLocaleString()} ARS</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="font-medium text-gray-900 dark:text-white">1 EUR =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{(1 / (currenciesWithRates.find(r => r.code === 'EUR')?.sell || 1)).toFixed(4)} USD</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="font-medium text-gray-900 dark:text-white">1 BTC =</div>
-                  <div className="text-gray-600 dark:text-gray-400">{(1 / (currenciesWithRates.find(r => r.code === 'BTC')?.sell || 1)).toLocaleString()} USD</div>
-                </div>
-              </div>
+              <CurrencyConverter />
             </div>
 
             {/* Top Movers */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                 <TrendingUp className="h-5 w-5 mr-2" />
-                Top Movers
+                {t('converter.topMovers')}
               </h3>
               <div className="space-y-3">
                 {currenciesWithRates.map((currency) => (

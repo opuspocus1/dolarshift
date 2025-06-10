@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TrendingUp, Menu, X, Database } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import { useTranslation } from 'react-i18next';
 
 const Navbar: React.FC = () => {
+  const { i18n } = useTranslation();
   const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   const navigation = [
     { name: 'Dashboard', path: '/' },
@@ -14,12 +17,22 @@ const Navbar: React.FC = () => {
     { name: 'Converter', path: '/converter' }
   ];
 
+  const languages = [
+    { code: 'es', label: 'ES', flag: '🇦🇷' },
+    { code: 'en', label: 'EN', flag: '🇺🇸' }
+  ];
+
+  const handleLanguageChange = (code: string) => {
+    i18n.changeLanguage(code);
+    setLangMenuOpen(false);
+  };
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -48,6 +61,34 @@ const Navbar: React.FC = () => {
                 {item.name}
               </Link>
             ))}
+            {/* Selector de idioma */}
+            <div className="relative">
+              <button
+                onClick={() => setLangMenuOpen((v) => !v)}
+                className="flex items-center px-2 py-1 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none border border-gray-200 dark:border-gray-700"
+                aria-haspopup="true"
+                aria-expanded={langMenuOpen}
+              >
+                <span className="mr-1">
+                  {languages.find(l => l.code === i18n.language)?.flag || '🌐'}
+                </span>
+                {languages.find(l => l.code === i18n.language)?.label || i18n.language.toUpperCase()}
+                <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </button>
+              {langMenuOpen && (
+                <div className="absolute right-0 mt-2 w-24 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                  {languages.map(lang => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`w-full flex items-center px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${i18n.language === lang.code ? 'font-bold' : ''}`}
+                    >
+                      <span className="mr-2">{lang.flag}</span> {lang.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <ThemeToggle />
           </div>
 

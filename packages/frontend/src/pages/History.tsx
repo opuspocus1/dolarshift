@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, TrendingUp } from 'lucide-react';
 import ChartCard from '../components/ChartCard';
 import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
 import { Currency } from '../types';
 
 const History: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedPeriod, setSelectedPeriod] = useState('30');
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['USD']);
@@ -13,10 +15,10 @@ const History: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const periods = [
-    { value: '7', label: '7 Days' },
-    { value: '30', label: '30 Days' },
-    { value: '90', label: '3 Months' },
-    { value: '365', label: '1 Year' }
+    { value: '7', label: t('history.period7') },
+    { value: '30', label: t('history.period30') },
+    { value: '90', label: t('history.period90') },
+    { value: '365', label: t('history.period365') }
   ];
 
   useEffect(() => {
@@ -63,13 +65,13 @@ const History: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Historical Exchange Rates</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Compare the evolution of multiple currencies over time</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('history.title')}</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('history.subtitle')}</p>
         </div>
 
         {/* Multiselect de monedas */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monedas a mostrar</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('history.currenciesLabel')}</label>
           <select
             multiple
             value={selectedCurrencies}
@@ -85,7 +87,7 @@ const History: React.FC = () => {
 
         {/* Period select */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Período</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('history.periodLabel')}</label>
           <select
             value={selectedPeriod}
             onChange={e => setSelectedPeriod(e.target.value)}
@@ -99,7 +101,7 @@ const History: React.FC = () => {
 
         {/* Chart */}
         <ChartCard
-          title={`Histórico de ${selectedCurrencies.join(', ')}`}
+          title={t('history.chartTitle', { currencies: selectedCurrencies.join(', ') })}
           data={chartData}
           selectedCurrencies={selectedCurrencies}
           height={400}

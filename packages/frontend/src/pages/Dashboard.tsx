@@ -1,71 +1,97 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
-import ChartCard from '../components/ChartCard';
-import { exchangeService, ExchangeRate, ExchangeRateHistory, API_BASE_URL } from '../services/exchangeService';
-import { format, subDays } from 'date-fns';
-import { ChartDataPoint } from '../types';
+import { getDivisas, getCotizacionesByDate } from '../data/bcraApi';
+import { Divisa, CotizacionesDetalle, CotizacionesFecha } from '../data/bcraApi';
+import { ExchangeRate } from '../services/exchangeService';
 
-// Función para obtener la fecha real desde el backend
-async function getRealToday(): Promise<Date> {
-  try {
-    const res = await fetch(`${API_BASE_URL}/time`);
-    if (!res.ok) throw new Error('API /time not found');
-    const data = await res.json();
-    if (!data.time) throw new Error('No "time" field in response');
-    return new Date(data.time);
-  } catch (e) {
-    // fallback a la fecha local si falla la API
-    return new Date();
-  }
-}
+const CARDS_PER_PAGE = 16;
 
 const Dashboard: React.FC = () => {
-  const [rates, setRates] = useState<ExchangeRate[]>([]);
-  const [usdHistory, setUsdHistory] = useState<ExchangeRateHistory[]>([]);
+  const { t } = useTranslation();
+  const [currencies, setCurrencies] = useState<Divisa[]>([]);
+  const [rates, setRates] = useState<CotizacionesDetalle[]>([]);
+  const [date, setDate] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const today = await getRealToday();
-        const now = today;
-        // Si la fecha de hoy es futura, usar ayer
-        let safeToday = today;
-        if (today > now) {
-          safeToday = subDays(now, 1);
-        }
-        console.log('Fecha que se consulta (real):', safeToday.toISOString());
-        const thirtyDaysAgo = subDays(safeToday, 30);
-
-        // Fetch current rates
-        const currentRates = await exchangeService.getExchangeRates(safeToday);
-        setRates(currentRates);
-
-        // Fetch USD history
-        const usdData = await exchangeService.getExchangeRateHistory('USD', thirtyDaysAgo, safeToday);
-        setUsdHistory(usdData);
-
+        const divisas = await getDivisas();
+        setCurrencies(divisas);
+        const today = new Date();
+        const fecha = today.toISOString().split('T')[0] + 'T00:00:00';
+        const cotizaciones: CotizacionesFecha = await getCotizacionesByDate(fecha);
+        setRates(cotizaciones.detalle);
+        setDate(cotizaciones.fecha);
         setError(null);
       } catch (err) {
-        setError('Error loading data. Please try again later.');
-        console.error('Error fetching data:', err);
+        setError('Error cargando datos. Intente nuevamente.');
+        setCurrencies([]);
+        setRates([]);
+        setDate('');
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
+
+  // Cruzar monedas y cotizaciones por código
+  const cards: ExchangeRate[] = currencies.map((currency) => {
+    const buyRate = rates.find((r) => r.codigoMoneda === currency.codigo && r.tipoPase === 1);
+    const sellRate = rates.find((r) => r.codigoMoneda === currency.codigo && r.tipoPase === 2);
+    return {
+      code: currency.codigo,
+      name: currency.denominacion,
+      buy: buyRate ? buyRate.tipoCotizacion : 0,
+      sell: sellRate ? sellRate.tipoCotizacion : 0,
+      date: date,
+    };
+  });
+
+  // Filtro de búsqueda
+  const filteredCards = cards.filter(card =>
+    card.code.toLowerCase().includes(search.toLowerCase()) ||
+    card.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Paginación
+  const totalPages = Math.ceil(filteredCards.length / CARDS_PER_PAGE);
+  const paginatedCards = filteredCards.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handlePrev = () => setPage((p) => Math.max(1, p - 1));
+  const handleNext = () => setPage((p) => Math.min(totalPages, p + 1));
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading data...</p>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
+          </div>
+          <div className="mb-4 flex justify-between items-center">
+            <input
+              type="text"
+              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              placeholder={t('search')}
+              disabled
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[...Array(CARDS_PER_PAGE)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-xl h-40" />
+            ))}
           </div>
         </div>
       </div>
@@ -76,80 +102,61 @@ const Dashboard: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-red-600 dark:text-red-400">
-            <p>{error}</p>
+          <div className="text-center">
+            <p className="mt-4 text-red-600 dark:text-red-400">{error}</p>
           </div>
         </div>
       </div>
     );
   }
 
-  const currenciesWithRates = rates.filter(currency => currency.buy !== null || currency.sell !== null);
-  const majorCurrencies = currenciesWithRates.slice(0, 4);
-  const otherCurrencies = currenciesWithRates.slice(4);
-
-  const chartData: ChartDataPoint[] = usdHistory.map(item => ({
-    date: format(new Date(item.date), 'MMM dd'),
-    value: item.sell,
-    timestamp: new Date(item.date).getTime()
-  }));
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Currency Dashboard</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Real-time exchange rates and market trends</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
         </div>
-
-        {/* Currency Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {majorCurrencies.map((currency) => (
-            <CurrencyCard key={currency.code} currency={currency} />
-          ))}
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ChartCard
-            title="USD/ARS Exchange Rate (30 Days)"
-            data={chartData}
-            color="#ef4444"
+        {/* Fecha de cotización y búsqueda */}
+        <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            {t('date')}: <span className="font-semibold text-gray-900 dark:text-white">{date}</span>
+          </div>
+          <input
+            type="text"
+            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+            placeholder={t('search')}
+            value={search}
+            onChange={handleSearch}
           />
         </div>
-
-        {/* Additional Currency Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {otherCurrencies.map((currency) => (
+        {/* Cards de monedas */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {paginatedCards.map((currency) => (
             <CurrencyCard key={currency.code} currency={currency} />
           ))}
         </div>
-
-        {/* Market Summary */}
-        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Market Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {currenciesWithRates.filter(rate => rate.changePercent && rate.changePercent > 0).length}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Currencies Up</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {currenciesWithRates.filter(rate => rate.changePercent && rate.changePercent < 0).length}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Currencies Down</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-gray-600 dark:text-gray-400">
-                {currenciesWithRates.filter(rate => !rate.changePercent || rate.changePercent === 0).length}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Unchanged</p>
-            </div>
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-4 mt-4">
+            <button
+              className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold disabled:opacity-50"
+              onClick={handlePrev}
+              disabled={page === 1}
+            >
+              {t('prev')}
+            </button>
+            <span className="text-gray-700 dark:text-gray-200">{page} / {totalPages}</span>
+            <button
+              className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold disabled:opacity-50"
+              onClick={handleNext}
+              disabled={page === totalPages}
+            >
+              {t('next')}
+            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,19 +1,19 @@
 import axios from 'axios';
 
 // Types based on BCRA API specification
-interface Divisa {
+export interface Divisa {
   codigo: string;
   denominacion: string;
 }
 
-interface CotizacionesDetalle {
+export interface CotizacionesDetalle {
   codigoMoneda: string;
   descripcion: string;
   tipoPase: number;
   tipoCotizacion: number;
 }
 
-interface CotizacionesFecha {
+export interface CotizacionesFecha {
   fecha: string;
   detalle: CotizacionesDetalle[];
 }
