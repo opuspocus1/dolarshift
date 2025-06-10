@@ -91,6 +91,18 @@ app.get('/api/time', (req, res) => {
   res.json({ now: new Date().toISOString() });
 });
 
+// Endpoint temporal para debug de fecha/hora del sistema
+app.get('/api/debug/time', (req, res) => {
+  const now = new Date();
+  res.json({
+    iso: now.toISOString(),
+    locale: now.toLocaleString(),
+    utc: now.toUTCString(),
+    epoch: now.getTime(),
+    string: now.toString()
+  });
+});
+
 // 404 handler - debe ir después de todas las rutas
 app.use((req, res) => {
   res.setHeader('Access-Control-Allow-Origin', 'https://dolarshift.netlify.app');
