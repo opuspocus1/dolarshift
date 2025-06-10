@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
-import { getDivisas, getCotizacionesByDate } from '../data/bcraApi';
-import { Divisa, CotizacionesDetalle, CotizacionesFecha } from '../data/bcraApi';
-import { ExchangeRate } from '../services/exchangeService';
+import { exchangeService, ExchangeRate } from '../services/exchangeService';
 
 const CARDS_PER_PAGE = 16;
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
-  const [currencies, setCurrencies] = useState<Divisa[]>([]);
-  const [rates, setRates] = useState<CotizacionesDetalle[]>([]);
+  const [cards, setCards] = useState<ExchangeRate[]>([]);
   const [date, setDate] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,18 +18,14 @@ const Dashboard: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const divisas = await getDivisas();
-        setCurrencies(divisas);
         const today = new Date();
-        const fecha = today.toISOString().split('T')[0] + 'T00:00:00';
-        const cotizaciones: CotizacionesFecha = await getCotizacionesByDate(fecha);
-        setRates(cotizaciones.detalle);
-        setDate(cotizaciones.fecha);
+        const rates = await exchangeService.getExchangeRates(today);
+        setCards(rates);
+        setDate(rates.length > 0 ? rates[0].date : '');
         setError(null);
       } catch (err) {
         setError('Error cargando datos. Intente nuevamente.');
-        setCurrencies([]);
-        setRates([]);
+        setCards([]);
         setDate('');
       } finally {
         setLoading(false);
@@ -40,19 +33,6 @@ const Dashboard: React.FC = () => {
     };
     fetchData();
   }, []);
-
-  // Cruzar monedas y cotizaciones por código
-  const cards: ExchangeRate[] = currencies.map((currency) => {
-    const buyRate = rates.find((r) => r.codigoMoneda === currency.codigo && r.tipoPase === 1);
-    const sellRate = rates.find((r) => r.codigoMoneda === currency.codigo && r.tipoPase === 2);
-    return {
-      code: currency.codigo,
-      name: currency.denominacion,
-      buy: buyRate ? buyRate.tipoCotizacion : 0,
-      sell: sellRate ? sellRate.tipoCotizacion : 0,
-      date: date,
-    };
-  });
 
   // Filtro de búsqueda
   const filteredCards = cards.filter(card =>
