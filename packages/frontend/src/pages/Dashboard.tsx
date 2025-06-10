@@ -41,11 +41,14 @@ const Dashboard: React.FC = () => {
           dateToUse = chosen;
         }
       }
-      setSelectedDate(format(dateToUse, 'yyyy-MM-dd'));
+      // Forzar formato YYYY-MM-DD para la request
+      const dateString = format(dateToUse, 'yyyy-MM-dd');
+      setSelectedDate(dateString);
+      console.log('[Dashboard] Fecha seleccionada para cotización:', dateString);
       // Pedir cotizaciones para la fecha seleccionada
-      const rates = await exchangeService.getExchangeRates(dateToUse);
+      const rates = await exchangeService.getExchangeRates(new Date(dateString));
       setCards(rates);
-      setDate(rates.length > 0 ? rates[0].date : format(dateToUse, 'yyyy-MM-dd'));
+      setDate(rates.length > 0 ? rates[0].date : dateString);
       setError(null);
       // Si después de las 10am no hay cotizaciones, mostrar mensaje especial
       const hour = today.getHours();
@@ -56,6 +59,7 @@ const Dashboard: React.FC = () => {
         setError('No hay cotizaciones para la fecha seleccionada.');
       }
     } catch (err) {
+      console.error('[Dashboard] Error real al cargar cotizaciones:', err);
       setError('Error cargando datos. Intente nuevamente.');
       setCards([]);
       setDate('');
