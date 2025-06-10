@@ -45,8 +45,23 @@ const Dashboard: React.FC = () => {
       const dateString = format(dateToUse, 'yyyy-MM-dd');
       setSelectedDate(dateString);
       console.log('[Dashboard] Fecha seleccionada para cotización:', dateString);
-      // Crear un objeto Date seguro en UTC para evitar problemas de formato
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+        console.error('[Dashboard] dateString inválido:', dateString);
+        setError('Fecha inválida para cotización.');
+        setCards([]);
+        setDate('');
+        setLoading(false);
+        return;
+      }
       const [year, month, day] = dateString.split('-').map(Number);
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        console.error('[Dashboard] Error al parsear fecha:', { year, month, day, dateString });
+        setError('Fecha inválida para cotización.');
+        setCards([]);
+        setDate('');
+        setLoading(false);
+        return;
+      }
       const safeDate = new Date(Date.UTC(year, month - 1, day));
       // Pedir cotizaciones para la fecha seleccionada
       const rates = await exchangeService.getExchangeRates(safeDate);
