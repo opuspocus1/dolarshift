@@ -53,6 +53,12 @@ export const getDivisas = async (): Promise<Divisa[]> => {
 
 // Function to get exchange rates for a specific date
 export const getCotizacionesByDate = async (fecha: string): Promise<CotizacionesFecha> => {
+  // Validar que la fecha no sea futura
+  const today = new Date().toISOString().split('T')[0];
+  const inputDate = fecha.split('T')[0];
+  if (inputDate > today) {
+    throw new Error('No hay cotizaciones para fechas futuras.');
+  }
   try {
     const response = await axios.get<{ status: number; results: CotizacionesFecha }>(
       `${BCRA_API_BASE_URL}/Cotizaciones`,

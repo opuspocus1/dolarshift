@@ -31,14 +31,17 @@ router.get('/currencies', async (req, res) => {
 router.get('/rates/:date', async (req, res) => {
   try {
     const { date } = req.params;
+    const dateObj = new Date(date);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if (dateObj > today) {
+      return res.status(400).json({ error: 'No hay cotizaciones para fechas futuras.' });
+    }
     const cacheKey = `rates_${date}`;
     const cachedData = cache.get(cacheKey);
-    
     if (cachedData) {
       return res.json(cachedData);
     }
-
-    const dateObj = new Date(date);
     const data = await bcraService.getExchangeRates(dateObj);
     cache.set(cacheKey, data);
     res.json(data);
@@ -53,15 +56,18 @@ router.get('/rates/:date', async (req, res) => {
 router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
   try {
     const { currency, startDate, endDate } = req.params;
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if (endDateObj > today) {
+      return res.status(400).json({ error: 'No hay cotizaciones para fechas futuras.' });
+    }
     const cacheKey = `rates_${currency}_${startDate}_${endDate}`;
     const cachedData = cache.get(cacheKey);
-    
     if (cachedData) {
       return res.json(cachedData);
     }
-
-    const startDateObj = new Date(startDate);
-    const endDateObj = new Date(endDate);
     const data = await bcraService.getExchangeRateHistory(currency, startDateObj, endDateObj);
     cache.set(cacheKey, data);
     res.json(data);
