@@ -45,8 +45,11 @@ const Dashboard: React.FC = () => {
       const dateString = format(dateToUse, 'yyyy-MM-dd');
       setSelectedDate(dateString);
       console.log('[Dashboard] Fecha seleccionada para cotización:', dateString);
+      // Crear un objeto Date seguro en UTC para evitar problemas de formato
+      const [year, month, day] = dateString.split('-').map(Number);
+      const safeDate = new Date(Date.UTC(year, month - 1, day));
       // Pedir cotizaciones para la fecha seleccionada
-      const rates = await exchangeService.getExchangeRates(new Date(dateString));
+      const rates = await exchangeService.getExchangeRates(safeDate);
       setCards(rates);
       setDate(rates.length > 0 ? rates[0].date : dateString);
       setError(null);
