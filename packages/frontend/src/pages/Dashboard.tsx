@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
+import { format, subDays } from 'date-fns';
 
 const CARDS_PER_PAGE = 16;
 
@@ -13,24 +14,57 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+
+  // Handler para el selector de fecha
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSelectedDate(value);
+    fetchData(value);
+  };
+
+  // Función para obtener cotizaciones según la fecha
+  const fetchData = async (dateOverride?: string) => {
+    try {
+      setLoading(true);
+      // Obtener la fecha actual del backend
+      const timeRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dolarshift.onrender.com/api'}/time`);
+      const { now } = await timeRes.json();
+      const today = new Date(now);
+      let dateToUse = today;
+      if (dateOverride) {
+        // Si el usuario elige una fecha, usarla (pero nunca mayor a hoy)
+        const chosen = new Date(dateOverride);
+        if (chosen > today) {
+          dateToUse = today;
+        } else {
+          dateToUse = chosen;
+        }
+      }
+      setSelectedDate(format(dateToUse, 'yyyy-MM-dd'));
+      // Pedir cotizaciones para la fecha seleccionada
+      const rates = await exchangeService.getExchangeRates(dateToUse);
+      setCards(rates);
+      setDate(rates.length > 0 ? rates[0].date : format(dateToUse, 'yyyy-MM-dd'));
+      setError(null);
+      // Si después de las 10am no hay cotizaciones, mostrar mensaje especial
+      const hour = today.getHours();
+      if (rates.length === 0 && dateToUse.getTime() === today.getTime() && hour >= 10 && hour < 18) {
+        setError('Aún no hay cotizaciones publicadas para hoy. El mercado abre a las 10am. Si es después de las 12pm y no ves datos, probá seleccionar el día anterior.');
+      }
+      if (rates.length === 0 && dateToUse.getTime() !== today.getTime()) {
+        setError('No hay cotizaciones para la fecha seleccionada.');
+      }
+    } catch (err) {
+      setError('Error cargando datos. Intente nuevamente.');
+      setCards([]);
+      setDate('');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const today = new Date();
-        const rates = await exchangeService.getExchangeRates(today);
-        setCards(rates);
-        setDate(rates.length > 0 ? rates[0].date : '');
-        setError(null);
-      } catch (err) {
-        setError('Error cargando datos. Intente nuevamente.');
-        setCards([]);
-        setDate('');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -100,8 +134,15 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Fecha de cotización y búsqueda */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
             {t('date')}: <span className="font-semibold text-gray-900 dark:text-white">{date}</span>
+            <input
+              type="date"
+              className="ml-2 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={selectedDate}
+              max={format(new Date(), 'yyyy-MM-dd')}
+              onChange={handleDateChange}
+            />
           </div>
           <input
             type="text"
