@@ -88,10 +88,7 @@ app.get('/api/exchange/rates/:currency/:startDate/:endDate', async (req, res) =>
 
 // Health check route
 app.get('/api/time', (req, res) => {
-  res.json({ 
-    time: new Date().toISOString(),
-    status: 'ok'
-  });
+  res.json({ now: new Date().toISOString() });
 });
 
 // 404 handler - debe ir después de todas las rutas
