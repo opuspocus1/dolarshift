@@ -41,6 +41,16 @@ const Dashboard: React.FC = () => {
           dateToUse = chosen;
         }
       }
+      // Validar que dateToUse sea un Date válido antes de formatear
+      console.log('[Dashboard] dateToUse:', dateToUse, 'isValid:', dateToUse instanceof Date && !isNaN(dateToUse.getTime()));
+      if (!(dateToUse instanceof Date) || isNaN(dateToUse.getTime())) {
+        console.error('[Dashboard] dateToUse inválido antes de formatear:', dateToUse);
+        setError('Fecha inválida para cotización.');
+        setCards([]);
+        setDate('');
+        setLoading(false);
+        return;
+      }
       // Forzar formato YYYY-MM-DD para la request
       const dateString = format(dateToUse, 'yyyy-MM-dd');
       setSelectedDate(dateString);
