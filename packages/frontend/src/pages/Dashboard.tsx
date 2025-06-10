@@ -30,7 +30,17 @@ const Dashboard: React.FC = () => {
       // Obtener la fecha actual del backend
       const timeRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dolarshift.onrender.com/api'}/time`);
       const { now } = await timeRes.json();
+      console.log('[Dashboard] Valor de now recibido del backend:', now);
       const today = new Date(now);
+      console.log('[Dashboard] today:', today, 'isValid:', today instanceof Date && !isNaN(today.getTime()));
+      if (!(today instanceof Date) || isNaN(today.getTime())) {
+        console.error('[Dashboard] Fecha inválida recibida del backend:', now);
+        setError('Fecha inválida del servidor.');
+        setCards([]);
+        setDate('');
+        setLoading(false);
+        return;
+      }
       let dateToUse = today;
       if (dateOverride && /^\d{4}-\d{2}-\d{2}$/.test(dateOverride)) {
         // Solo si el string es válido, crear el Date
