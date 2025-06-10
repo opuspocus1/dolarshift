@@ -42,6 +42,9 @@ app.get('/api/exchange/rates/:date', async (req, res) => {
     }
     res.json({ date, rates });
   } catch (err) {
+    console.error('Error en /api/exchange/rates/:date:', err);
+    res.setHeader('Access-Control-Allow-Origin', 'https://dolarshift.netlify.app');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     if (err.response && err.response.status === 404) {
       res.json({ date, rates: {} });
     } else {
@@ -71,16 +74,13 @@ app.get('/api/exchange/rates/:currency/:startDate/:endDate', async (req, res) =>
     });
     res.json(history);
   } catch (err) {
+    console.error('Error en /api/exchange/rates/:currency/:startDate/:endDate:', err);
+    res.setHeader('Access-Control-Allow-Origin', 'https://dolarshift.netlify.app');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     if (err.response && err.response.status === 404) {
       console.warn('BCRA 404 Not Found:', err.message, err.response && err.response.data);
       res.json([]);
     } else {
-      // Logs exhaustivos
-      console.error('Error fetching BCRA history:', err);
-      if (err.stack) console.error('Stack:', err.stack);
-      if (err.response) console.error('Response:', err.response.data);
-      if (err.request) console.error('Request:', err.request);
-      if (err.config) console.error('Config:', err.config);
       res.status(500).json({ error: 'Error fetching BCRA history', details: err.message, stack: err.stack, bcra: err.response && err.response.data });
     }
   }
