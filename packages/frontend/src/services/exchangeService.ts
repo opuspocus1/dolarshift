@@ -50,7 +50,7 @@ export const exchangeService = {
       console.log('[exchangeService] Respuesta BCRA:', response.data);
 
       // Mapear la respuesta del BCRA al formato esperado
-      const rates = response.data.map((rate: any) => ({
+      const rates = Object.values(response.data.results).map((rate: any) => ({
         code: rate.codigo,
         name: rate.descripcion,
         codigomoneda: rate.codigo,
