@@ -135,6 +135,10 @@ const Dashboard: React.FC = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
+            {/* Aclaración sobre el dólar mayorista */}
+            <div className="mt-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2">
+              El valor USD mostrado corresponde al <b>dólar mayorista oficial</b> publicado por el BCRA.
+            </div>
           </div>
           <div className="mb-4 flex justify-between items-center">
             <input
@@ -173,19 +177,13 @@ const Dashboard: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
-        </div>
-        {/* Fecha de cotización y búsqueda */}
-        <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-            {t('date')}: <span className="font-semibold text-gray-900 dark:text-white">{date}</span>
-            <input
-              type="date"
-              className="ml-2 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              value={selectedDate}
-              max={format(new Date(), 'yyyy-MM-dd')}
-              onChange={handleDateChange}
-            />
+          {/* Aclaración sobre el dólar mayorista */}
+          <div className="mt-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2">
+            El valor USD mostrado corresponde al <b>dólar mayorista oficial</b> publicado por el BCRA.
           </div>
+        </div>
+        {/* Eliminar sección de fecha y selector de fecha */}
+        <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <input
             type="text"
             className="w-full md:w-1/3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
