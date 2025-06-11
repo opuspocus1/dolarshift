@@ -55,12 +55,15 @@ const Charts: React.FC = () => {
 
       try {
         const newHistories: Record<string, ExchangeRateHistory[]> = {};
-        
+        // Sumar 1 día a endDate para que sea inclusiva
+        const endDateObjPlus1 = new Date(endDate);
+        endDateObjPlus1.setDate(endDateObjPlus1.getDate() + 1);
+        const endDateInclusive = format(endDateObjPlus1, 'yyyy-MM-dd');
         for (const currency of selectedCurrencies) {
           const history = await exchangeService.getChartHistory(
             currency,
             startDate,
-            endDate
+            endDateInclusive
           );
           newHistories[currency] = history;
         }
