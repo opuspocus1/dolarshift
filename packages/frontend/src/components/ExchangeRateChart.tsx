@@ -101,21 +101,46 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     plugins: {
       legend: {
         position: 'top' as const,
+        align: 'end',
+        labels: {
+          boxWidth: 18,
+          boxHeight: 18,
+          font: { size: 14, family: 'inherit', weight: 'bold' },
+          color: '#222',
+          padding: 18,
+        },
       },
       title: {
-        display: true,
-        text: 'Exchange Rate History',
+        display: false,
+        text: '',
+      },
+      tooltip: {
+        backgroundColor: 'rgba(30,41,59,0.95)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: '#38bdf8',
+        borderWidth: 1,
+        padding: 12,
+        cornerRadius: 8,
+        caretSize: 8,
+        displayColors: true,
       },
     },
     scales: {
       y: {
         beginAtZero: false,
+        grid: { color: '#e5e7eb' },
+        ticks: { color: '#222', font: { size: 13 } },
+      },
+      x: {
+        grid: { color: '#e5e7eb' },
+        ticks: { color: '#222', font: { size: 13 } },
       },
     },
   };
 
   return (
-    <div className="w-full h-[500px] p-4">
+    <div className="w-full h-[520px] p-2 md:p-6 bg-white/90 rounded-2xl shadow-2xl flex items-center justify-center">
       <Line options={options} data={data} />
     </div>
   );

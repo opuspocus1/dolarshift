@@ -105,80 +105,68 @@ const Charts: React.FC = () => {
   }));
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 py-4">
       <ScrollToTop />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{t('charts.title')}</h1>
-        <p className="text-gray-600">{t('charts.description')}</p>
-      </div>
-
-      {/* Selector de moneda base */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Moneda base</label>
-        <select
-          value={baseCurrency}
-          onChange={e => setBaseCurrency(e.target.value)}
-          className="w-full md:w-1/3 p-2 border border-gray-300 rounded-md"
-        >
-          {currencies.map((currency) => (
-            <option key={currency.code} value={currency.code}>
-              {currency.code} - {currency.name}
-            </option>
-          ))}
-        </select>
+        <h1 className="text-3xl font-bold mb-2">{t('charts.title')}</h1>
+        <p className="text-gray-600 mb-2">{t('charts.description')}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="col-span-1 md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t('charts.selectCurrencies')}
-          </label>
-          <div className="flex flex-wrap gap-2 bg-gray-900 p-3 rounded-xl">
-            {/* Solo mostrar el multiselect, sin botones principales */}
-            {otherCurrencies.length > 0 && (
-              <div style={{ minWidth: 220 }}>
-                <Select
-                  isMulti
-                  options={options}
-                  className="min-w-[220px] text-black"
-                  placeholder="Otras monedas..."
-                  onChange={(selectedOptions: MultiValue<{ value: string; label: string }>) => {
-                    const newCodes = (selectedOptions || []).map(opt => opt.value);
-                    setSelectedCurrencies(prev => [
-                      ...prev,
-                      ...newCodes.filter(code => !prev.includes(code)),
-                    ]);
-                  }}
-                  value={options.filter(opt => selectedCurrencies.includes(opt.value))}
-                />
-              </div>
-            )}
-          </div>
+      {/* Filtros compactos en una sola fila */}
+      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-2 gap-2">
+        <div className="flex-1 min-w-[180px]">
+          <label className="block text-xs font-medium text-gray-500 mb-1">Moneda base</label>
+          <select
+            value={baseCurrency}
+            onChange={e => setBaseCurrency(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+          >
+            {currencies.map((currency) => (
+              <option key={currency.code} value={currency.code}>
+                {currency.code} - {currency.name}
+              </option>
+            ))}
+          </select>
         </div>
-
-        <div className="col-span-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t('charts.dateRange')}
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <DatePicker
-                selected={startDateObj}
-                onChange={date => setStartDate(format(date as Date, 'yyyy-MM-dd'))}
-                dateFormat="dd/MM/yyyy"
-                className="w-full p-2 border border-gray-300 rounded-md"
-                calendarClassName="bg-white"
-              />
-            </div>
-            <div>
-              <DatePicker
-                selected={endDateObj}
-                onChange={date => setEndDate(format(date as Date, 'yyyy-MM-dd'))}
-                dateFormat="dd/MM/yyyy"
-                className="w-full p-2 border border-gray-300 rounded-md"
-                calendarClassName="bg-white"
-              />
-            </div>
+        <div className="flex-1 min-w-[220px]">
+          <label className="block text-xs font-medium text-gray-500 mb-1">{t('charts.selectCurrencies')}</label>
+          {otherCurrencies.length > 0 && (
+            <Select
+              isMulti
+              options={options}
+              className="min-w-[220px] text-black"
+              placeholder="Otras monedas..."
+              onChange={(selectedOptions: MultiValue<{ value: string; label: string }>) => {
+                const newCodes = (selectedOptions || []).map(opt => opt.value);
+                setSelectedCurrencies(prev => [
+                  ...prev,
+                  ...newCodes.filter(code => !prev.includes(code)),
+                ]);
+              }}
+              value={options.filter(opt => selectedCurrencies.includes(opt.value))}
+            />
+          )}
+        </div>
+        <div className="flex flex-1 flex-row gap-2 min-w-[200px]">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">{t('charts.dateRange')}</label>
+            <DatePicker
+              selected={startDateObj}
+              onChange={date => setStartDate(format(date as Date, 'yyyy-MM-dd'))}
+              dateFormat="dd/MM/yyyy"
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              calendarClassName="bg-white"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">&nbsp;</label>
+            <DatePicker
+              selected={endDateObj}
+              onChange={date => setEndDate(format(date as Date, 'yyyy-MM-dd'))}
+              dateFormat="dd/MM/yyyy"
+              className="w-full p-2 border border-gray-300 rounded-md text-sm"
+              calendarClassName="bg-white"
+            />
           </div>
         </div>
       </div>
@@ -194,7 +182,7 @@ const Charts: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-lg p-4">
+        <div className="bg-white/90 rounded-2xl shadow-2xl p-2 md:p-6 mt-2 max-w-full mx-auto" style={{ minHeight: 480 }}>
           <ExchangeRateChart
             histories={histories}
             selectedCurrencies={selectedCurrencies}
