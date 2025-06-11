@@ -26,11 +26,13 @@ ChartJS.register(
 interface ExchangeRateChartProps {
   histories: Record<string, ExchangeRateHistory[]>;
   selectedCurrencies: string[];
+  baseCurrency: string;
 }
 
 const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   histories,
-  selectedCurrencies
+  selectedCurrencies,
+  baseCurrency
 }) => {
   const colors = [
     '#3b82f6', // blue
@@ -43,16 +45,27 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     '#84cc16', // lime
   ];
 
-  const datasets = selectedCurrencies.map((currency, index) => {
-    const history = histories[currency] || [];
-    return {
-      label: currency,
-      data: history.map(h => h.buy),
-      borderColor: colors[index % colors.length],
-      backgroundColor: colors[index % colors.length],
-      tension: 0.4,
-    };
-  });
+  const datasets = selectedCurrencies
+    .filter(currency => currency !== baseCurrency)
+    .map((currency, index) => {
+      const history = histories[currency] || [];
+      let data: number[] = [];
+      let label = `${currency}/${baseCurrency}`;
+      if (baseCurrency !== 'ARS') {
+        // Relación invertida: base/moneda
+        data = history.map(h => h.buy ? 1 / h.buy : 0).filter(v => typeof v === 'number' && !isNaN(v));
+        label = `${baseCurrency}/${currency}`;
+      } else {
+        data = history.map(h => h.buy);
+      }
+      return {
+        label,
+        data,
+        borderColor: colors[index % colors.length],
+        backgroundColor: colors[index % colors.length],
+        tension: 0.4,
+      };
+    });
 
   const labels = histories[selectedCurrencies[0]]?.map(h => 
     new Date(h.date).toLocaleDateString()

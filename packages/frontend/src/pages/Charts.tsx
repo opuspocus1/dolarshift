@@ -16,6 +16,7 @@ const Charts: React.FC = () => {
   const [histories, setHistories] = useState<Record<string, ExchangeRateHistory[]>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [baseCurrency, setBaseCurrency] = useState<string>('ARS');
 
   // Forzar scroll al tope al montar la página
   useEffect(() => {
@@ -86,6 +87,22 @@ const Charts: React.FC = () => {
         <p className="text-gray-600">{t('charts.description')}</p>
       </div>
 
+      {/* Selector de moneda base */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Moneda base</label>
+        <select
+          value={baseCurrency}
+          onChange={e => setBaseCurrency(e.target.value)}
+          className="w-full md:w-1/3 p-2 border border-gray-300 rounded-md"
+        >
+          {currencies.map((currency) => (
+            <option key={currency.code} value={currency.code}>
+              {currency.code} - {currency.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="col-span-1 md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -101,9 +118,9 @@ const Charts: React.FC = () => {
                   ${selectedCurrencies.includes(currency.code)
                     ? 'bg-teal-600 text-white shadow-md'
                     : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
-                style={{ minWidth: 60 }}
+                style={{ minWidth: 120 }}
               >
-                {currency.code}
+                {currency.code}/{baseCurrency} - {currency.name}
               </button>
             ))}
           </div>
@@ -149,6 +166,7 @@ const Charts: React.FC = () => {
           <ExchangeRateChart
             histories={histories}
             selectedCurrencies={selectedCurrencies}
+            baseCurrency={baseCurrency}
           />
         </div>
       )}
