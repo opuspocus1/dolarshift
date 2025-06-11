@@ -119,6 +119,20 @@ const Navbar: React.FC = () => {
                 {item.name}
               </Link>
             ))}
+            {/* Selector de idioma en mobile */}
+            <div className="mt-2">
+              <div className="flex items-center space-x-2">
+                {languages.map(lang => (
+                  <button
+                    key={lang.code}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className={`flex items-center px-3 py-2 text-sm rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 mr-2 ${i18n.language === lang.code ? 'font-bold ring-2 ring-blue-500' : ''}`}
+                  >
+                    <span className="mr-2">{lang.flag}</span> {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
