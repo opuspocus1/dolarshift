@@ -8,6 +8,7 @@ import ExchangeRateChart from '../components/ExchangeRateChart';
 import { format, subDays, parse } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Select, { MultiValue } from 'react-select';
 
 const Charts: React.FC = () => {
   const { t } = useTranslation();
@@ -98,6 +99,11 @@ const Charts: React.FC = () => {
     // eslint-disable-next-line
   }, [selectedDropdown]);
 
+  const options = otherCurrencies.map(currency => ({
+    value: currency.code,
+    label: `${currency.code}/${baseCurrency} - ${currency.name}`,
+  }));
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ScrollToTop />
@@ -142,21 +148,24 @@ const Charts: React.FC = () => {
                 {currency.code}/{baseCurrency} - {currency.name}
               </button>
             ))}
-            {/* Dropdown para el resto de monedas */}
+            {/* Dropdown para el resto de monedas (multiselect) */}
             {otherCurrencies.length > 0 && (
-              <select
-                className="px-4 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-200 border border-gray-700"
-                value={selectedDropdown}
-                onChange={e => setSelectedDropdown(e.target.value)}
-                style={{ minWidth: 180 }}
-              >
-                <option value="">Otras monedas...</option>
-                {otherCurrencies.map(currency => (
-                  <option key={currency.code} value={currency.code}>
-                    {currency.code}/{baseCurrency} - {currency.name}
-                  </option>
-                ))}
-              </select>
+              <div style={{ minWidth: 220 }}>
+                <Select
+                  isMulti
+                  options={options}
+                  className="min-w-[220px] text-black"
+                  placeholder="Otras monedas..."
+                  onChange={(selectedOptions: MultiValue<{ value: string; label: string }>) => {
+                    const newCodes = (selectedOptions || []).map(opt => opt.value);
+                    setSelectedCurrencies(prev => [
+                      ...prev,
+                      ...newCodes.filter(code => !prev.includes(code)),
+                    ]);
+                  }}
+                  value={options.filter(opt => selectedCurrencies.includes(opt.value))}
+                />
+              </div>
             )}
           </div>
         </div>
