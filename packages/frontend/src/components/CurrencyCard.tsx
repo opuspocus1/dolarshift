@@ -48,15 +48,15 @@ interface CurrencyCardProps {
 }
 
 const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'ARS' }) => {
-  // Usar codigomoneda para el mapeo de bandera
+  // Usar solo el código de moneda, sin bandera
   const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          {/* Mostrar bandera como emoji */}
-          <span className="text-2xl md:text-3xl lg:text-4xl">{meta.flag}</span>
+          {/* Eliminar bandera, solo mostrar código de moneda */}
+          <span className="text-2xl md:text-3xl lg:text-4xl font-bold">{currency.codigomoneda || currency.code}</span>
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
               <span>{currency.codigomoneda || currency.code}</span>
