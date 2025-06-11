@@ -48,7 +48,13 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   // Obtener y ordenar las fechas de menor a mayor
   const rawHistory = histories[selectedCurrencies[0]] || [];
   const sortedHistory = [...rawHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const labels = sortedHistory.map(h => new Date(h.date).toLocaleDateString());
+  const labels = sortedHistory.map(h => {
+    const d = new Date(h.date);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  });
 
   // Mapear los datasets usando el orden de sortedHistory
   const datasets = selectedCurrencies
