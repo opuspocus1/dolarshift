@@ -53,9 +53,9 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'A
   // Usar solo el código de moneda, sin bandera
   const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
 
-  // Formatear la fecha que viene del BCRA (formato: YYYY-MM-DD)
+  // Formatear la fecha usando parseISO para evitar desfase horario
   const formattedDate = currency.date 
-    ? format(new Date(currency.date), "d 'de' MMMM 'de' yyyy", { locale: es })
+    ? format(parseISO(currency.date), "d 'de' MMMM 'de' yyyy", { locale: es })
     : 'N/A';
 
   return (

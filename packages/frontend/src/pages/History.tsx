@@ -15,6 +15,11 @@ const History: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Forzar scroll al tope al montar la página
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
   const periods = [
     { value: '7', label: t('history.period7') },
     { value: '30', label: t('history.period30') },

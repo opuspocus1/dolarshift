@@ -12,6 +12,10 @@ const Converter: React.FC = () => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
+  useEffect(() => {
     const fetchRates = async () => {
       const data = await exchangeService.getExchangeRates(new Date());
       setRates(data.map(rate => ({

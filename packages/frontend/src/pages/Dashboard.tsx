@@ -17,6 +17,11 @@ const Dashboard: React.FC = () => {
   const [page, setPage] = useState(1);
   const [selectedDate, setSelectedDate] = useState<string>('');
 
+  // Forzar scroll al tope al montar el Dashboard
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
   // Handler para el selector de fecha
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

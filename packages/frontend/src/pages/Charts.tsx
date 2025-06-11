@@ -18,6 +18,10 @@ const Charts: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
+
+  useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
       const end = new Date();
