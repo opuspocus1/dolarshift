@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ChartCard from '../components/ChartCard';
+import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
 import { subDays } from 'date-fns';
 
@@ -77,6 +78,7 @@ const Charts: React.FC = () => {
           </div>
         </div>
       </div>
+      <ScrollToTop />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
+import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays } from 'date-fns';
 
@@ -171,6 +172,7 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
+      <ScrollToTop />
     </div>
   );
 };

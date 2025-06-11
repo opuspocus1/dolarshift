@@ -1,6 +1,8 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { ExchangeRate } from '../services/exchangeService';
+import { format, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 // Mapeo simple de banderas y símbolos por código de moneda
 const currencyMeta: Record<string, { flag: string; symbol: string }> = {
@@ -51,6 +53,11 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'A
   // Usar solo el código de moneda, sin bandera
   const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
 
+  // Formatear la fecha que viene del BCRA (formato: YYYY-MM-DD)
+  const formattedDate = currency.date 
+    ? format(new Date(currency.date), "d 'de' MMMM 'de' yyyy", { locale: es })
+    : 'N/A';
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full">
       <div className="flex items-center justify-between mb-4">
@@ -86,7 +93,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'A
         <div className="mt-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">Fecha</p>
           <p className="text-sm font-medium text-gray-900 dark:text-white">
-            {currency.date ? new Date(currency.date).toLocaleDateString() : 'N/A'}
+            {formattedDate}
           </p>
         </div>
       </div>

@@ -46,6 +46,10 @@ export const exchangeService = {
       const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
       console.log('[exchangeService] Respuesta BCRA:', response.data);
 
+      // Obtener la fecha de la respuesta del BCRA
+      const bcraDate = response.data.results.fecha;
+      console.log('[exchangeService] Fecha BCRA:', bcraDate);
+
       // Mapear la respuesta del BCRA al formato esperado
       const rates = (response.data.results.detalle || [])
         .filter((rate: any) => rate && rate.codigoMoneda)
@@ -56,7 +60,7 @@ export const exchangeService = {
           descripcion: rate.descripcion,
           tipopase: rate.tipoPase,
           tipocotizacion: rate.tipoCotizacion,
-          date: response.data.results.fecha
+          date: bcraDate // Usar la fecha de la respuesta del BCRA
         }));
       return rates;
     } catch (error) {

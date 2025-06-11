@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyConverter from '../components/CurrencyConverter';
+import ScrollToTop from '../components/ScrollToTop';
 import { Calculator, TrendingUp, Clock } from 'lucide-react';
 import { exchangeService } from '../services/exchangeService';
 import { CurrencyRate, Currency } from '../types';
@@ -155,6 +156,7 @@ const Converter: React.FC = () => {
           </div>
         </div>
       </div>
+      <ScrollToTop />
     </div>
   );
 };

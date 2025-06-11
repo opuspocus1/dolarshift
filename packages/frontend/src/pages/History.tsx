@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, TrendingUp } from 'lucide-react';
 import ChartCard from '../components/ChartCard';
+import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
 import { Currency } from '../types';
 
@@ -107,6 +108,7 @@ const History: React.FC = () => {
           height={400}
         />
       </div>
+      <ScrollToTop />
     </div>
   );
 };
