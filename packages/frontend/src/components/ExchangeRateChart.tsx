@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { ExchangeRateHistory } from '../services/exchangeService';
+import { eachDayOfInterval, format as formatDateFns } from 'date-fns';
 
 ChartJS.register(
   CategoryScale,
@@ -48,33 +49,41 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   // Obtener y ordenar las fechas de menor a mayor
   const rawHistory = histories[selectedCurrencies[0]] || [];
   const sortedHistory = [...rawHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const labels = sortedHistory.map(h => {
-    const d = new Date(h.date);
+
+  // Obtener el rango de fechas completo del primer y último dato
+  let allDates: Date[] = [];
+  if (sortedHistory.length > 0) {
+    const start = new Date(sortedHistory[0].date);
+    const end = new Date(sortedHistory[sortedHistory.length - 1].date);
+    allDates = eachDayOfInterval({ start, end });
+  }
+  const labels = allDates.map(d => {
     const day = d.getDate().toString().padStart(2, '0');
     const month = (d.getMonth() + 1).toString().padStart(2, '0');
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   });
 
-  // Mapear los datasets usando el orden de sortedHistory
+  // Mapear los datasets usando el orden de allDates, rellenando con null si no hay dato
   const datasets = selectedCurrencies
     .filter(currency => currency !== baseCurrency)
     .map((currency, index) => {
       const history = histories[currency] || [];
-      // Ordenar el history según el orden de las fechas en sortedHistory
-      const historyMap = Object.fromEntries(history.map(h => [h.date, h]));
-      let data: number[] = [];
+      const historyMap = Object.fromEntries(history.map(h => [formatDateFns(new Date(h.date), 'yyyy-MM-dd'), h]));
+      let data: (number | null)[] = [];
       let label = `${currency}/${baseCurrency}`;
       if (baseCurrency !== 'ARS') {
-        data = sortedHistory.map(h => {
-          const item = historyMap[h.date];
-          return item && item.buy ? 1 / item.buy : 0;
+        data = allDates.map(d => {
+          const key = formatDateFns(d, 'yyyy-MM-dd');
+          const item = historyMap[key];
+          return item && item.buy ? 1 / item.buy : null;
         });
         label = `${baseCurrency}/${currency}`;
       } else {
-        data = sortedHistory.map(h => {
-          const item = historyMap[h.date];
-          return item ? item.buy : 0;
+        data = allDates.map(d => {
+          const key = formatDateFns(d, 'yyyy-MM-dd');
+          const item = historyMap[key];
+          return item ? item.buy : null;
         });
       }
       return {
@@ -83,6 +92,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         borderColor: colors[index % colors.length],
         backgroundColor: colors[index % colors.length],
         tension: 0.4,
+        spanGaps: false,
       };
     });
 
