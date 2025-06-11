@@ -134,21 +134,7 @@ const Charts: React.FC = () => {
             {t('charts.selectCurrencies')}
           </label>
           <div className="flex flex-wrap gap-2 bg-gray-900 p-3 rounded-xl">
-            {mainCurrencies.map((currency) => (
-              <button
-                key={currency.code}
-                type="button"
-                onClick={() => toggleCurrency(currency.code)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 focus:outline-none
-                  ${selectedCurrencies.includes(currency.code)
-                    ? 'bg-teal-600 text-white shadow-md'
-                    : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
-                style={{ minWidth: 120 }}
-              >
-                {currency.code}/{baseCurrency} - {currency.name}
-              </button>
-            ))}
-            {/* Dropdown para el resto de monedas (multiselect) */}
+            {/* Solo mostrar el multiselect, sin botones principales */}
             {otherCurrencies.length > 0 && (
               <div style={{ minWidth: 220 }}>
                 <Select
