@@ -5,7 +5,9 @@ import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
 import { Currency } from '../types';
 import ExchangeRateChart from '../components/ExchangeRateChart';
-import { format, subDays } from 'date-fns';
+import { format, subDays, parse } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Charts: React.FC = () => {
   const { t } = useTranslation();
@@ -17,6 +19,10 @@ const Charts: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [baseCurrency, setBaseCurrency] = useState<string>('ARS');
+
+  // Convertir string a Date para DatePicker
+  const startDateObj = parse(startDate, 'yyyy-MM-dd', new Date());
+  const endDateObj = parse(endDate, 'yyyy-MM-dd', new Date());
 
   // Forzar scroll al tope al montar la página
   useEffect(() => {
@@ -132,19 +138,21 @@ const Charts: React.FC = () => {
           </label>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+              <DatePicker
+                selected={startDateObj}
+                onChange={date => setStartDate(format(date as Date, 'yyyy-MM-dd'))}
+                dateFormat="dd/MM/yyyy"
                 className="w-full p-2 border border-gray-300 rounded-md"
+                calendarClassName="bg-white"
               />
             </div>
             <div>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+              <DatePicker
+                selected={endDateObj}
+                onChange={date => setEndDate(format(date as Date, 'yyyy-MM-dd'))}
+                dateFormat="dd/MM/yyyy"
                 className="w-full p-2 border border-gray-300 rounded-md"
+                calendarClassName="bg-white"
               />
             </div>
           </div>
