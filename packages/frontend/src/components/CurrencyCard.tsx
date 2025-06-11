@@ -55,13 +55,11 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'A
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          {/* Eliminar bandera, solo mostrar código de moneda */}
-          <span className="text-2xl md:text-3xl lg:text-4xl font-bold">{currency.codigomoneda || currency.code}</span>
+          {/* Mostrar solo código y símbolo juntos, sin letras grandes aparte */}
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+            <span>{(currency.codigomoneda || currency.code) + (meta.symbol || '')}</span>
+          </h3>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-              <span>{currency.codigomoneda || currency.code}</span>
-              <span className="text-base text-gray-500 dark:text-gray-400">{meta.symbol}</span>
-            </h3>
             <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">{currency.descripcion || currency.name}</p>
           </div>
         </div>
@@ -78,7 +76,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'A
             <p className="text-xs text-gray-500 dark:text-gray-400">Cotización</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
               {currency.tipocotizacion !== undefined && currency.tipocotizacion !== null 
-                ? `${meta.symbol}${Number(currency.tipocotizacion).toLocaleString(undefined, { maximumFractionDigits: 0 })}` 
+                ? Number(currency.tipocotizacion).toLocaleString(undefined, { maximumFractionDigits: 0 })
                 : 'N/A'}
             </p>
           </div>
