@@ -28,9 +28,10 @@ export interface ExchangeRateHistory {
 export const exchangeService = {
   async getCurrencies(): Promise<Currency[]> {
     try {
-      const response = await axios.get(`${BCRA_API_URL}/Maestros/Divisas`);
-      return response.data.map((divisa: any) => ({
-        code: divisa.codigo,
+      // Usar el array de monedas de la última cotización
+      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
+      return (response.data.results.detalle || []).map((divisa: any) => ({
+        code: divisa.codigoMoneda,
         name: divisa.descripcion
       }));
     } catch (error) {

@@ -27,74 +27,15 @@ const Dashboard: React.FC = () => {
   const fetchData = async (dateOverride?: string) => {
     try {
       setLoading(true);
-      // Obtener la fecha actual del backend
-      const timeRes = await fetch(`${import.meta.env.VITE_API_URL || 'https://dolarshift.onrender.com/api'}/time`);
-      const { now } = await timeRes.json();
-      console.log('[Dashboard] Valor de now recibido del backend:', now);
-      const today = new Date(now);
-      console.log('[Dashboard] today:', today, 'isValid:', today instanceof Date && !isNaN(today.getTime()));
-      if (!(today instanceof Date) || isNaN(today.getTime())) {
-        console.error('[Dashboard] Fecha inválida recibida del backend:', now);
-        setError('Fecha inválida del servidor.');
-        setCards([]);
-        setDate('');
-        setLoading(false);
-        return;
-      }
-      let dateToUse = today;
-      if (dateOverride && /^\d{4}-\d{2}-\d{2}$/.test(dateOverride)) {
-        // Solo si el string es válido, crear el Date
-        const chosen = new Date(dateOverride + 'T00:00:00Z');
-        if (chosen > today) {
-          dateToUse = today;
-        } else {
-          dateToUse = chosen;
-        }
-      }
-      // Validar que dateToUse sea un Date válido antes de formatear
-      console.log('[Dashboard] dateToUse:', dateToUse, 'isValid:', dateToUse instanceof Date && !isNaN(dateToUse.getTime()));
-      if (!(dateToUse instanceof Date) || isNaN(dateToUse.getTime())) {
-        console.error('[Dashboard] dateToUse inválido antes de formatear:', dateToUse);
-        setError('Fecha inválida para cotización.');
-        setCards([]);
-        setDate('');
-        setLoading(false);
-        return;
-      }
-      // Forzar formato YYYY-MM-DD para la request
-      const dateString = format(dateToUse, 'yyyy-MM-dd');
-      setSelectedDate(dateString);
-      console.log('[Dashboard] Fecha seleccionada para cotización:', dateString);
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-        console.error('[Dashboard] dateString inválido:', dateString);
-        setError('Fecha inválida para cotización.');
-        setCards([]);
-        setDate('');
-        setLoading(false);
-        return;
-      }
-      const [year, month, day] = dateString.split('-').map(Number);
-      if (isNaN(year) || isNaN(month) || isNaN(day)) {
-        console.error('[Dashboard] Error al parsear fecha:', { year, month, day, dateString });
-        setError('Fecha inválida para cotización.');
-        setCards([]);
-        setDate('');
-        setLoading(false);
-        return;
-      }
-      const safeDate = new Date(Date.UTC(year, month - 1, day));
       // Pedir cotizaciones para la fecha seleccionada
-      const rates = await exchangeService.getExchangeRates(safeDate);
+      const rates = await exchangeService.getExchangeRates(new Date(dateOverride || date));
       setCards(rates);
-      setDate(rates.length > 0 ? rates[0].date : dateString);
+      setDate(rates.length > 0 ? rates[0].date : dateOverride || date);
       setError(null);
       // Si después de las 10am no hay cotizaciones, mostrar mensaje especial
-      const hour = today.getHours();
-      if (rates.length === 0 && dateToUse.getTime() === today.getTime() && hour >= 10 && hour < 18) {
+      const hour = new Date(date).getHours();
+      if (rates.length === 0 && hour >= 10 && hour < 18) {
         setError('Aún no hay cotizaciones publicadas para hoy. El mercado abre a las 10am. Si es después de las 12pm y no ves datos, probá seleccionar el día anterior.');
-      }
-      if (rates.length === 0 && dateToUse.getTime() !== today.getTime()) {
-        setError('No hay cotizaciones para la fecha seleccionada.');
       }
     } catch (err) {
       console.error('[Dashboard] Error real al cargar cotizaciones:', err);
@@ -164,6 +105,12 @@ const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="mt-4 text-red-600 dark:text-red-400">{error}</p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              onClick={() => fetchData()}
+            >
+              Reintentar
+            </button>
           </div>
         </div>
       </div>
