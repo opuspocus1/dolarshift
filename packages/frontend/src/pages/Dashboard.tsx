@@ -51,6 +51,11 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
+  // Scroll automático al final de la página cuando cambia la página
+  useEffect(() => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }, [page]);
+
   // Filtro de búsqueda
   const filteredCards = cards.filter(card =>
     card.code.toLowerCase().includes(search.toLowerCase()) ||
