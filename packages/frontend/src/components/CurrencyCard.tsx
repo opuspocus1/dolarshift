@@ -78,7 +78,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'A
             <p className="text-xs text-gray-500 dark:text-gray-400">Cotización</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
               {currency.tipocotizacion !== undefined && currency.tipocotizacion !== null 
-                ? `${meta.symbol}${currency.tipocotizacion.toLocaleString()}` 
+                ? `${meta.symbol}${Number(currency.tipocotizacion).toLocaleString(undefined, { maximumFractionDigits: 0 })}` 
                 : 'N/A'}
             </p>
           </div>
