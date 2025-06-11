@@ -12,14 +12,10 @@ export interface Currency {
 export interface ExchangeRate {
   code: string;
   name: string;
-  buy: number;
-  sell: number;
   date: string;
-  change?: number;
-  changePercent?: number;
   codigomoneda?: string;
   descripcion?: string;
-  tipopase?: string;
+  tipopase?: number;
   tipocotizacion?: number;
 }
 
@@ -50,18 +46,17 @@ export const exchangeService = {
       console.log('[exchangeService] Respuesta BCRA:', response.data);
 
       // Mapear la respuesta del BCRA al formato esperado
-      const rates = Object.values(response.data.results).map((rate: any) => ({
-        code: rate.codigo,
-        name: rate.descripcion,
-        codigomoneda: rate.codigo,
-        descripcion: rate.descripcion,
-        tipopase: rate.tipoPase,
-        tipocotizacion: rate.tipoCotizacion,
-        date: rate.fecha,
-        buy: rate.tipoCotizacion, // Usamos tipoCotizacion como valor de compra
-        sell: rate.tipoCotizacion  // Usamos tipoCotizacion como valor de venta
-      }));
-
+      const rates = Object.values(response.data.results)
+        .filter((rate: any) => rate && (rate.codigo || rate.codigoMoneda))
+        .map((rate: any) => ({
+          code: rate.codigo || rate.codigoMoneda,
+          name: rate.descripcion,
+          codigomoneda: rate.codigo || rate.codigoMoneda,
+          descripcion: rate.descripcion,
+          tipopase: rate.tipoPase,
+          tipocotizacion: rate.tipoCotizacion,
+          date: rate.fecha
+        }));
       return rates;
     } catch (error) {
       console.error('Error fetching exchange rates:', error);
