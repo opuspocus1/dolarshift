@@ -69,6 +69,15 @@ const Charts: React.FC = () => {
     fetchHistories();
   }, [selectedCurrencies, startDate, endDate]);
 
+  // Función para alternar selección de moneda
+  const toggleCurrency = (code: string) => {
+    setSelectedCurrencies((prev) =>
+      prev.includes(code)
+        ? prev.filter((c) => c !== code)
+        : [...prev, code]
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ScrollToTop />
@@ -82,21 +91,22 @@ const Charts: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             {t('charts.selectCurrencies')}
           </label>
-          <select
-            multiple
-            value={selectedCurrencies}
-            onChange={(e) => {
-              const values = Array.from(e.target.selectedOptions, option => option.value);
-              setSelectedCurrencies(values);
-            }}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          >
+          <div className="flex flex-wrap gap-2 bg-gray-900 p-3 rounded-xl">
             {currencies.map((currency) => (
-              <option key={currency.code} value={currency.code}>
-                {currency.code} - {currency.name}
-              </option>
+              <button
+                key={currency.code}
+                type="button"
+                onClick={() => toggleCurrency(currency.code)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 focus:outline-none
+                  ${selectedCurrencies.includes(currency.code)
+                    ? 'bg-teal-600 text-white shadow-md'
+                    : 'bg-gray-800 text-gray-200 hover:bg-gray-700'}`}
+                style={{ minWidth: 60 }}
+              >
+                {currency.code}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         <div className="col-span-1">
