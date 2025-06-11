@@ -91,10 +91,10 @@ export const exchangeService = {
   // Nuevas funciones para Charts
   async getAvailableCurrencies(): Promise<Currency[]> {
     try {
-      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones/USD`);
-      return (response.data.detalle || []).map((item: any) => ({
-        code: item.codMoneda,
-        name: item.nomMoneda
+      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
+      return (response.data.results.detalle || []).map((item: any) => ({
+        code: item.codigoMoneda,
+        name: item.descripcion
       }));
     } catch (error) {
       console.error('Error fetching available currencies:', error);
@@ -104,14 +104,28 @@ export const exchangeService = {
 
   async getChartHistory(currencyCode: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
     try {
+      // Formatear las fechas para la API del BCRA
+      const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
+      const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
+      
       const response = await axios.get(
-        `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fecha=${startDate}T00:00:00`
+        `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fechadesde=${formattedStartDate}&fechahasta=${formattedEndDate}`
       );
-      return response.data.detalle.map((item: any) => ({
-        date: item.fecha,
-        buy: item.valor,
-        sell: item.valor
-      }));
+      
+      // La respuesta tiene una estructura anidada: results[].detalle[]
+      const history: ExchangeRateHistory[] = [];
+      response.data.results.forEach((day: any) => {
+        const detail = day.detalle[0]; // Tomamos el primer detalle de cada día
+        if (detail) {
+          history.push({
+            date: day.fecha,
+            buy: detail.tipoCotizacion,
+            sell: detail.tipoCotizacion
+          });
+        }
+      });
+
+      return history;
     } catch (error) {
       console.error('Error fetching chart history:', error);
       throw error;
