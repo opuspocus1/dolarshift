@@ -67,6 +67,12 @@ const Dashboard: React.FC = () => {
     card.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Dividir monedas: 4 principales y el resto
+  const mainCurrencies = filteredCards.slice(0, 4);
+  const otherCurrencies = filteredCards.slice(4);
+  const [selectedDropdown, setSelectedDropdown] = useState<string>('');
+  const selectedDropdownCard = otherCurrencies.find(card => card.code === selectedDropdown);
+
   // Paginación
   const totalPages = Math.ceil(filteredCards.length / CARDS_PER_PAGE);
   const paginatedCards = filteredCards.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
@@ -149,12 +155,34 @@ const Dashboard: React.FC = () => {
             onChange={handleSearch}
           />
         </div>
-        {/* Cards de monedas */}
+        {/* Cards de monedas: solo 4 principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {paginatedCards.map((currency) => (
+          {mainCurrencies.map((currency) => (
             <CurrencyCard key={currency.code} currency={currency} />
           ))}
         </div>
+        {/* Dropdown para el resto de monedas */}
+        {otherCurrencies.length > 0 && (
+          <div className="mb-8 flex items-center gap-4">
+            <select
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={selectedDropdown}
+              onChange={e => setSelectedDropdown(e.target.value)}
+            >
+              <option value="">Seleccionar otra moneda...</option>
+              {otherCurrencies.map(card => (
+                <option key={card.code} value={card.code}>
+                  {card.code} - {card.name}
+                </option>
+              ))}
+            </select>
+            {selectedDropdownCard && (
+              <div className="w-full md:w-1/2 lg:w-1/4">
+                <CurrencyCard currency={selectedDropdownCard} />
+              </div>
+            )}
+          </div>
+        )}
         {/* Paginación */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center space-x-4 mt-4">
