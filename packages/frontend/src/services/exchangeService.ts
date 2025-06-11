@@ -46,7 +46,7 @@ export const exchangeService = {
   async getExchangeRates(date: Date): Promise<ExchangeRate[]> {
     try {
       // Obtener la última cotización disponible
-      const response = await axios.get(`${BCRA_API_URL}/`);
+      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
       console.log('[exchangeService] Respuesta BCRA:', response.data);
 
       // Mapear la respuesta del BCRA al formato esperado
