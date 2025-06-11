@@ -12,8 +12,34 @@ const currencyMeta: Record<string, { flag: string; symbol: string }> = {
   JPY: { flag: '🇯🇵', symbol: '¥' },
   CNY: { flag: '🇨🇳', symbol: '¥' },
   CHF: { flag: '🇨🇭', symbol: 'Fr' },
-  BTC: { flag: '₿', symbol: '₿' },
-  // ... agregar más si querés
+  AUD: { flag: '🇦🇺', symbol: '$' },
+  CAD: { flag: '🇨🇦', symbol: '$' },
+  NZD: { flag: '🇳🇿', symbol: '$' },
+  MXP: { flag: '🇲🇽', symbol: '$' },
+  CLP: { flag: '🇨🇱', symbol: '$' },
+  PEN: { flag: '🇵🇪', symbol: 'S/' },
+  UYU: { flag: '🇺🇾', symbol: '$' },
+  COP: { flag: '🇨🇴', symbol: '$' },
+  PYG: { flag: '🇵🇾', symbol: '₲' },
+  BOB: { flag: '🇧🇴', symbol: 'Bs' },
+  RUB: { flag: '🇷🇺', symbol: '₽' },
+  SEK: { flag: '🇸🇪', symbol: 'kr' },
+  NOK: { flag: '🇳🇴', symbol: 'kr' },
+  DKK: { flag: '🇩🇰', symbol: 'kr' },
+  CZK: { flag: '🇨🇿', symbol: 'Kč' },
+  HUF: { flag: '🇭🇺', symbol: 'Ft' },
+  TRY: { flag: '🇹🇷', symbol: '₺' },
+  ILS: { flag: '🇮🇱', symbol: '₪' },
+  INR: { flag: '🇮🇳', symbol: '₹' },
+  ZAR: { flag: '🇿🇦', symbol: 'R' },
+  SGD: { flag: '🇸🇬', symbol: '$' },
+  HKD: { flag: '🇭��', symbol: '$' },
+  CNH: { flag: '🇨🇳', symbol: '¥' },
+  XAU: { flag: '🥇', symbol: 'Au' }, // Oro
+  XAG: { flag: '🥈', symbol: 'Ag' }, // Plata
+  XDR: { flag: '💱', symbol: 'XDR' }, // DEG
+  // Fallback
+  DEFAULT: { flag: '🏳️', symbol: '' }
 };
 
 interface CurrencyCardProps {
@@ -22,7 +48,7 @@ interface CurrencyCardProps {
 }
 
 const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'ARS' }) => {
-  const meta = currencyMeta[currency.code] || { flag: '🏳️', symbol: currency.code };
+  const meta = currencyMeta[currency.code] || currencyMeta.DEFAULT;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full">
