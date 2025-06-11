@@ -85,6 +85,19 @@ const Charts: React.FC = () => {
     );
   };
 
+  // Dividir monedas: 4 principales y el resto
+  const mainCurrencies = currencies.slice(0, 4);
+  const otherCurrencies = currencies.slice(4);
+  const [selectedDropdown, setSelectedDropdown] = useState<string>('');
+
+  // Cuando seleccionan del dropdown, agregar a la selección
+  useEffect(() => {
+    if (selectedDropdown && !selectedCurrencies.includes(selectedDropdown)) {
+      setSelectedCurrencies(prev => [...prev, selectedDropdown]);
+    }
+    // eslint-disable-next-line
+  }, [selectedDropdown]);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <ScrollToTop />
@@ -115,7 +128,7 @@ const Charts: React.FC = () => {
             {t('charts.selectCurrencies')}
           </label>
           <div className="flex flex-wrap gap-2 bg-gray-900 p-3 rounded-xl">
-            {currencies.map((currency) => (
+            {mainCurrencies.map((currency) => (
               <button
                 key={currency.code}
                 type="button"
@@ -129,6 +142,22 @@ const Charts: React.FC = () => {
                 {currency.code}/{baseCurrency} - {currency.name}
               </button>
             ))}
+            {/* Dropdown para el resto de monedas */}
+            {otherCurrencies.length > 0 && (
+              <select
+                className="px-4 py-2 rounded-full text-sm font-medium bg-gray-800 text-gray-200 border border-gray-700"
+                value={selectedDropdown}
+                onChange={e => setSelectedDropdown(e.target.value)}
+                style={{ minWidth: 180 }}
+              >
+                <option value="">Otras monedas...</option>
+                {otherCurrencies.map(currency => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.code}/{baseCurrency} - {currency.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
 
