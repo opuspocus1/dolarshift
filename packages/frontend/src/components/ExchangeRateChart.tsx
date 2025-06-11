@@ -51,11 +51,8 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   const sortedHistory = [...rawHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   console.log('Fechas en sortedHistory:', sortedHistory.map(h => h.date));
   const labels = sortedHistory.map(h => {
-    const d = new Date(h.date);
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    const [year, month, day] = h.date.split('-');
+    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
   });
   console.log('Labels del gráfico:', labels);
 

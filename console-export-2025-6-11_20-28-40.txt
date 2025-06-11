@@ -1,0 +1,32 @@
+[exchangeService] Respuesta BCRA: 
+Object { status: 200, results: {…} }
+index-BbYeYpeC.js:127:5358
+[exchangeService] Fecha BCRA: 2025-06-11 index-BbYeYpeC.js:127:5450
+Historial recibido: 
+Array []
+index-BbYeYpeC.js:144:29707
+Fechas en sortedHistory: 
+Array []
+index-BbYeYpeC.js:144:29826
+Labels del gráfico: 
+Array []
+index-BbYeYpeC.js:144:30056
+Historial recibido: 
+Array(22) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
+index-BbYeYpeC.js:144:29707
+Fechas en sortedHistory: 
+Array(22) [ "2025-05-12", "2025-05-13", "2025-05-14", "2025-05-15", "2025-05-16", "2025-05-19", "2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", … ]
+index-BbYeYpeC.js:144:29826
+Labels del gráfico: 
+Array(22) [ "11/05/2025", "12/05/2025", "13/05/2025", "14/05/2025", "15/05/2025", "18/05/2025", "19/05/2025", "20/05/2025", "21/05/2025", "22/05/2025", … ]
+index-BbYeYpeC.js:144:30056
+Historial recibido: 
+Array(22) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
+index-BbYeYpeC.js:144:29707
+Fechas en sortedHistory: 
+Array(22) [ "2025-05-12", "2025-05-13", "2025-05-14", "2025-05-15", "2025-05-16", "2025-05-19", "2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", … ]
+index-BbYeYpeC.js:144:29826
+Labels del gráfico: 
+Array(22) [ "11/05/2025", "12/05/2025", "13/05/2025", "14/05/2025", "15/05/2025", "18/05/2025", "19/05/2025", "20/05/2025", "21/05/2025", "22/05/2025", … ]
+index-BbYeYpeC.js:144:30056
+Error in parsing value for ‘-webkit-text-size-adjust’.  Declaration dropped. index-qw2FECgj.css:1:24098
