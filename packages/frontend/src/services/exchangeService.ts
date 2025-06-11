@@ -46,16 +46,16 @@ export const exchangeService = {
       console.log('[exchangeService] Respuesta BCRA:', response.data);
 
       // Mapear la respuesta del BCRA al formato esperado
-      const rates = Object.values(response.data.results)
-        .filter((rate: any) => rate && (rate.codigo || rate.codigoMoneda))
+      const rates = (response.data.results.detalle || [])
+        .filter((rate: any) => rate && rate.codigoMoneda)
         .map((rate: any) => ({
-          code: rate.codigo || rate.codigoMoneda,
+          code: rate.codigoMoneda,
           name: rate.descripcion,
-          codigomoneda: rate.codigo || rate.codigoMoneda,
+          codigomoneda: rate.codigoMoneda,
           descripcion: rate.descripcion,
           tipopase: rate.tipoPase,
           tipocotizacion: rate.tipoCotizacion,
-          date: rate.fecha
+          date: response.data.results.fecha
         }));
       return rates;
     } catch (error) {
