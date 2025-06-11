@@ -45,18 +45,31 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     '#84cc16', // lime
   ];
 
+  // Obtener y ordenar las fechas de menor a mayor
+  const rawHistory = histories[selectedCurrencies[0]] || [];
+  const sortedHistory = [...rawHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const labels = sortedHistory.map(h => new Date(h.date).toLocaleDateString());
+
+  // Mapear los datasets usando el orden de sortedHistory
   const datasets = selectedCurrencies
     .filter(currency => currency !== baseCurrency)
     .map((currency, index) => {
       const history = histories[currency] || [];
+      // Ordenar el history según el orden de las fechas en sortedHistory
+      const historyMap = Object.fromEntries(history.map(h => [h.date, h]));
       let data: number[] = [];
       let label = `${currency}/${baseCurrency}`;
       if (baseCurrency !== 'ARS') {
-        // Relación invertida: base/moneda
-        data = history.map(h => h.buy ? 1 / h.buy : 0).filter(v => typeof v === 'number' && !isNaN(v));
+        data = sortedHistory.map(h => {
+          const item = historyMap[h.date];
+          return item && item.buy ? 1 / item.buy : 0;
+        });
         label = `${baseCurrency}/${currency}`;
       } else {
-        data = history.map(h => h.buy);
+        data = sortedHistory.map(h => {
+          const item = historyMap[h.date];
+          return item ? item.buy : 0;
+        });
       }
       return {
         label,
@@ -66,10 +79,6 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         tension: 0.4,
       };
     });
-
-  const labels = histories[selectedCurrencies[0]]?.map(h => 
-    new Date(h.date).toLocaleDateString()
-  ) || [];
 
   const data = {
     labels,
