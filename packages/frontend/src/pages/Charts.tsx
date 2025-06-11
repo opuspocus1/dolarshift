@@ -49,7 +49,7 @@ const Charts: React.FC = () => {
         const newHistories: Record<string, ExchangeRateHistory[]> = {};
         
         for (const currency of selectedCurrencies) {
-          const history = await exchangeService.getExchangeRateHistory(
+          const history = await exchangeService.getChartHistory(
             currency,
             startDate,
             endDate

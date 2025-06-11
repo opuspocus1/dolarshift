@@ -47,7 +47,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     const history = histories[currency] || [];
     return {
       label: currency,
-      data: history.map(h => h.value),
+      data: history.map(h => h.buy),
       borderColor: colors[index % colors.length],
       backgroundColor: colors[index % colors.length],
       tension: 0.4,

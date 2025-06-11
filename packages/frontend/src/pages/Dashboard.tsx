@@ -17,12 +17,8 @@ const Dashboard: React.FC = () => {
   const [page, setPage] = useState(1);
   const [selectedDate, setSelectedDate] = useState<string>('');
 
-  // Forzar scroll al tope al montar el Dashboard, incluso si el navegador intenta restaurar el scroll
   useEffect(() => {
-    window.history.scrollRestoration = "manual";
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }, 0);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
   // Handler para el selector de fecha
