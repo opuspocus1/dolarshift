@@ -1,88 +1,147 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ChartCard from '../components/ChartCard';
+import { Calendar } from 'lucide-react';
 import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRateHistory } from '../services/exchangeService';
-import { subDays } from 'date-fns';
-
-const chartPairs = [
-  { code: 'USD', label: 'USD/ARS', color: '#3b82f6' },
-  { code: 'EUR', label: 'EUR/ARS', color: '#ef4444' },
-  { code: 'GBP', label: 'GBP/ARS', color: '#10b981' },
-  { code: 'BTC', label: 'BTC/ARS', color: '#f59e0b' }
-];
+import { Currency } from '../types';
+import ExchangeRateChart from '../components/ExchangeRateChart';
+import { format, subDays } from 'date-fns';
 
 const Charts: React.FC = () => {
   const { t } = useTranslation();
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['USD']);
+  const [startDate, setStartDate] = useState<string>(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [histories, setHistories] = useState<Record<string, ExchangeRateHistory[]>>({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Forzar scroll al tope al montar la página
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.history.scrollRestoration = "manual";
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }, 0);
   }, []);
 
   useEffect(() => {
-    const fetchAll = async () => {
-      setLoading(true);
-      const end = new Date();
-      const start = subDays(end, 30);
-      const result: Record<string, ExchangeRateHistory[]> = {};
-      for (const pair of chartPairs) {
-        try {
-          result[pair.code] = await exchangeService.getExchangeRateHistory(pair.code, start, end);
-        } catch (e) {
-          result[pair.code] = [];
-        }
+    const fetchCurrencies = async () => {
+      try {
+        const availableCurrencies = await exchangeService.getAvailableCurrencies();
+        setCurrencies(availableCurrencies);
+      } catch (error) {
+        console.error('Error fetching currencies:', error);
+        setError('Failed to load currencies');
       }
-      setHistories(result);
-      setLoading(false);
     };
-    fetchAll();
+    fetchCurrencies();
   }, []);
+
+  useEffect(() => {
+    const fetchHistories = async () => {
+      if (selectedCurrencies.length === 0) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const newHistories: Record<string, ExchangeRateHistory[]> = {};
+        
+        for (const currency of selectedCurrencies) {
+          const history = await exchangeService.getExchangeRateHistory(
+            currency,
+            startDate,
+            endDate
+          );
+          newHistories[currency] = history;
+        }
+
+        setHistories(newHistories);
+      } catch (error) {
+        console.error('Error fetching histories:', error);
+        setError('Failed to load exchange rate history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistories();
+  }, [selectedCurrencies, startDate, endDate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('charts.title')}</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('charts.subtitle')}</p>
+    <div className="container mx-auto px-4 py-8">
+      <ScrollToTop />
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-4">{t('charts.title')}</h1>
+        <p className="text-gray-600">{t('charts.description')}</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="col-span-1 md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('charts.selectCurrencies')}
+          </label>
+          <select
+            multiple
+            value={selectedCurrencies}
+            onChange={(e) => {
+              const values = Array.from(e.target.selectedOptions, option => option.value);
+              setSelectedCurrencies(values);
+            }}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            {currencies.map((currency) => (
+              <option key={currency.code} value={currency.code}>
+                {currency.code} - {currency.name}
+              </option>
+            ))}
+          </select>
         </div>
-        {/* Chart Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {chartPairs.map(pair => (
-            <ChartCard
-              key={pair.code}
-              title={t(`charts.pair.${pair.code}`, { defaultValue: pair.label })}
-              data={histories[pair.code] || []}
-              color={pair.color}
-            />
-          ))}
-        </div>
-        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('charts.infoTitle')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
+
+        <div className="col-span-1">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('charts.dateRange')}
+          </label>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">{t('charts.howToReadTitle')}</h4>
-              <ul className="space-y-1">
-                <li>• {t('charts.howToRead1')}</li>
-                <li>• {t('charts.howToRead2')}</li>
-                <li>• {t('charts.howToRead3')}</li>
-                <li>• {t('charts.howToRead4')}</li>
-              </ul>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">{t('charts.pairsTitle')}</h4>
-              <ul className="space-y-1">
-                <li>• <strong>USD/ARS:</strong> {t('charts.pairDesc.USDARS')}</li>
-                <li>• <strong>EUR/USD:</strong> {t('charts.pairDesc.EURUSD')}</li>
-                <li>• <strong>GBP/USD:</strong> {t('charts.pairDesc.GBPUSD')}</li>
-                <li>• <strong>BTC/USD:</strong> {t('charts.pairDesc.BTCUSD')}</li>
-              </ul>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
             </div>
           </div>
         </div>
       </div>
-      <ScrollToTop />
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow-lg p-4">
+          <ExchangeRateChart
+            histories={histories}
+            selectedCurrencies={selectedCurrencies}
+          />
+        </div>
+      )}
     </div>
   );
 };

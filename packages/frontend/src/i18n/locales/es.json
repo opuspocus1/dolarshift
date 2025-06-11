@@ -1,0 +1,10 @@
+{
+  "charts": {
+    "title": "Gráficos de Cotizaciones",
+    "description": "Visualiza y compara el historial de cotizaciones de diferentes monedas",
+    "selectCurrencies": "Seleccionar Monedas",
+    "dateRange": "Rango de Fechas",
+    "loading": "Cargando datos del gráfico...",
+    "error": "Error al cargar los datos del gráfico"
+  }
+} 

@@ -1,0 +1,10 @@
+{
+  "charts": {
+    "title": "Exchange Rate Charts",
+    "description": "View and compare exchange rate history for different currencies",
+    "selectCurrencies": "Select Currencies",
+    "dateRange": "Date Range",
+    "loading": "Loading chart data...",
+    "error": "Error loading chart data"
+  }
+} 
