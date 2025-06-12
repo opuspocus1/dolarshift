@@ -14,9 +14,12 @@ const CurrencyConverter: React.FC = () => {
     const fetchRates = async () => {
       const data = await exchangeService.getExchangeRates(new Date());
       setRates(data.map(rate => ({
-        ...rate,
-        change: rate.change ?? 0,
-        changePercent: rate.changePercent ?? 0
+        code: rate.code,
+        name: rate.name,
+        buy: rate.buy || 0,
+        sell: rate.sell || 0,
+        change: 0,
+        changePercent: 0
       })));
     };
     fetchRates();
@@ -68,7 +71,7 @@ const CurrencyConverter: React.FC = () => {
               type="text"
               value={amount}
               onChange={handleAmountChange}
-              className="w-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
               placeholder="Amount"
             />
           </div>
@@ -99,7 +102,7 @@ const CurrencyConverter: React.FC = () => {
                 </option>
               ))}
             </select>
-            <div className="w-32 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-right font-medium text-gray-900 dark:text-white">
+            <div className="w-24 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-right font-medium text-gray-900 dark:text-white">
               {result?.toLocaleString('en-US', { 
                 minimumFractionDigits: 2, 
                 maximumFractionDigits: 8 

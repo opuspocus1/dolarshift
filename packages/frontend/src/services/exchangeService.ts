@@ -13,6 +13,8 @@ export interface ExchangeRate {
   code: string;
   name: string;
   date: string;
+  buy: number;
+  sell: number;
   codigomoneda?: string;
   descripcion?: string;
   tipopase?: number;
@@ -60,6 +62,8 @@ export const exchangeService = {
           descripcion: rate.descripcion,
           tipopase: rate.tipoPase,
           tipocotizacion: rate.tipoCotizacion,
+          buy: rate.tipoCotizacion,
+          sell: rate.tipoCotizacion,
           date: bcraDate // Usar la fecha de la respuesta del BCRA
         }));
       return rates;
