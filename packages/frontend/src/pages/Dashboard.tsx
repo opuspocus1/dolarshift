@@ -82,6 +82,12 @@ const Dashboard: React.FC = () => {
     }
   }, [page]);
 
+  useEffect(() => {
+    if (page > 1) {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  }, [page]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
