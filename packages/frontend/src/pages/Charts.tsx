@@ -147,11 +147,7 @@ const Charts: React.FC = () => {
               }}
               placeholder="Otras monedas..."
               onChange={(selectedOptions: MultiValue<{ value: string; label: string }>) => {
-                const newCodes = (selectedOptions || []).map(opt => opt.value);
-                setSelectedCurrencies(prev => [
-                  ...prev,
-                  ...newCodes.filter(code => !prev.includes(code)),
-                ]);
+                setSelectedCurrencies((selectedOptions || []).map(opt => opt.value));
               }}
               value={options.filter(opt => selectedCurrencies.includes(opt.value))}
             />
