@@ -39,3 +39,8 @@
 .react-datepicker__day--disabled {
   color: #cbd5e1 !important;
 }
+
+/* Forzar font-size 16px en inputs/selects en mobile para evitar zoom en navegadores móviles */
+input, select, textarea {
+  font-size: 16px !important;
+}
