@@ -29,6 +29,8 @@ interface ExchangeRateChartProps {
   baseCurrency: string;
 }
 
+const isDark = () => document.documentElement.classList.contains('dark');
+
 const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   histories,
   selectedCurrencies,
@@ -91,6 +93,8 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     datasets,
   };
 
+  const dark = isDark();
+
   const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -106,7 +110,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
           boxWidth: 18,
           boxHeight: 18,
           font: { size: 14, family: 'inherit', weight: 'bold' },
-          color: '#fff',
+          color: dark ? '#fff' : '#22223b',
           padding: 18,
         },
       },
@@ -115,9 +119,9 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         text: '',
       },
       tooltip: {
-        backgroundColor: '#22223b',
-        titleColor: '#fff',
-        bodyColor: '#fff',
+        backgroundColor: dark ? '#22223b' : '#fff',
+        titleColor: dark ? '#fff' : '#22223b',
+        bodyColor: dark ? '#fff' : '#22223b',
         borderColor: '#38bdf8',
         borderWidth: 1,
         padding: 12,
@@ -129,18 +133,18 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     scales: {
       y: {
         beginAtZero: false,
-        grid: { color: '#334155' },
-        ticks: { color: '#fff', font: { size: 13 } },
+        grid: { color: dark ? '#334155' : '#e5e7eb' },
+        ticks: { color: dark ? '#fff' : '#22223b', font: { size: 13 } },
       },
       x: {
-        grid: { color: '#334155' },
-        ticks: { color: '#fff', font: { size: 13 } },
+        grid: { color: dark ? '#334155' : '#e5e7eb' },
+        ticks: { color: dark ? '#fff' : '#22223b', font: { size: 13 } },
       },
     },
   };
 
   return (
-    <div className="w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 bg-[#181e29] rounded-lg shadow-2xl flex items-center justify-center">
+    <div className={`w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 rounded-lg shadow-2xl flex items-center justify-center ${dark ? 'bg-[#181e29]' : 'bg-white'}`}>
       <Line options={options} data={data} style={{ width: '100%', height: '100%' }} />
     </div>
   );

@@ -112,7 +112,7 @@ const Charts: React.FC = () => {
       </div>
 
       {/* Filtros compactos en una sola fila */}
-      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-2 gap-2">
+      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-2 gap-2 bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors duration-200">
         <div className="flex-1 min-w-[180px]">
           <label className="block text-xs font-medium text-gray-500 mb-1">Moneda base</label>
           <select
@@ -188,11 +188,13 @@ const Charts: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <ExchangeRateChart
-          histories={histories}
-          selectedCurrencies={selectedCurrencies}
-          baseCurrency={baseCurrency}
-        />
+        <div className="bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4 transition-colors duration-200">
+          <ExchangeRateChart
+            histories={histories}
+            selectedCurrencies={selectedCurrencies}
+            baseCurrency={baseCurrency}
+          />
+        </div>
       )}
     </div>
   );

@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import CurrencyConverter from '../components/CurrencyConverter';
 import ScrollToTop from '../components/ScrollToTop';
 import { Calculator, TrendingUp, Clock } from 'lucide-react';
-import { exchangeService } from '../services/exchangeService';
-import { CurrencyRate, Currency } from '../types';
+import { exchangeService, ExchangeRate } from '../services/exchangeService';
+import { Currency } from '../types';
 
 const Converter: React.FC = () => {
   const { t } = useTranslation();
-  const [rates, setRates] = useState<CurrencyRate[]>([]);
+  const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   useEffect(() => {
@@ -18,11 +18,7 @@ const Converter: React.FC = () => {
   useEffect(() => {
     const fetchRates = async () => {
       const data = await exchangeService.getExchangeRates(new Date());
-      setRates(data.map(rate => ({
-        ...rate,
-        change: rate.change ?? 0,
-        changePercent: rate.changePercent ?? 0
-      })));
+      setRates(data);
     };
 
     const fetchCurrencies = async () => {
@@ -41,7 +37,10 @@ const Converter: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('converter.title')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <Calculator className="h-8 w-8" />
+            {t('converter.title')}
+          </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">{t('converter.subtitle')}</p>
         </div>
 
@@ -62,37 +61,22 @@ const Converter: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Currency
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Rate (USD)
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        24h Change
-                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Currency</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Buy</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sell</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     {currenciesWithRates.map((currency) => (
-                      <tr key={currency.code} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">{currency.code}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{currency.name}</div>
-                          </div>
-                        </td>
+                      <tr key={currency.code}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {currency.sell !== null && currency.sell !== undefined ? currency.sell.toLocaleString() : 'N/A'}
+                          {currency.code} - {currency.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            currency.changePercent >= 0 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                          }`}>
-                            {currency.changePercent >= 0 ? '+' : ''}{currency.changePercent.toFixed(2)}%
-                          </span>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-300">
+                          {currency.buy?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-300">
+                          {currency.sell?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                       </tr>
                     ))}

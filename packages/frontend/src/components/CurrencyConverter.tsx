@@ -29,7 +29,7 @@ const CurrencyConverter: React.FC = () => {
     const numAmount = parseFloat(amount) || 0;
     const fromRate = rates.find(r => r.code === from)?.sell || 1;
     const toRate = rates.find(r => r.code === to)?.sell || 1;
-    const convertedAmount = (numAmount * toRate) / fromRate;
+    const convertedAmount = numAmount * (fromRate / toRate);
     setResult(convertedAmount);
   }, [amount, from, to, rates]);
 
@@ -114,10 +114,10 @@ const CurrencyConverter: React.FC = () => {
         {/* Exchange Rate Info */}
         <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
           <p className="text-sm text-blue-800 dark:text-blue-300">
-            1 {from} = {(result ? (result / (parseFloat(amount) || 1)).toLocaleString('en-US', { 
+            1 {from} = {((rates.find(r => r.code === from)?.sell || 1) / (rates.find(r => r.code === to)?.sell || 1)).toLocaleString('en-US', { 
               minimumFractionDigits: 2, 
               maximumFractionDigits: 8 
-            }) : 'Loading...')} {to}
+            })} {to}
           </p>
         </div>
       </div>
