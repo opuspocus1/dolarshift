@@ -73,10 +73,10 @@ const Converter: React.FC = () => {
                           {currency.code} - {currency.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-300">
-                          {currency.buy?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currency.buy?.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-300">
-                          {currency.sell?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currency.sell?.toLocaleString('en-US', { maximumFractionDigits: 0 })}
                         </td>
                       </tr>
                     ))}
@@ -88,15 +88,6 @@ const Converter: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Converter */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                <Calculator className="h-5 w-5 mr-2" />
-                {t('converter.quickConvert')}
-              </h3>
-              <CurrencyConverter />
-            </div>
-
             {/* Market Status */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">

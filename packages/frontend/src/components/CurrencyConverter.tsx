@@ -96,8 +96,7 @@ const CurrencyConverter: React.FC = () => {
             </select>
             <div className="w-24 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-right font-medium text-gray-900 dark:text-white">
               {result?.toLocaleString('en-US', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 8 
+                maximumFractionDigits: 0 
               })}
             </div>
           </div>
@@ -107,8 +106,7 @@ const CurrencyConverter: React.FC = () => {
         <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
           <p className="text-sm text-blue-800 dark:text-blue-300">
             1 {from} = {((rates.find(r => r.code === from)?.sell || 1) / (rates.find(r => r.code === to)?.sell || 1)).toLocaleString('en-US', { 
-              minimumFractionDigits: 2, 
-              maximumFractionDigits: 8 
+              maximumFractionDigits: 0 
             })} {to}
           </p>
         </div>
