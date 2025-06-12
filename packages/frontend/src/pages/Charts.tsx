@@ -106,7 +106,7 @@ const Charts: React.FC = () => {
   return (
     <div className="container mx-auto px-2 py-4">
       <ScrollToTop />
-      <div className="mb-4">
+      <div className="mb-4 mt-6">
         <h1 className="text-3xl font-bold mb-2">{t('charts.title')}</h1>
         <p className="text-gray-600 mb-2">{t('charts.description')}</p>
       </div>
@@ -181,13 +181,11 @@ const Charts: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <div className="bg-transparent p-0 m-0 shadow-none rounded-none">
-          <ExchangeRateChart
-            histories={histories}
-            selectedCurrencies={selectedCurrencies}
-            baseCurrency={baseCurrency}
-          />
-        </div>
+        <ExchangeRateChart
+          histories={histories}
+          selectedCurrencies={selectedCurrencies}
+          baseCurrency={baseCurrency}
+        />
       )}
     </div>
   );
