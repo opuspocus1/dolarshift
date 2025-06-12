@@ -181,7 +181,7 @@ const Charts: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <div className="bg-white/90 rounded-2xl shadow-2xl p-2 md:p-6 mt-2 max-w-full mx-auto" style={{ minHeight: 480 }}>
+        <div className="bg-transparent p-0 m-0 shadow-none rounded-none">
           <ExchangeRateChart
             histories={histories}
             selectedCurrencies={selectedCurrencies}
