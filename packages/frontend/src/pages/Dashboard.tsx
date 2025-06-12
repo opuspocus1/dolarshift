@@ -74,6 +74,14 @@ const Dashboard: React.FC = () => {
   const handlePrev = () => setPage((p) => Math.max(1, p - 1));
   const handleNext = () => setPage((p) => Math.min(totalPages, p + 1));
 
+  // Hacer scroll al final de la lista de cards al cambiar de página
+  const cardsListRef = React.useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (page > 1 && cardsListRef.current) {
+      cardsListRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [page]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
@@ -145,7 +153,7 @@ const Dashboard: React.FC = () => {
           />
         </div>
         {/* Cards de monedas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {paginatedCards.map((currency) => (
             <CurrencyCard key={currency.code} currency={currency} />
           ))}
