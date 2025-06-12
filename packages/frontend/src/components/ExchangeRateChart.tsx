@@ -106,7 +106,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
           boxWidth: 18,
           boxHeight: 18,
           font: { size: 14, family: 'inherit', weight: 'bold' },
-          color: '#222',
+          color: '#fff',
           padding: 18,
         },
       },
@@ -115,7 +115,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         text: '',
       },
       tooltip: {
-        backgroundColor: 'rgba(30,41,59,0.95)',
+        backgroundColor: '#22223b',
         titleColor: '#fff',
         bodyColor: '#fff',
         borderColor: '#38bdf8',
@@ -129,18 +129,18 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     scales: {
       y: {
         beginAtZero: false,
-        grid: { color: '#e5e7eb' },
-        ticks: { color: '#222', font: { size: 13 } },
+        grid: { color: '#334155' },
+        ticks: { color: '#fff', font: { size: 13 } },
       },
       x: {
-        grid: { color: '#e5e7eb' },
-        ticks: { color: '#222', font: { size: 13 } },
+        grid: { color: '#334155' },
+        ticks: { color: '#fff', font: { size: 13 } },
       },
     },
   };
 
   return (
-    <div className="w-full h-[520px] p-2 md:p-6 bg-white/90 rounded-2xl shadow-2xl flex items-center justify-center">
+    <div className="w-full h-[520px] p-2 md:p-6 bg-[#181e29] rounded-2xl shadow-2xl flex items-center justify-center">
       <Line options={options} data={data} />
     </div>
   );
