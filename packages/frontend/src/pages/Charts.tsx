@@ -150,11 +150,11 @@ const Charts: React.FC = () => {
                 setSelectedCurrencies((selectedOptions || []).map(opt => opt.value));
               }}
               value={options.filter(opt => selectedCurrencies.includes(opt.value))}
-            />
+              />
           )}
         </div>
         <div className="flex flex-1 flex-row gap-2 min-w-[200px]">
-          <div>
+            <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">{t('charts.dateRange')}</label>
             <DatePicker
               selected={startDateObj}
@@ -163,8 +163,8 @@ const Charts: React.FC = () => {
               className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
               calendarClassName="bg-[#181e29] text-white"
             />
-          </div>
-          <div>
+            </div>
+            <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">&nbsp;</label>
             <DatePicker
               selected={endDateObj}

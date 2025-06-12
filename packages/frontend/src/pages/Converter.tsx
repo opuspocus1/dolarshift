@@ -69,7 +69,7 @@ const Converter: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Data Source:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">Mock API</span>
+                  <span className="font-medium text-gray-900 dark:text-white">BCRA API</span>
                 </div>
               </div>
             </div>

@@ -62,15 +62,15 @@ const ChartCard: React.FC<ChartCardProps> = ({
             />
             {selectedCurrencies
               ? selectedCurrencies.map((code, idx) => (
-                  <Line
+            <Line 
                     key={code}
-                    type="monotone"
+              type="monotone" 
                     dataKey={code}
                     stroke={colors[idx % colors.length]}
-                    strokeWidth={2}
-                    dot={false}
+              strokeWidth={2}
+              dot={false}
                     activeDot={{ r: 4, fill: colors[idx % colors.length] }}
-                  />
+            />
                 ))
               : <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: color }} />}
           </LineChart>

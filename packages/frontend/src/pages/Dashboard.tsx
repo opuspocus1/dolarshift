@@ -30,8 +30,8 @@ const Dashboard: React.FC = () => {
 
   // Función para obtener cotizaciones según la fecha
   const fetchData = async (dateOverride?: string) => {
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
       // Pedir cotizaciones para la fecha seleccionada
       const rates = await exchangeService.getExchangeRates(new Date(dateOverride || date));
       setCards(rates);
@@ -42,15 +42,15 @@ const Dashboard: React.FC = () => {
       if (rates.length === 0 && hour >= 10 && hour < 18) {
         setError('Aún no hay cotizaciones publicadas para hoy. El mercado abre a las 10am. Si es después de las 12pm y no ves datos, probá seleccionar el día anterior.');
       }
-    } catch (err) {
+      } catch (err) {
       console.error('[Dashboard] Error real al cargar cotizaciones:', err);
       setError('Error cargando datos. Intente nuevamente.');
       setCards([]);
       setDate('');
-    } finally {
-      setLoading(false);
-    }
-  };
+      } finally {
+        setLoading(false);
+      }
+    };
 
   useEffect(() => {
     fetchData();
@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
           {/* Aclaración sobre el dólar mayorista */}
           <div className="mt-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2">
             El valor USD mostrado corresponde al <b>dólar mayorista oficial</b> publicado por el BCRA.
-          </div>
+        </div>
         </div>
         {/* Eliminar sección de fecha y selector de fecha */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
