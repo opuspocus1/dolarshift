@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import ApiStatus from './components/ApiStatus';
 import Dashboard from './pages/Dashboard';
 import Charts from './pages/Charts';
-import History from './pages/History';
 import Converter from './pages/Converter';
 
 function App() {
@@ -17,7 +16,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/charts" element={<Charts />} />
-            <Route path="/history" element={<History />} />
             <Route path="/converter" element={<Converter />} />
           </Routes>
           <ApiStatus />

@@ -35,18 +35,6 @@ const resources = {
           BTCUSD: 'Bitcoin a dólar estadounidense'
         }
       },
-      // History
-      history: {
-        title: 'Histórico de Cotizaciones',
-        subtitle: 'Compará la evolución de múltiples monedas en el tiempo',
-        currenciesLabel: 'Monedas a mostrar',
-        periodLabel: 'Período',
-        period7: '7 días',
-        period30: '30 días',
-        period90: '3 meses',
-        period365: '1 año',
-        chartTitle: 'Histórico de {{currencies}}'
-      },
       // Converter
       converter: {
         title: 'Conversor de Monedas',
@@ -89,23 +77,11 @@ const resources = {
           BTCUSD: 'Bitcoin to US Dollar'
         }
       },
-      // History
-      history: {
-        title: 'Historical Exchange Rates',
-        subtitle: 'Compare the evolution of multiple currencies over time',
-        currenciesLabel: 'Currencies to show',
-        periodLabel: 'Period',
-        period7: '7 Days',
-        period30: '30 Days',
-        period90: '3 Months',
-        period365: '1 Year',
-        chartTitle: 'History of {{currencies}}'
-      },
       // Converter
       converter: {
-        title: 'Currency Converter',
-        subtitle: 'Convert between different currencies with real-time rates',
-        quickConvert: 'Quick Convert',
+        title: 'Currency Dashboard',
+        subtitle: 'Today\'s exchange rates for all currencies against the Argentine peso',
+        quickConvert: 'Quick Conversion',
         topMovers: 'Top Movers'
       }
     }

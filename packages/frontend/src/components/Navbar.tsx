@@ -13,7 +13,6 @@ const Navbar: React.FC = () => {
   const navigation = [
     { name: 'Dashboard', path: '/' },
     { name: 'Charts', path: '/charts' },
-    { name: 'History', path: '/history' },
     { name: 'Converter', path: '/converter' }
   ];
 
