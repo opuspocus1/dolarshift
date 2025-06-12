@@ -47,11 +47,11 @@ const CurrencyConverter: React.FC = () => {
         {/* From Currency */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">From</label>
-          <div className="flex space-x-2">
+          <div className="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
             <select
               value={from}
               onChange={(e) => setFrom(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200 w-full"
             >
               {currenciesWithRates.map(rate => (
                 <option key={rate.code} value={rate.code}>
@@ -63,7 +63,7 @@ const CurrencyConverter: React.FC = () => {
               type="text"
               value={amount}
               onChange={handleAmountChange}
-              className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="md:w-24 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
               placeholder="Amount"
             />
           </div>
@@ -82,11 +82,11 @@ const CurrencyConverter: React.FC = () => {
         {/* To Currency */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">To</label>
-          <div className="flex space-x-2">
+          <div className="flex flex-col md:flex-row md:space-x-2 space-y-2 md:space-y-0">
             <select
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200 w-full"
             >
               {currenciesWithRates.map(rate => (
                 <option key={rate.code} value={rate.code}>
@@ -94,7 +94,7 @@ const CurrencyConverter: React.FC = () => {
                 </option>
               ))}
             </select>
-            <div className="w-24 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-right font-medium text-gray-900 dark:text-white">
+            <div className="md:w-24 w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-right font-medium text-gray-900 dark:text-white">
               {result?.toLocaleString('en-US', { 
                 maximumFractionDigits: 0 
               })}
