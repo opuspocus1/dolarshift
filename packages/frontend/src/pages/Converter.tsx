@@ -97,29 +97,6 @@ const Converter: React.FC = () => {
               <CurrencyConverter />
             </div>
 
-            {/* Top Movers */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2" />
-                {t('converter.topMovers')}
-              </h3>
-              <div className="space-y-3">
-                {currenciesWithRates.map((currency) => (
-                  <div key={currency.code} className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-sm text-gray-900 dark:text-white">{currency.code}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{currency.name}</div>
-                    </div>
-                    <div className={`text-sm font-semibold ${
-                      currency.changePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                    }`}>
-                      {currency.changePercent >= 0 ? '+' : ''}{currency.changePercent.toFixed(2)}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Market Status */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
