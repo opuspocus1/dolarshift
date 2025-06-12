@@ -140,8 +140,8 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   };
 
   return (
-    <div className="w-full h-[520px] p-2 md:p-6 bg-[#181e29] rounded-2xl shadow-2xl flex items-center justify-center">
-      <Line options={options} data={data} />
+    <div className="w-full min-h-[320px] h-[50vh] max-h-[600px] p-2 md:p-6 bg-[#181e29] rounded-2xl shadow-2xl flex items-center justify-center">
+      <Line options={options} data={data} style={{ width: '100%', height: '100%' }} />
     </div>
   );
 };
