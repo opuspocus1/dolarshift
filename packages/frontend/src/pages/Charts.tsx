@@ -118,10 +118,10 @@ const Charts: React.FC = () => {
           <select
             value={baseCurrency}
             onChange={e => setBaseCurrency(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+            className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
           >
             {currencies.map((currency) => (
-              <option key={currency.code} value={currency.code}>
+              <option key={currency.code} value={currency.code} className="bg-[#181e29] text-white">
                 {currency.code} - {currency.name}
               </option>
             ))}
@@ -133,7 +133,17 @@ const Charts: React.FC = () => {
             <Select
               isMulti
               options={options}
-              className="min-w-[220px] text-black"
+              classNamePrefix="react-select-dark"
+              className="min-w-[220px] text-white"
+              styles={{
+                control: (base) => ({ ...base, backgroundColor: '#181e29', borderColor: '#334155', color: '#fff' }),
+                menu: (base) => ({ ...base, backgroundColor: '#181e29', color: '#fff' }),
+                option: (base, state) => ({ ...base, backgroundColor: state.isFocused ? '#334155' : '#181e29', color: '#fff' }),
+                multiValue: (base) => ({ ...base, backgroundColor: '#334155', color: '#fff' }),
+                input: (base) => ({ ...base, color: '#fff' }),
+                singleValue: (base) => ({ ...base, color: '#fff' }),
+                placeholder: (base) => ({ ...base, color: '#94a3b8' }),
+              }}
               placeholder="Otras monedas..."
               onChange={(selectedOptions: MultiValue<{ value: string; label: string }>) => {
                 const newCodes = (selectedOptions || []).map(opt => opt.value);
@@ -153,8 +163,8 @@ const Charts: React.FC = () => {
               selected={startDateObj}
               onChange={date => setStartDate(format(date as Date, 'yyyy-MM-dd'))}
               dateFormat="dd/MM/yyyy"
-              className="w-full p-2 border border-gray-300 rounded-md text-sm"
-              calendarClassName="bg-white"
+              className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
+              calendarClassName="bg-[#181e29] text-white"
             />
           </div>
           <div>
@@ -163,8 +173,8 @@ const Charts: React.FC = () => {
               selected={endDateObj}
               onChange={date => setEndDate(format(date as Date, 'yyyy-MM-dd'))}
               dateFormat="dd/MM/yyyy"
-              className="w-full p-2 border border-gray-300 rounded-md text-sm"
-              calendarClassName="bg-white"
+              className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
+              calendarClassName="bg-[#181e29] text-white"
             />
           </div>
         </div>
