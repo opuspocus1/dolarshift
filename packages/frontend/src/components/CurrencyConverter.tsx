@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRightLeft } from 'lucide-react';
-import { exchangeService } from '../services/exchangeService';
-import { CurrencyRate } from '../types';
+import { exchangeService, ExchangeRate } from '../services/exchangeService';
 
 const CurrencyConverter: React.FC = () => {
-  const [rates, setRates] = useState<CurrencyRate[]>([]);
+  const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [from, setFrom] = useState('USD');
   const [to, setTo] = useState('ARS');
   const [amount, setAmount] = useState('100');
@@ -13,14 +12,7 @@ const CurrencyConverter: React.FC = () => {
   useEffect(() => {
     const fetchRates = async () => {
       const data = await exchangeService.getExchangeRates(new Date());
-      setRates(data.map(rate => ({
-        code: rate.code,
-        name: rate.name,
-        buy: rate.buy || 0,
-        sell: rate.sell || 0,
-        change: 0,
-        changePercent: 0
-      })));
+      setRates(data);
     };
     fetchRates();
   }, []);
@@ -48,7 +40,7 @@ const CurrencyConverter: React.FC = () => {
   const currenciesWithRates = rates.filter(currency => currency.buy !== null || currency.sell !== null);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Currency Converter</h3>
       
       <div className="space-y-4">

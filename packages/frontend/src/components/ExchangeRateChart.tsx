@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,13 +29,23 @@ interface ExchangeRateChartProps {
   baseCurrency: string;
 }
 
-const isDark = () => document.documentElement.classList.contains('dark');
+const getIsDark = () => document.documentElement.classList.contains('dark');
 
 const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   histories,
   selectedCurrencies,
   baseCurrency
 }) => {
+  const [dark, setDark] = useState(getIsDark());
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDark(getIsDark());
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
   const colors = [
     '#3b82f6', // blue
     '#ef4444', // red
@@ -92,8 +102,6 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     labels,
     datasets,
   };
-
-  const dark = isDark();
 
   const options: ChartOptions<'line'> = {
     responsive: true,
