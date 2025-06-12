@@ -48,42 +48,6 @@ const Converter: React.FC = () => {
           {/* Main Converter */}
           <div className="lg:col-span-2">
             <CurrencyConverter />
-            
-            {/* Exchange Rate Table */}
-            <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors duration-200">
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Current Exchange Rates
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Currency</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Buy</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sell</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {currenciesWithRates.map((currency) => (
-                      <tr key={currency.code}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {currency.code} - {currency.name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-300">
-                          {currency.buy?.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-500 dark:text-gray-300">
-                          {currency.sell?.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
 
           {/* Sidebar */}
