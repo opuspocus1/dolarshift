@@ -92,18 +92,14 @@ const Charts: React.FC = () => {
   const otherCurrencies = currencies.slice(4);
   const [selectedDropdown, setSelectedDropdown] = useState<string>('');
 
-  // Cuando seleccionan del dropdown, agregar a la selección
-  useEffect(() => {
-    if (selectedDropdown && !selectedCurrencies.includes(selectedDropdown)) {
-      setSelectedCurrencies(prev => [...prev, selectedDropdown]);
-    }
-    // eslint-disable-next-line
-  }, [selectedDropdown]);
-
-  const options = otherCurrencies.map(currency => ({
-    value: currency.code,
-    label: `${currency.code}/${baseCurrency} - ${currency.name}`,
-  }));
+  // Unir todas las monedas para el selector, asegurando que las seleccionadas estén presentes
+  const allCurrencies = [...mainCurrencies, ...otherCurrencies];
+  const options = allCurrencies
+    .filter((currency, idx, arr) => arr.findIndex(c => c.code === currency.code) === idx)
+    .map(currency => ({
+      value: currency.code,
+      label: `${currency.code}/${baseCurrency} - ${currency.name}`,
+    }));
 
   // Leer el parámetro de la URL para filtrar por moneda si corresponde
   useEffect(() => {
