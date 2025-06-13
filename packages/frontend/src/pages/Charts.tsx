@@ -9,9 +9,11 @@ import { format, subDays, parse } from 'date-fns';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select, { MultiValue } from 'react-select';
+import { useLocation } from 'react-router-dom';
 
 const Charts: React.FC = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['USD']);
   const [startDate, setStartDate] = useState<string>(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
@@ -102,6 +104,15 @@ const Charts: React.FC = () => {
     value: currency.code,
     label: `${currency.code}/${baseCurrency} - ${currency.name}`,
   }));
+
+  // Leer el parámetro de la URL para filtrar por moneda si corresponde
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const currencyParam = params.get('currency');
+    if (currencyParam) {
+      setSelectedCurrencies([currencyParam]);
+    }
+  }, [location.search]);
 
   return (
     <div className="container mx-auto px-4 py-8">

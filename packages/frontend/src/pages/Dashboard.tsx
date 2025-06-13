@@ -4,11 +4,13 @@ import CurrencyCard from '../components/CurrencyCard';
 import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 const CARDS_PER_PAGE = 16;
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [cards, setCards] = useState<ExchangeRate[]>([]);
   const [date, setDate] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -161,7 +163,13 @@ const Dashboard: React.FC = () => {
         {/* Cards de monedas */}
         <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {paginatedCards.map((currency) => (
-            <CurrencyCard key={currency.code} currency={currency} />
+            <div
+              key={currency.code}
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate(`/charts?currency=${currency.code}`)}
+            >
+              <CurrencyCard currency={currency} />
+            </div>
           ))}
         </div>
         {/* Paginación */}
