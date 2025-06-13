@@ -41,7 +41,14 @@ const resources = {
         subtitle: 'Tasas de cambio actualizadas expresadas en relación al dólar estadounidense (USD)',
         quickConvert: 'Conversión Rápida',
         topMovers: 'Mayores Movimientos'
-      }
+      },
+      'dashboard.title': 'Dashboard de Divisas',
+      'dashboard.subtitle': 'Tasas de cambio actualizadas expresadas en relación al dólar estadounidense (USD)',
+      'dashboard.description': 'Visualiza las tasas de cambio de todas las divisas en relación al USD y al ARS',
+      'currency.rate.usd': 'Relativa al USD',
+      'currency.rate.ars': 'Relativa al ARS',
+      'currency.format': 'Formato',
+      'currency.date': 'Fecha'
     }
   },
   en: {
@@ -83,7 +90,14 @@ const resources = {
         subtitle: 'Updated exchange rates expressed relative to the US dollar (USD)',
         quickConvert: 'Quick Conversion',
         topMovers: 'Top Movers'
-      }
+      },
+      'dashboard.title': 'Currency Dashboard',
+      'dashboard.subtitle': 'Updated exchange rates expressed relative to the US dollar (USD)',
+      'dashboard.description': 'View exchange rates for all currencies relative to USD and ARS',
+      'currency.rate.usd': 'Relative to USD',
+      'currency.rate.ars': 'Relative to ARS',
+      'currency.format': 'Format',
+      'currency.date': 'Date'
     }
   }
 };

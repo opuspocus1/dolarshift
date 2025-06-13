@@ -24,6 +24,9 @@ export interface ExchangeRate {
   tipocotizacion?: number;
   isUsdQuoted?: boolean;
   rateAgainstUSD?: number;
+  rateAgainstARS?: number;
+  usdFormat?: string;
+  arsFormat?: string;
 }
 
 export interface ExchangeRateHistory {
@@ -32,46 +35,66 @@ export interface ExchangeRateHistory {
   sell: number;
 }
 
-function processRatesRelativeToUSD(rates: ExchangeRate[]): ExchangeRate[] {
+function processExchangeRates(rates: any[]): ExchangeRate[] {
   // Encontrar la tasa USD
-  const usdRate = rates.find(rate => rate.code === 'USD');
+  const usdRate = rates.find(rate => rate.codigoMoneda === 'USD');
   if (!usdRate) {
     console.warn('USD rate not found, cannot process relative rates');
-    return rates;
+    return rates.map(rate => ({
+      code: rate.codigoMoneda,
+      name: rate.descripcion,
+      date: rate.fecha,
+      buy: rate.tipoCotizacion,
+      sell: rate.tipoCotizacion,
+      codigomoneda: rate.codigoMoneda,
+      descripcion: rate.descripcion,
+      tipopase: rate.tipoPase,
+      tipocotizacion: rate.tipoCotizacion,
+      rateAgainstARS: rate.tipoCotizacion,
+      arsFormat: `${rate.codigoMoneda}/ARS`
+    }));
   }
 
-  return rates
-    .filter(rate => rate.code !== 'ARS') // Eliminar tasa ARS/ARS
-    .map(rate => {
-      if (rate.code === 'USD') {
-        return {
-          ...rate,
-          rateAgainstUSD: 1,
-          isUsdQuoted: false
-        };
-      }
+  return rates.map(rate => {
+    const isUsdQuoted = USD_QUOTED_CURRENCIES.includes(rate.codigoMoneda);
+    let rateAgainstUSD: number | null = null;
+    let usdFormat: string | null = null;
 
-      // Calcular nueva tasa relativa al USD
-      const newBuy = usdRate.buy / rate.buy;
-      const newSell = usdRate.sell / rate.sell;
+    if (rate.codigoMoneda === 'USD') {
+      rateAgainstUSD = 1;
+      usdFormat = 'USD/USD';
+    } else if (rate.codigoMoneda === 'ARS') {
+      rateAgainstUSD = null;
+      usdFormat = null;
+    } else {
+      // Calcular tasa relativa al USD
+      const newRate = usdRate.tipoCotizacion / rate.tipoCotizacion;
+      rateAgainstUSD = isUsdQuoted ? 1 / newRate : newRate;
+      usdFormat = isUsdQuoted ? `${rate.codigoMoneda}/USD` : `USD/${rate.codigoMoneda}`;
+    }
 
-      // Verificar si esta moneda típicamente se cotiza como currency/USD
-      const isUsdQuoted = USD_QUOTED_CURRENCIES.includes(rate.code);
-
-      return {
-        ...rate,
-        buy: isUsdQuoted ? 1 / newBuy : newBuy,
-        sell: isUsdQuoted ? 1 / newSell : newSell,
-        rateAgainstUSD: isUsdQuoted ? 1 / newBuy : newBuy,
-        isUsdQuoted
-      };
-    });
+    return {
+      code: rate.codigoMoneda,
+      name: rate.descripcion,
+      date: rate.fecha,
+      buy: rate.tipoCotizacion,
+      sell: rate.tipoCotizacion,
+      codigomoneda: rate.codigoMoneda,
+      descripcion: rate.descripcion,
+      tipopase: rate.tipoPase,
+      tipocotizacion: rate.tipoCotizacion,
+      isUsdQuoted,
+      rateAgainstUSD,
+      rateAgainstARS: rate.codigoMoneda === 'USD' ? null : rate.tipoCotizacion,
+      usdFormat,
+      arsFormat: rate.codigoMoneda === 'ARS' ? null : `${rate.codigoMoneda}/ARS`
+    };
+  });
 }
 
 export const exchangeService = {
   async getCurrencies(): Promise<Currency[]> {
     try {
-      // Usar el array de monedas de la última cotización
       const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
       return (response.data.results.detalle || []).map((divisa: any) => ({
         code: divisa.codigoMoneda,
@@ -85,31 +108,20 @@ export const exchangeService = {
 
   async getExchangeRates(date: Date): Promise<ExchangeRate[]> {
     try {
-      // Obtener la última cotización disponible
       const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
       console.log('[exchangeService] Respuesta BCRA:', response.data);
 
-      // Obtener la fecha de la respuesta del BCRA
       const bcraDate = response.data.results.fecha;
       console.log('[exchangeService] Fecha BCRA:', bcraDate);
 
-      // Mapear la respuesta del BCRA al formato esperado
       const rates = (response.data.results.detalle || [])
         .filter((rate: any) => rate && rate.codigoMoneda)
         .map((rate: any) => ({
-          code: rate.codigoMoneda,
-          name: rate.descripcion,
-          codigomoneda: rate.codigoMoneda,
-          descripcion: rate.descripcion,
-          tipopase: rate.tipoPase,
-          tipocotizacion: rate.tipoCotizacion,
-          buy: rate.tipoCotizacion,
-          sell: rate.tipoCotizacion,
-          date: bcraDate
+          ...rate,
+          fecha: bcraDate
         }));
 
-      // Procesar las tasas para que sean relativas al USD
-      return processRatesRelativeToUSD(rates);
+      return processExchangeRates(rates);
     } catch (error) {
       console.error('Error fetching exchange rates:', error);
       return [];

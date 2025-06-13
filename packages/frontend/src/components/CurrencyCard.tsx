@@ -59,7 +59,8 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
     : 'N/A';
 
   // Formatear la tasa de cambio
-  const formatRate = (rate: number) => {
+  const formatRate = (rate: number | null | undefined) => {
+    if (rate === null || rate === undefined) return '-';
     return Number(rate).toLocaleString(undefined, { 
       minimumFractionDigits: 4,
       maximumFractionDigits: 4
@@ -84,18 +85,25 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
           </div>
         </div>
       </div>
-      <div className="space-y-2 mt-2">
+      <div className="space-y-4 mt-2">
+        {/* Tasa relativa al USD */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Tasa de Cambio</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Relativa al USD</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {formatRate(currency.buy)}
+              {formatRate(currency.rateAgainstUSD)}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {currency.usdFormat || '-'}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Formato</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Relativa al ARS</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {getRateFormat()}
+              {formatRate(currency.rateAgainstARS)}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {currency.arsFormat || '-'}
             </p>
           </div>
         </div>
