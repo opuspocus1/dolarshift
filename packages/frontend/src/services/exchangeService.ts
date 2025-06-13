@@ -36,10 +36,11 @@ export interface ExchangeRateHistory {
 }
 
 function processExchangeRates(rates: any[]): ExchangeRate[] {
-  // Encontrar la tasa USD
+  // Encontrar la tasa USD y ARS
   const usdRate = rates.find(rate => rate.codigoMoneda === 'USD');
-  if (!usdRate) {
-    console.warn('USD rate not found, cannot process relative rates');
+  const arsRate = rates.find(rate => rate.codigoMoneda === 'ARS');
+  if (!usdRate || !arsRate) {
+    console.warn('USD or ARS rate not found, cannot process relative rates');
     return rates.map(rate => ({
       code: rate.codigoMoneda,
       name: rate.descripcion,
@@ -50,29 +51,47 @@ function processExchangeRates(rates: any[]): ExchangeRate[] {
       descripcion: rate.descripcion,
       tipopase: rate.tipoPase,
       tipocotizacion: rate.tipoCotizacion,
-      rateAgainstARS: rate.tipoCotizacion,
-      arsFormat: `${rate.codigoMoneda}/ARS`
+      rateAgainstUSD: undefined,
+      rateAgainstARS: undefined,
+      usdFormat: undefined,
+      arsFormat: undefined
     }));
   }
 
   return rates.map(rate => {
-    const isUsdQuoted = USD_QUOTED_CURRENCIES.includes(rate.codigoMoneda);
-    let rateAgainstUSD: number | null = null;
-    let usdFormat: string | null = null;
-
-    if (rate.codigoMoneda === 'USD') {
-      rateAgainstUSD = 1;
-      usdFormat = 'USD/USD';
-    } else if (rate.codigoMoneda === 'ARS') {
-      rateAgainstUSD = null;
-      usdFormat = null;
-    } else {
-      // Calcular tasa relativa al USD
-      const newRate = usdRate.tipoCotizacion / rate.tipoCotizacion;
-      rateAgainstUSD = isUsdQuoted ? 1 / newRate : newRate;
-      usdFormat = isUsdQuoted ? `${rate.codigoMoneda}/USD` : `USD/${rate.codigoMoneda}`;
+    let rateAgainstUSD: number | undefined = undefined;
+    let rateAgainstARS: number | undefined = undefined;
+    let usdFormat: string | undefined = undefined;
+    let arsFormat: string | undefined = undefined;
+    const code = rate.codigoMoneda;
+    // ARS
+    if (code === 'ARS') {
+      rateAgainstUSD = rate.tipoPase ? 1 / rate.tipoPase : undefined;
+      rateAgainstARS = 1;
+      usdFormat = 'ARS/USD';
+      arsFormat = 'ARS/ARS';
     }
-
+    // USD
+    else if (code === 'USD') {
+      rateAgainstUSD = 1;
+      rateAgainstARS = rate.tipoCotizacion ?? undefined;
+      usdFormat = 'USD/USD';
+      arsFormat = 'USD/ARS';
+    }
+    // XAU y XAG
+    else if (code === 'XAU' || code === 'XAG') {
+      rateAgainstUSD = rate.tipoPase ?? undefined;
+      rateAgainstARS = undefined;
+      usdFormat = `${code}/USD`;
+      arsFormat = '-';
+    }
+    // Otras monedas
+    else {
+      rateAgainstUSD = undefined;
+      rateAgainstARS = undefined;
+      usdFormat = undefined;
+      arsFormat = undefined;
+    }
     return {
       code: rate.codigoMoneda,
       name: rate.descripcion,
@@ -83,11 +102,10 @@ function processExchangeRates(rates: any[]): ExchangeRate[] {
       descripcion: rate.descripcion,
       tipopase: rate.tipoPase,
       tipocotizacion: rate.tipoCotizacion,
-      isUsdQuoted,
       rateAgainstUSD,
-      rateAgainstARS: rate.codigoMoneda === 'USD' ? null : rate.tipoCotizacion,
+      rateAgainstARS,
       usdFormat,
-      arsFormat: rate.codigoMoneda === 'ARS' ? null : `${rate.codigoMoneda}/ARS`
+      arsFormat
     };
   });
 }
