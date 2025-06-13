@@ -53,17 +53,17 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   // Usar solo el código de moneda, sin bandera
   const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
 
-  // Formatear la fecha usando parseISO para evitar desfase horario
-  const formattedDate = currency.date 
-    ? format(parseISO(currency.date), "d 'de' MMMM 'de' yyyy", { locale: es })
+  // Formatear la fecha y hora usando parseISO para evitar desfase horario
+  const formattedDateTime = currency.date 
+    ? format(parseISO(currency.date), "d 'de' MMMM 'de' yyyy HH:mm", { locale: es })
     : 'N/A';
 
   // Formatear la tasa de cambio
   const formatRate = (rate: number | null | undefined) => {
     if (rate === null || rate === undefined) return '-';
-    return Number(rate).toLocaleString(undefined, { 
-      minimumFractionDigits: 4,
-      maximumFractionDigits: 4
+    return Number(rate).toLocaleString('es-AR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
   };
 
@@ -89,7 +89,6 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         {/* Tasa relativa al USD */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Relativa al USD</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
               {formatRate(currency.rateAgainstUSD)}
             </p>
@@ -98,7 +97,6 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Relativa al ARS</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
               {formatRate(currency.rateAgainstARS)}
             </p>
@@ -110,7 +108,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         <div className="mt-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">Fecha</p>
           <p className="text-sm font-medium text-gray-900 dark:text-white">
-            {formattedDate}
+            {formattedDateTime}
           </p>
         </div>
       </div>
