@@ -53,10 +53,19 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   // Usar solo el código de moneda, sin bandera
   const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
 
-  // Formatear la fecha y hora usando parseISO para evitar desfase horario
-  const formattedDateTime = currency.date 
-    ? format(parseISO(currency.date), "d 'de' MMMM 'de' yyyy HH:mm", { locale: es })
-    : 'N/A';
+  // Formatear la fecha de la API y la hora actual de Buenos Aires
+  let formattedDateTime = 'N/A';
+  if (currency.date) {
+    const apiDate = parseISO(currency.date);
+    // Obtener la hora actual de Buenos Aires
+    const nowBuenosAires = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' })
+    );
+    // Combinar fecha de la API y hora actual de Buenos Aires
+    const combinedDate = new Date(apiDate);
+    combinedDate.setHours(nowBuenosAires.getHours(), nowBuenosAires.getMinutes(), 0, 0);
+    formattedDateTime = format(combinedDate, "d 'de' MMMM 'de' yyyy HH:mm", { locale: es });
+  }
 
   // Formatear la tasa de cambio
   const formatRate = (rate: number | null | undefined) => {
