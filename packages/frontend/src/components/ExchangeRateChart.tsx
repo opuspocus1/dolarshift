@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,8 +10,17 @@ import {
   Legend,
   ChartOptions
 } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { Line } from 'react-chartjs-2';
 import { ExchangeRateHistory } from '../services/exchangeService';
+import {
+  Plus,
+  Minus,
+  Search,
+  Hand,
+  Home,
+  Download
+} from 'lucide-react';
 
 ChartJS.register(
   CategoryScale,
@@ -20,7 +29,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  zoomPlugin
 );
 
 interface ExchangeRateChartProps {
@@ -37,6 +47,9 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   baseCurrency
 }) => {
   const [dark, setDark] = useState(getIsDark());
+  const chartRef = useRef<any>(null);
+  const [panMode, setPanMode] = useState(false);
+  const [zoomDrag, setZoomDrag] = useState(false);
 
   useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -137,6 +150,22 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         caretSize: 8,
         displayColors: true,
       },
+      zoom: {
+        pan: {
+          enabled: panMode,
+          mode: 'xy',
+        },
+        zoom: {
+          wheel: { enabled: !zoomDrag },
+          pinch: { enabled: !zoomDrag },
+          drag: { enabled: zoomDrag, modifierKey: 'ctrl' },
+          mode: 'xy',
+        },
+        limits: {
+          x: { min: 'original', max: 'original' },
+          y: { min: 'original', max: 'original' }
+        }
+      }
     },
     scales: {
       y: {
@@ -151,9 +180,62 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     },
   };
 
+  // Funciones de control
+  const handleZoomIn = () => {
+    const chart = chartRef.current;
+    if (chart) chart.zoom(1.2);
+  };
+  const handleZoomOut = () => {
+    const chart = chartRef.current;
+    if (chart) chart.zoom(0.8);
+  };
+  const handleReset = () => {
+    const chart = chartRef.current;
+    if (chart) chart.resetZoom();
+  };
+  const handleDownload = () => {
+    const chart = chartRef.current;
+    if (chart) {
+      const url = chart.toBase64Image();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'chart.png';
+      link.click();
+    }
+  };
+  const handlePan = () => {
+    setPanMode((prev) => !prev);
+    setZoomDrag(false);
+  };
+  const handleZoomDrag = () => {
+    setZoomDrag((prev) => !prev);
+    setPanMode(false);
+  };
+
   return (
-    <div className={`w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 rounded-lg shadow-2xl flex items-center justify-center ${dark ? 'bg-[#181e29]' : 'bg-white'}`}>
-      <Line options={options} data={data} style={{ width: '100%', height: '100%' }} />
+    <div className={`relative w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 rounded-lg shadow-2xl flex items-center justify-center ${dark ? 'bg-[#181e29]' : 'bg-white'}`}>
+      {/* Controles visuales */}
+      <div className="absolute top-3 right-3 flex flex-row items-center gap-2 z-10">
+        <button onClick={handleZoomIn} title="Zoom in" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+          <Plus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+        </button>
+        <button onClick={handleZoomOut} title="Zoom out" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+          <Minus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+        </button>
+        <button onClick={handleZoomDrag} title="Zoom con selección" className={`rounded-full p-1.5 border shadow transition-colors ${zoomDrag ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-400' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40'}`}>
+          <Search className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+        </button>
+        <button onClick={handlePan} title="Pan" className={`rounded-full p-1.5 border shadow transition-colors ${panMode ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-400' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40'}`}>
+          <Hand className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        </button>
+        <button onClick={handleReset} title="Reset" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+          <Home className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+        </button>
+        <button onClick={handleDownload} title="Descargar" className="rounded-full p-1.5 bg-purple-200 hover:bg-purple-300 dark:bg-purple-700 dark:hover:bg-purple-600 border border-purple-400 dark:border-purple-700 shadow transition-colors">
+          <Download className="w-5 h-5 text-purple-800 dark:text-white" />
+        </button>
+      </div>
+      <Line ref={chartRef} options={options} data={data} style={{ width: '100%', height: '100%' }} />
     </div>
   );
 };
