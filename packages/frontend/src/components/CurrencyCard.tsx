@@ -50,28 +50,20 @@ interface CurrencyCardProps {
 }
 
 const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'USD' }) => {
+  // Usar solo el código de moneda, sin bandera
   const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
 
-  // Formatear la fecha y hora como "Última Actualización: dd-mmm-yy hh:mm"
-  let formattedDate = 'N/A';
-  if (currency.date) {
-    const dateObj = parseISO(currency.date);
-    const day = dateObj.getDate().toString().padStart(2, '0');
-    const month = dateObj.toLocaleString('en-US', { month: 'short' });
-    const year = dateObj.getFullYear().toString().slice(-2);
-    const hours = dateObj.getHours().toString().padStart(2, '0');
-    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-    formattedDate = `${day}-${month}-${year} ${hours}:${minutes}`;
-  }
+  // Formatear la fecha usando parseISO para evitar desfase horario
+  const formattedDate = currency.date 
+    ? format(parseISO(currency.date), "d 'de' MMMM 'de' yyyy", { locale: es })
+    : 'N/A';
 
-  // Formatear la tasa de cambio con punto como separador de miles y dos decimales
-  const formatRate = (rate: number | string | null | undefined) => {
-    if (rate === null || rate === undefined || rate === '-') return '-';
-    const num = Number(rate);
-    if (isNaN(num)) return '-';
-    return num.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+  // Formatear la tasa de cambio
+  const formatRate = (rate: number | null | undefined) => {
+    if (rate === null || rate === undefined) return '-';
+    return Number(rate).toLocaleString(undefined, { 
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4
     });
   };
 
@@ -94,21 +86,29 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         </div>
       </div>
       <div className="space-y-4 mt-2">
-        {/* Mostrar ambos valores en una sola fila, sin labels */}
+        {/* Tasa relativa al USD */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400">Relativa al USD</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
               {formatRate(currency.rateAgainstUSD)}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {currency.usdFormat || '-'}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400">Relativa al ARS</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white">
               {formatRate(currency.rateAgainstARS)}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {currency.arsFormat || '-'}
             </p>
           </div>
         </div>
         <div className="mt-2">
-          <p className="text-xs text-gray-500 dark:text-gray-400">Última Actualización</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Fecha</p>
           <p className="text-sm font-medium text-gray-900 dark:text-white">
             {formattedDate}
           </p>
