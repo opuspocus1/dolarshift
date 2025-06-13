@@ -27,6 +27,7 @@ interface ProcessedExchangeRate {
   buy: number;
   sell: number;
   date: string;
+  isUsdQuoted?: boolean; // Indicates if the rate is currency/USD instead of USD/currency
 }
 
 interface BCRAHistoryResponse {
@@ -41,6 +42,40 @@ interface CurrencyResponse {
     codigo: string;
     denominacion: string;
   }>;
+}
+
+function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExchangeRate[] {
+  // Find USD rate
+  const usdRate = rates.find(rate => rate.code === 'USD');
+  if (!usdRate) {
+    console.warn('USD rate not found, cannot process relative rates');
+    return rates;
+  }
+
+  // List of currencies that are typically quoted as currency/USD
+  const usdQuotedCurrencies = ['EUR', 'GBP', 'CHF', 'JPY', 'AUD', 'CAD', 'NZD'];
+
+  return rates
+    .filter(rate => rate.code !== 'ARS') // Remove ARS/ARS rate
+    .map(rate => {
+      if (rate.code === 'USD') {
+        return rate;
+      }
+
+      // Calculate new rate relative to USD
+      const newBuy = usdRate.buy / rate.buy;
+      const newSell = usdRate.sell / rate.sell;
+
+      // Check if this currency is typically quoted as currency/USD
+      const isUsdQuoted = usdQuotedCurrencies.includes(rate.code);
+
+      return {
+        ...rate,
+        buy: isUsdQuoted ? 1 / newBuy : newBuy,
+        sell: isUsdQuoted ? 1 / newSell : newSell,
+        isUsdQuoted
+      };
+    });
 }
 
 export const bcraService = {
@@ -60,34 +95,16 @@ export const bcraService = {
 
     // Procesar los datos para separar compra y venta
     const rates = response.data.results.detalle;
-    const processedRates: ProcessedExchangeRate[] = [];
+    const processedRates = rates.map((rate: BCRAExchangeRate) => ({
+      code: rate.codigoMoneda,
+      name: rate.descripcion,
+      buy: rate.tipoCotizacion,
+      sell: rate.tipoCotizacion,
+      date: response.data.results.fecha
+    }));
 
-    // Agrupar por moneda
-    const ratesByCurrency = rates.reduce((acc: { [key: string]: BCRAExchangeRate[] }, rate: BCRAExchangeRate) => {
-      if (!acc[rate.codigoMoneda]) {
-        acc[rate.codigoMoneda] = [];
-      }
-      acc[rate.codigoMoneda].push(rate);
-      return acc;
-    }, {});
-
-    // Procesar cada moneda
-    Object.entries(ratesByCurrency).forEach(([code, currencyRates]) => {
-      const buyRate = currencyRates.find(rate => rate.tipoPase === 1);
-      const sellRate = currencyRates.find(rate => rate.tipoPase === 2);
-
-      if (buyRate || sellRate) {
-        processedRates.push({
-          code,
-          name: buyRate?.descripcion || sellRate?.descripcion || code,
-          buy: buyRate?.tipoCotizacion || 0,
-          sell: sellRate?.tipoCotizacion || 0,
-          date: response.data.results.fecha
-        });
-      }
-    });
-
-    return processedRates;
+    // Process rates relative to USD
+    return processRatesRelativeToUSD(processedRates);
   },
 
   async getExchangeRateHistory(currency: string, startDate: Date, endDate: Date) {
@@ -106,7 +123,7 @@ export const bcraService = {
     });
 
     // Procesar el historial para incluir compra y venta
-    return response.data.results.map((result) => {
+    return response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
       const buyRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 1);
       const sellRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 2);
 
