@@ -83,7 +83,6 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
 
   // Mapear los datasets usando el orden de sortedHistory
   const datasets = selectedCurrencies
-    .filter(currency => currency !== baseCurrency)
     .map((currency, index) => {
       const history = histories[currency] || [];
       // Ordenar el history según el orden de las fechas en sortedHistory
