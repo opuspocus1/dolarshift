@@ -35,16 +35,14 @@ ChartJS.register(
 
 interface ExchangeRateChartProps {
   histories: Record<string, ExchangeRateHistory[]>;
-  selectedCurrencies: string[];
-  baseCurrency: string;
+  selectedPairs: string[];
 }
 
 const getIsDark = () => document.documentElement.classList.contains('dark');
 
 const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   histories,
-  selectedCurrencies,
-  baseCurrency
+  selectedPairs
 }) => {
   const [dark, setDark] = useState(getIsDark());
   const chartRef = useRef<any>(null);
@@ -71,56 +69,57 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   ];
 
   // Obtener y ordenar las fechas de menor a mayor
-  const rawHistory = histories[selectedCurrencies[0]] || [];
-  console.log('Historial recibido:', rawHistory);
+  // Usar la historia de la primer moneda del primer par para las fechas
+  const firstPair = selectedPairs[0] || '';
+  const [base, quote] = firstPair.split('/');
+  const rawHistory = histories[base] || histories[quote] || [];
   const sortedHistory = [...rawHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  console.log('Fechas en sortedHistory:', sortedHistory.map(h => h.date));
   const labels = sortedHistory.map(h => {
     const [year, month, day] = h.date.split('-');
     return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
   });
-  console.log('Labels del gráfico:', labels);
 
-  // Mapear los datasets usando el orden de sortedHistory
-  const datasets = selectedCurrencies.map((currency, index) => {
-    const history = histories[currency] || [];
-    const usdHistory = histories['USD'] || [];
-    // Ordenar el history según el orden de las fechas en sortedHistory
-    const historyMap = Object.fromEntries(history.map(h => [h.date, h]));
-    const usdHistoryMap = Object.fromEntries(usdHistory.map(h => [h.date, h]));
+  // Mapear los datasets usando la lógica exacta del Dashboard
+  const datasets = selectedPairs.map((pair, index) => {
+    const [base, quote] = pair.split('/');
+    const baseHistory = histories[base] || [];
+    const quoteHistory = histories[quote] || [];
+    const baseMap = Object.fromEntries(baseHistory.map(h => [h.date, h]));
+    const quoteMap = Object.fromEntries(quoteHistory.map(h => [h.date, h]));
     let data: number[] = [];
-    let label = `${currency}/USD`;
+    let label = pair;
 
-    if (currency === 'ARS') {
-      // ARS vs USD: 1 / tipoPase (tipoPase = USD/ARS)
+    if (pair === 'ARS/USD') {
+      // ARS/USD: 1 / tipoPase (tipoPase = USD/ARS)
       data = sortedHistory.map(h => {
-        const item = historyMap[h.date];
+        const item = baseMap[h.date];
         return item && item.buy ? 1 / item.buy : 0;
       });
-      label = 'ARS/USD';
-    } else if (currency === 'USD') {
-      // USD vs USD: always 1
+    } else if (pair === 'USD/USD') {
+      // USD/USD: always 1
       data = sortedHistory.map(() => 1);
-      label = 'USD/USD';
-    } else if (currency === 'XAU' || currency === 'XAG') {
-      // XAU, XAG vs USD: tipoPase
+    } else if (pair === 'XAU/USD' || pair === 'XAG/USD') {
+      // XAU/USD, XAG/USD: tipoPase
       data = sortedHistory.map(h => {
-        const item = historyMap[h.date];
+        const item = baseMap[h.date];
         return item && item.buy ? item.buy : 0;
       });
-      label = `${currency}/USD`;
-    } else {
-      // Otros: USD/currency o currency/USD según convención
-      // Usar USD/currency (tipoCotizacion) si no es USD-quoted, sino currency/USD (1/tipoCotizacion)
-      // Para esto, necesitamos el valor de USD y de la moneda en la misma fecha
+    } else if (pair.startsWith('USD/')) {
+      // USD/XXX: USD.tipoCotizacion / XXX.tipoCotizacion
       data = sortedHistory.map(h => {
-        const item = historyMap[h.date];
-        const usdItem = usdHistoryMap[h.date];
-        if (!item || !usdItem || !item.buy || !usdItem.buy) return 0;
-        // Por defecto: USD/currency
-        return usdItem.buy / item.buy;
+        const usdItem = quoteMap[h.date];
+        const baseItem = baseMap[h.date];
+        if (!usdItem || !baseItem || !usdItem.buy || !baseItem.buy) return 0;
+        return usdItem.buy / baseItem.buy;
       });
-      label = `USD/${currency}`;
+    } else {
+      // Fallback: base/quote
+      data = sortedHistory.map(h => {
+        const baseItem = baseMap[h.date];
+        const quoteItem = quoteMap[h.date];
+        if (!baseItem || !quoteItem || !baseItem.buy || !quoteItem.buy) return 0;
+        return baseItem.buy / quoteItem.buy;
+      });
     }
 
     return {

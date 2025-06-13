@@ -96,27 +96,38 @@ const Charts: React.FC = () => {
 
   // Unir todas las monedas para el selector, asegurando que las seleccionadas estén presentes
   const allCurrencies = [...mainCurrencies, ...otherCurrencies];
+
+  // Helper to build dashboard-like pairs
+  const getDashboardPair = (code: string): string => {
+    if (code === 'ARS') return 'ARS/USD';
+    if (code === 'USD') return 'USD/USD';
+    if (code === 'XAU' || code === 'XAG') return `${code}/USD`;
+    return `USD/${code}`;
+  };
+
+  // Build options as pairs
   const options = allCurrencies
     .filter((currency, idx, arr) => arr.findIndex(c => c.code === currency.code) === idx)
     .map(currency => ({
-      value: currency.code,
-      label: `${currency.code}/${baseCurrency} - ${currency.name}`,
+      value: getDashboardPair(currency.code),
+      label: getDashboardPair(currency.code) + ' - ' + currency.name,
     }));
 
-  // Leer el parámetro de la URL para filtrar por moneda si corresponde
+  // When navigating from dashboard, set selected pair
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currencyParam = params.get('currency');
     if (currencyParam) {
-      setSelectedCurrencies([currencyParam]);
-      // Lógica de pares igual que en Dashboard
-      if (currencyParam === 'ARS' || currencyParam === 'USD' || currencyParam === 'XAU' || currencyParam === 'XAG') {
-        setBaseCurrency('USD');
-      } else {
-        setBaseCurrency('USD');
-      }
+      setSelectedCurrencies([getDashboardPair(currencyParam)]);
+      // Set base and quote for the pair
+      // (No need to set baseCurrency separately, pair will be split in chart)
     }
   }, [location.search]);
+
+  // When selecting from filter, update selectedCurrencies as pairs
+  const handleSelectChange = (selectedOptions: MultiValue<{ value: string; label: string }>) => {
+    setSelectedCurrencies((selectedOptions || []).map(opt => opt.value));
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -163,11 +174,9 @@ const Charts: React.FC = () => {
                 placeholder: (base) => ({ ...base, color: '#94a3b8' }),
               }}
               placeholder="Otras monedas..."
-              onChange={(selectedOptions: MultiValue<{ value: string; label: string }>) => {
-                setSelectedCurrencies((selectedOptions || []).map(opt => opt.value));
-              }}
+              onChange={handleSelectChange}
               value={options.filter(opt => selectedCurrencies.includes(opt.value))}
-              />
+            />
           )}
         </div>
         <div className="flex flex-1 flex-row gap-2 min-w-[200px]">
@@ -208,8 +217,7 @@ const Charts: React.FC = () => {
         <div className="bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-6 mt-4 transition-colors duration-200">
           <ExchangeRateChart
             histories={histories}
-            selectedCurrencies={selectedCurrencies}
-            baseCurrency={baseCurrency}
+            selectedPairs={selectedCurrencies}
           />
         </div>
       )}
