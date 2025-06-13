@@ -205,38 +205,44 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   };
 
   return (
-    <div className={`relative w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 rounded-lg shadow-2xl flex items-center justify-center ${dark ? 'bg-[#181e29]' : 'bg-white'}`}>
-      {/* Leyenda custom a la izquierda */}
-      <div className="absolute top-3 left-3 flex flex-row items-center gap-3 z-10">
-        {datasets.map((ds, i) => (
-          <div key={ds.label} className="flex items-center gap-1">
-            <span className="inline-block w-4 h-4 rounded-full" style={{ background: ds.borderColor }}></span>
-            <span className="text-xs font-semibold" style={{ color: dark ? '#fff' : '#22223b' }}>{ds.label}</span>
-          </div>
-        ))}
+    <div className={`w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 rounded-lg shadow-2xl flex flex-col ${dark ? 'bg-[#181e29]' : 'bg-white'}`}>
+      {/* Leyenda y controles arriba, fuera del gráfico */}
+      <div className="flex flex-row items-center justify-between px-4 pt-4 pb-2">
+        {/* Leyenda custom a la izquierda */}
+        <div className="flex flex-row items-center gap-3">
+          {datasets.map((ds, i) => (
+            <div key={ds.label} className="flex items-center gap-1">
+              <span className="inline-block w-4 h-4 rounded-full" style={{ background: ds.borderColor }}></span>
+              <span className="text-xs font-semibold" style={{ color: dark ? '#fff' : '#22223b' }}>{ds.label}</span>
+            </div>
+          ))}
+        </div>
+        {/* Controles visuales a la derecha */}
+        <div className="flex flex-row items-center gap-2">
+          <button onClick={handleZoomIn} title="Zoom in" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors outline-none focus:ring-0">
+            <Plus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+          </button>
+          <button onClick={handleZoomOut} title="Zoom out" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors outline-none focus:ring-0">
+            <Minus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+          </button>
+          <button onClick={handleZoomDrag} title="Zoom con selección" className={`rounded-full p-1.5 border shadow transition-colors outline-none focus:ring-0 ${zoomDrag ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-400' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40'}`}> 
+            <Search className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+          </button>
+          <button onClick={handlePan} title="Pan" className={`rounded-full p-1.5 border shadow transition-colors outline-none focus:ring-0 ${panMode ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-400' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40'}`}> 
+            <Hand className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          </button>
+          <button onClick={handleReset} title="Reset" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors outline-none focus:ring-0">
+            <Home className="w-5 h-5 text-gray-700 dark:text-gray-100" />
+          </button>
+          <button onClick={handleDownload} title="Descargar" className="rounded-full p-1.5 bg-purple-200 hover:bg-purple-300 dark:bg-purple-700 dark:hover:bg-purple-600 border border-purple-400 dark:border-purple-700 shadow transition-colors outline-none focus:ring-0">
+            <Download className="w-5 h-5 text-purple-800 dark:text-white" />
+          </button>
+        </div>
       </div>
-      {/* Controles visuales a la derecha */}
-      <div className="absolute top-3 right-3 flex flex-row items-center gap-2 z-10">
-        <button onClick={handleZoomIn} title="Zoom in" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
-          <Plus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
-        </button>
-        <button onClick={handleZoomOut} title="Zoom out" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
-          <Minus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
-        </button>
-        <button onClick={handleZoomDrag} title="Zoom con selección" className={`rounded-full p-1.5 border shadow transition-colors ${zoomDrag ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-400' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40'}`}>
-          <Search className="w-5 h-5 text-gray-700 dark:text-gray-100" />
-        </button>
-        <button onClick={handlePan} title="Pan" className={`rounded-full p-1.5 border shadow transition-colors ${panMode ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-400' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40'}`}>
-          <Hand className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-        </button>
-        <button onClick={handleReset} title="Reset" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
-          <Home className="w-5 h-5 text-gray-700 dark:text-gray-100" />
-        </button>
-        <button onClick={handleDownload} title="Descargar" className="rounded-full p-1.5 bg-purple-200 hover:bg-purple-300 dark:bg-purple-700 dark:hover:bg-purple-600 border border-purple-400 dark:border-purple-700 shadow transition-colors">
-          <Download className="w-5 h-5 text-purple-800 dark:text-white" />
-        </button>
+      {/* Gráfico limpio debajo */}
+      <div className="flex-1 flex items-center justify-center">
+        <Line ref={chartRef} options={options} data={data} style={{ width: '100%', height: '100%' }} />
       </div>
-      <Line ref={chartRef} options={options} data={data} style={{ width: '100%', height: '100%' }} />
     </div>
   );
 };
