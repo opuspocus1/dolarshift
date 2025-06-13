@@ -107,6 +107,12 @@ const Charts: React.FC = () => {
     const currencyParam = params.get('currency');
     if (currencyParam) {
       setSelectedCurrencies([currencyParam]);
+      // Lógica de pares igual que en Dashboard
+      if (currencyParam === 'ARS' || currencyParam === 'USD' || currencyParam === 'XAU' || currencyParam === 'XAG') {
+        setBaseCurrency('USD');
+      } else {
+        setBaseCurrency('USD');
+      }
     }
   }, [location.search]);
 
