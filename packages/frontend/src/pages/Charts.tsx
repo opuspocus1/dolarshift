@@ -57,15 +57,15 @@ const Charts: React.FC = () => {
 
       try {
         const newHistories: Record<string, ExchangeRateHistory[]> = {};
-        // Siempre cargar el historial de USD si la base es USD o si alguna moneda lo necesita
-        const neededCurrencies = Array.from(new Set([...selectedCurrencies, baseCurrency, 'USD']));
-        for (const currency of neededCurrencies) {
+        // Obtener todos los códigos únicos de monedas de los pares seleccionados
+        const neededCodes = Array.from(new Set(selectedCurrencies.flatMap(pair => pair.split('/'))));
+        for (const code of neededCodes) {
           const history = await exchangeService.getChartHistory(
-            currency,
+            code,
             startDate,
             endDate
           );
-          newHistories[currency] = history;
+          newHistories[code] = history;
         }
 
         setHistories(newHistories);
@@ -78,7 +78,7 @@ const Charts: React.FC = () => {
     };
 
     fetchHistories();
-  }, [selectedCurrencies, baseCurrency, startDate, endDate]);
+  }, [selectedCurrencies, startDate, endDate]);
 
   // Función para alternar selección de moneda
   const toggleCurrency = (code: string) => {
