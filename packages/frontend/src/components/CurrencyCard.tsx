@@ -64,7 +64,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
     // Combinar fecha de la API y hora actual de Buenos Aires
     const combinedDate = new Date(apiDate);
     combinedDate.setHours(nowBuenosAires.getHours(), nowBuenosAires.getMinutes(), 0, 0);
-    formattedDateTime = format(combinedDate, "d 'de' MMMM 'de' yyyy HH:mm", { locale: es });
+    formattedDateTime = format(combinedDate, "d 'de' MMMM 'de' yyyy HH:mm", { locale: es }) + ' hs';
   }
 
   // Formatear la tasa de cambio
