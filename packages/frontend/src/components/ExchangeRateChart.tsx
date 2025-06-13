@@ -125,15 +125,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     },
     plugins: {
       legend: {
-        position: 'top' as const,
-        align: 'end',
-        labels: {
-          boxWidth: 18,
-          boxHeight: 18,
-          font: { size: 14, family: 'inherit', weight: 'bold' },
-          color: dark ? '#fff' : '#22223b',
-          padding: 18,
-        },
+        display: false,
       },
       title: {
         display: false,
@@ -214,7 +206,16 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
 
   return (
     <div className={`relative w-full min-h-[320px] h-[50vh] max-h-[600px] p-1 md:p-2 rounded-lg shadow-2xl flex items-center justify-center ${dark ? 'bg-[#181e29]' : 'bg-white'}`}>
-      {/* Controles visuales */}
+      {/* Leyenda custom a la izquierda */}
+      <div className="absolute top-3 left-3 flex flex-row items-center gap-3 z-10">
+        {datasets.map((ds, i) => (
+          <div key={ds.label} className="flex items-center gap-1">
+            <span className="inline-block w-4 h-4 rounded-full" style={{ background: ds.borderColor }}></span>
+            <span className="text-xs font-semibold" style={{ color: dark ? '#fff' : '#22223b' }}>{ds.label}</span>
+          </div>
+        ))}
+      </div>
+      {/* Controles visuales a la derecha */}
       <div className="absolute top-3 right-3 flex flex-row items-center gap-2 z-10">
         <button onClick={handleZoomIn} title="Zoom in" className="rounded-full p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
           <Plus className="w-5 h-5 text-gray-700 dark:text-gray-100" />
