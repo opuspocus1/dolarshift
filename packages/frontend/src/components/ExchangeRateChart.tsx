@@ -35,14 +35,16 @@ ChartJS.register(
 
 interface ExchangeRateChartProps {
   histories: Record<string, ExchangeRateHistory[]>;
-  selectedPairs: string[];
+  selectedCurrency: string;
+  viewMode: 'USD' | 'ARS';
 }
 
 const getIsDark = () => document.documentElement.classList.contains('dark');
 
 const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   histories,
-  selectedPairs
+  selectedCurrency,
+  viewMode
 }) => {
   const [dark, setDark] = useState(getIsDark());
   const chartRef = useRef<any>(null);
@@ -69,67 +71,82 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   ];
 
   // Obtener y ordenar las fechas de menor a mayor
-  // Usar la historia de la primer moneda del primer par para las fechas
-  const firstPair = selectedPairs[0] || '';
-  const [base, quote] = firstPair.split('/');
-  const rawHistory = histories[base] || histories[quote] || [];
-  const sortedHistory = [...rawHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const history = histories[selectedCurrency] || [];
+  const sortedHistory = [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const labels = sortedHistory.map(h => {
     const [year, month, day] = h.date.split('-');
     return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
   });
 
-  // Mapear los datasets usando la lógica exacta del Dashboard
-  const datasets = selectedPairs.map((pair, index) => {
-    const [base, quote] = pair.split('/');
-    const baseHistory = histories[base] || [];
-    const quoteHistory = histories[quote] || [];
-    const baseMap = Object.fromEntries(baseHistory.map(h => [h.date, h]));
-    const quoteMap = Object.fromEntries(quoteHistory.map(h => [h.date, h]));
-    let data: number[] = [];
-    let label = pair;
-
-    if (pair === 'ARS/USD') {
-      // ARS/USD: 1 / tipoPase (tipoPase = USD/ARS)
+  // Calcular el dataset según la lógica del Dashboard
+  let data: number[] = [];
+  let label = '';
+  if (viewMode === 'USD') {
+    // Lógica de la izquierda del Dashboard
+    if (selectedCurrency === 'ARS') {
+      // ARS/USD: 1 / tipoPase
       data = sortedHistory.map(h => {
-        const item = baseMap[h.date];
+        const item = histories['ARS']?.find(x => x.date === h.date);
         return item && item.buy ? 1 / item.buy : 0;
       });
-    } else if (pair === 'USD/USD') {
-      // USD/USD: always 1
+      label = 'ARS/USD';
+    } else if (selectedCurrency === 'USD') {
+      // USD/USD: 1
       data = sortedHistory.map(() => 1);
-    } else if (pair === 'XAU/USD' || pair === 'XAG/USD') {
+      label = 'USD/USD';
+    } else if (selectedCurrency === 'XAU' || selectedCurrency === 'XAG') {
       // XAU/USD, XAG/USD: tipoPase
       data = sortedHistory.map(h => {
-        const item = baseMap[h.date];
+        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
         return item && item.buy ? item.buy : 0;
       });
-    } else if (pair.startsWith('USD/')) {
+      label = `${selectedCurrency}/USD`;
+    } else {
       // USD/XXX: USD.tipoCotizacion / XXX.tipoCotizacion
       data = sortedHistory.map(h => {
-        const usdItem = quoteMap[h.date];
-        const baseItem = baseMap[h.date];
-        if (!usdItem || !baseItem || !usdItem.buy || !baseItem.buy) return 0;
-        return usdItem.buy / baseItem.buy;
+        const usdItem = histories['USD']?.find(x => x.date === h.date);
+        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        if (!usdItem || !item || !usdItem.buy || !item.buy) return 0;
+        return usdItem.buy / item.buy;
       });
-    } else {
-      // Fallback: base/quote
-      data = sortedHistory.map(h => {
-        const baseItem = baseMap[h.date];
-        const quoteItem = quoteMap[h.date];
-        if (!baseItem || !quoteItem || !baseItem.buy || !quoteItem.buy) return 0;
-        return baseItem.buy / quoteItem.buy;
-      });
+      label = `USD/${selectedCurrency}`;
     }
+  } else {
+    // Lógica de la derecha del Dashboard
+    if (selectedCurrency === 'ARS') {
+      // ARS/ARS: 1
+      data = sortedHistory.map(() => 1);
+      label = 'ARS/ARS';
+    } else if (selectedCurrency === 'USD') {
+      // USD/ARS: tipoCotizacion
+      data = sortedHistory.map(h => {
+        const item = histories['USD']?.find(x => x.date === h.date);
+        return item && item.buy ? item.buy : 0;
+      });
+      label = 'USD/ARS';
+    } else if (selectedCurrency === 'XAU' || selectedCurrency === 'XAG') {
+      // XAU/ARS, XAG/ARS: no se calcula, mostrar null o vacío
+      data = sortedHistory.map(() => NaN);
+      label = `${selectedCurrency}/ARS`;
+    } else {
+      // XXX/ARS: tipoCotizacion
+      data = sortedHistory.map(h => {
+        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        return item && item.buy ? item.buy : 0;
+      });
+      label = `${selectedCurrency}/ARS`;
+    }
+  }
 
-    return {
+  const datasets = [
+    {
       label,
       data,
-      borderColor: colors[index % colors.length],
-      backgroundColor: colors[index % colors.length],
+      borderColor: colors[0],
+      backgroundColor: colors[0],
       tension: 0.4,
-    };
-  });
+    }
+  ];
 
   const data = {
     labels,
