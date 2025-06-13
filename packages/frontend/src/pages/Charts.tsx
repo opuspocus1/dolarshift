@@ -104,15 +104,15 @@ const Charts: React.FC = () => {
   }));
 
   return (
-    <div className="container mx-auto px-2 py-4">
+    <div className="container mx-auto px-4 py-8">
       <ScrollToTop />
-      <div className="mb-4 mt-6">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">{t('charts.title')}</h1>
-        <p className="text-gray-600 mb-2">{t('charts.description')}</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-2">{t('charts.description')}</p>
       </div>
 
       {/* Filtros compactos en una sola fila */}
-      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-2 gap-2 bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors duration-200">
+      <div className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-6 gap-4 bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors duration-200">
         <div className="flex-1 min-w-[180px]">
           <label className="block text-xs font-medium text-gray-500 mb-1">Moneda base</label>
           <select
@@ -188,7 +188,7 @@ const Charts: React.FC = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-4 mt-4 transition-colors duration-200">
+        <div className="bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-6 mt-4 transition-colors duration-200">
           <ExchangeRateChart
             histories={histories}
             selectedCurrencies={selectedCurrencies}
