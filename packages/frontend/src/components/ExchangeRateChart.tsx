@@ -12,7 +12,7 @@ import {
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { Line } from 'react-chartjs-2';
-import { ExchangeRateHistory } from '../services/exchangeService';
+import { ExchangeRateHistory, USD_QUOTED_CURRENCIES } from '../services/exchangeService';
 import {
   Plus,
   Minus,
@@ -101,8 +101,15 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         return item && item.buy ? item.buy : 0;
       });
       label = `${selectedCurrency}/USD`;
+    } else if (USD_QUOTED_CURRENCIES.includes(selectedCurrency)) {
+      // XXX/USD: 1 / (USD/XXX)
+      chartDataArray = sortedHistory.map(h => {
+        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        return item && item.buy ? 1 / item.buy : 0;
+      });
+      label = `${selectedCurrency}/USD`;
     } else {
-      // USD/XXX: USD.tipoCotizacion / XXX.tipoCotizacion
+      // USD/XXX: USD/XXX
       chartDataArray = sortedHistory.map(h => {
         const usdItem = histories['USD']?.find(x => x.date === h.date);
         const item = histories[selectedCurrency]?.find(x => x.date === h.date);

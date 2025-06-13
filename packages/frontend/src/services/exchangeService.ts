@@ -5,7 +5,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dolarshift.
 export const BCRA_API_URL = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0';
 
 // Lista de monedas que típicamente se cotizan como currency/USD
-const USD_QUOTED_CURRENCIES = ['EUR', 'GBP', 'CHF', 'JPY', 'AUD', 'CAD', 'NZD'];
+export const USD_QUOTED_CURRENCIES = ['EUR', 'GBP', 'CHF', 'JPY', 'AUD', 'CAD', 'NZD'];
 
 export interface Currency {
   code: string;

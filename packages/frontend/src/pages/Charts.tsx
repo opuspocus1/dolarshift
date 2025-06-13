@@ -111,14 +111,13 @@ const Charts: React.FC = () => {
       label: `${currency.code} - ${currency.name}`,
     }));
 
-  // When navigating from dashboard, set selected pair
+  // When navigating from dashboard, set selected currency and viewMode to USD
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currencyParam = params.get('currency');
     if (currencyParam) {
-      setSelectedCurrencies([getDashboardPair(currencyParam)]);
-      // Set base and quote for the pair
-      // (No need to set baseCurrency separately, pair will be split in chart)
+      setSelectedCurrency(currencyParam);
+      setViewMode('USD'); // Always show left value (against USD) by default
     }
   }, [location.search]);
 
@@ -153,11 +152,11 @@ const Charts: React.FC = () => {
         </div>
         <div className="flex-1 min-w-[180px] flex items-end">
           <div className="flex gap-4">
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 text-white">
               <input type="radio" name="viewMode" value="USD" checked={viewMode === 'USD'} onChange={() => setViewMode('USD')} />
               Ver contra USD
             </label>
-            <label className="flex items-center gap-2">
+            <label className="flex items-center gap-2 text-white">
               <input type="radio" name="viewMode" value="ARS" checked={viewMode === 'ARS'} onChange={() => setViewMode('ARS')} />
               Ver contra ARS
             </label>
