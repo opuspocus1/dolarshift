@@ -4,6 +4,9 @@ import { format, subDays } from 'date-fns';
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dolarshift.onrender.com/api';
 export const BCRA_API_URL = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0';
 
+// Lista de monedas que típicamente se cotizan como currency/USD
+const USD_QUOTED_CURRENCIES = ['EUR', 'GBP', 'CHF', 'JPY', 'AUD', 'CAD', 'NZD'];
+
 export interface Currency {
   code: string;
   name: string;
@@ -19,12 +22,50 @@ export interface ExchangeRate {
   descripcion?: string;
   tipopase?: number;
   tipocotizacion?: number;
+  isUsdQuoted?: boolean;
+  rateAgainstUSD?: number;
 }
 
 export interface ExchangeRateHistory {
   date: string;
   buy: number;
   sell: number;
+}
+
+function processRatesRelativeToUSD(rates: ExchangeRate[]): ExchangeRate[] {
+  // Encontrar la tasa USD
+  const usdRate = rates.find(rate => rate.code === 'USD');
+  if (!usdRate) {
+    console.warn('USD rate not found, cannot process relative rates');
+    return rates;
+  }
+
+  return rates
+    .filter(rate => rate.code !== 'ARS') // Eliminar tasa ARS/ARS
+    .map(rate => {
+      if (rate.code === 'USD') {
+        return {
+          ...rate,
+          rateAgainstUSD: 1,
+          isUsdQuoted: false
+        };
+      }
+
+      // Calcular nueva tasa relativa al USD
+      const newBuy = usdRate.buy / rate.buy;
+      const newSell = usdRate.sell / rate.sell;
+
+      // Verificar si esta moneda típicamente se cotiza como currency/USD
+      const isUsdQuoted = USD_QUOTED_CURRENCIES.includes(rate.code);
+
+      return {
+        ...rate,
+        buy: isUsdQuoted ? 1 / newBuy : newBuy,
+        sell: isUsdQuoted ? 1 / newSell : newSell,
+        rateAgainstUSD: isUsdQuoted ? 1 / newBuy : newBuy,
+        isUsdQuoted
+      };
+    });
 }
 
 export const exchangeService = {
@@ -64,9 +105,11 @@ export const exchangeService = {
           tipocotizacion: rate.tipoCotizacion,
           buy: rate.tipoCotizacion,
           sell: rate.tipoCotizacion,
-          date: bcraDate // Usar la fecha de la respuesta del BCRA
+          date: bcraDate
         }));
-      return rates;
+
+      // Procesar las tasas para que sean relativas al USD
+      return processRatesRelativeToUSD(rates);
     } catch (error) {
       console.error('Error fetching exchange rates:', error);
       return [];

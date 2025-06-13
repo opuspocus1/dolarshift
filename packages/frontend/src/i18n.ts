@@ -4,50 +4,50 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   es: {
     translation: {
-      title: 'Panel de Monedas',
-      subtitle: 'Cotizaciones del día de todas las monedas respecto al peso argentino',
-      search: 'Buscar moneda...',
-      date: 'Cotización del día',
+      title: 'Dashboard de Divisas',
+      subtitle: 'Tasas de cambio actualizadas expresadas en relación al dólar estadounidense (USD)',
+      search: 'Buscar divisa...',
+      date: 'Fecha de cotización',
       prev: 'Anterior',
       next: 'Siguiente',
       loading: 'Cargando datos...',
       // Charts
       charts: {
-        title: 'Gráficos de Cotización',
-        subtitle: 'Gráficos interactivos mostrando tendencias y movimientos de monedas',
-        infoTitle: 'Información sobre los gráficos',
-        howToReadTitle: 'Cómo leer los gráficos',
-        howToRead1: 'Pasá el mouse sobre un punto para ver el valor exacto',
-        howToRead2: 'Las tendencias verdes indican apreciación',
-        howToRead3: 'Las tendencias rojas indican depreciación',
-        howToRead4: 'Los datos representan el cierre de cada día',
-        pairsTitle: 'Explicación de pares de monedas',
+        title: 'Gráficos de Tasas de Cambio',
+        subtitle: 'Gráficos interactivos mostrando tendencias y movimientos de divisas',
+        infoTitle: 'Información del Gráfico',
+        howToReadTitle: 'Cómo Leer los Gráficos',
+        howToRead1: 'Pase el mouse sobre cualquier punto para ver valores exactos',
+        howToRead2: 'Tendencias verdes indican apreciación',
+        howToRead3: 'Tendencias rojas indican depreciación',
+        howToRead4: 'Los datos representan tasas de cierre para cada día',
+        pairsTitle: 'Pares de Divisas Explicados',
         pair: {
-          USD: 'Dólar/ARS',
-          EUR: 'Euro/ARS',
-          GBP: 'Libra/ARS',
-          BTC: 'Bitcoin/ARS'
+          USD: 'USD/ARS',
+          EUR: 'EUR/USD',
+          GBP: 'GBP/USD',
+          BTC: 'BTC/USD'
         },
         pairDesc: {
-          USDARS: 'Dólar estadounidense a peso argentino',
-          EURUSD: 'Euro a dólar estadounidense',
-          GBPUSD: 'Libra esterlina a dólar estadounidense',
-          BTCUSD: 'Bitcoin a dólar estadounidense'
+          USDARS: 'Dólar estadounidense a Peso argentino',
+          EURUSD: 'Euro a Dólar estadounidense',
+          GBPUSD: 'Libra esterlina a Dólar estadounidense',
+          BTCUSD: 'Bitcoin a Dólar estadounidense'
         }
       },
       // Converter
       converter: {
-        title: 'Conversor de Monedas',
-        subtitle: 'Convertí entre diferentes monedas con cotizaciones en tiempo real',
-        quickConvert: 'Conversión rápida',
-        topMovers: 'Mayores variaciones'
+        title: 'Dashboard de Divisas',
+        subtitle: 'Tasas de cambio actualizadas expresadas en relación al dólar estadounidense (USD)',
+        quickConvert: 'Conversión Rápida',
+        topMovers: 'Mayores Movimientos'
       }
     }
   },
   en: {
     translation: {
       title: 'Currency Dashboard',
-      subtitle: 'Today\'s exchange rates for all currencies against the Argentine peso',
+      subtitle: 'Updated exchange rates expressed relative to the US dollar (USD)',
       search: 'Search currency...',
       date: 'Exchange rate date',
       prev: 'Previous',
@@ -66,9 +66,9 @@ const resources = {
         pairsTitle: 'Currency Pairs Explained',
         pair: {
           USD: 'USD/ARS',
-          EUR: 'EUR/ARS',
-          GBP: 'GBP/ARS',
-          BTC: 'BTC/ARS'
+          EUR: 'EUR/USD',
+          GBP: 'GBP/USD',
+          BTC: 'BTC/USD'
         },
         pairDesc: {
           USDARS: 'US Dollar to Argentine Peso',
@@ -80,7 +80,7 @@ const resources = {
       // Converter
       converter: {
         title: 'Currency Dashboard',
-        subtitle: 'Today\'s exchange rates for all currencies against the Argentine peso',
+        subtitle: 'Updated exchange rates expressed relative to the US dollar (USD)',
         quickConvert: 'Quick Conversion',
         topMovers: 'Top Movers'
       }
