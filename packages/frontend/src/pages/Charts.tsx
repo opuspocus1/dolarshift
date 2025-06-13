@@ -114,17 +114,19 @@ const Charts: React.FC = () => {
       {/* Filtros compactos en una sola fila */}
       <div className="flex flex-col md:flex-row md:items-end md:space-x-4 mb-6 gap-4 bg-white dark:bg-[#181e29] border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors duration-200">
         <div className="flex-1 min-w-[180px]">
-          <label className="block text-xs font-medium text-gray-500 mb-1">Moneda base</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1">Moneda de Referencia</label>
           <select
             value={baseCurrency}
             onChange={e => setBaseCurrency(e.target.value)}
             className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
           >
-            {currencies.map((currency) => (
-              <option key={currency.code} value={currency.code} className="bg-[#181e29] text-white">
-                {currency.code} - {currency.name}
-              </option>
-            ))}
+            {currencies
+              .filter(currency => currency.code === 'ARS' || currency.code === 'USD')
+              .map((currency) => (
+                <option key={currency.code} value={currency.code} className="bg-[#181e29] text-white">
+                  {currency.code} - {currency.name}
+                </option>
+              ))}
           </select>
         </div>
         <div className="flex-1 min-w-[220px]">
