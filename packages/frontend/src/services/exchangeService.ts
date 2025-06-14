@@ -87,9 +87,9 @@ function processExchangeRates(rates: any[]): ExchangeRate[] {
     } else {
       // Default/standard logic for all other currencies
       const newRate = usdRate.tipoCotizacion / rate.tipoCotizacion;
-      rateAgainstUSD = isUsdQuoted ? newRate : newRate;
+      rateAgainstUSD = isUsdQuoted ? 1 / newRate : newRate;
       rateAgainstARS = rate.tipoCotizacion;
-      usdFormat = isUsdQuoted ? `USD/${rate.codigoMoneda}` : `USD/${rate.codigoMoneda}`;
+      usdFormat = isUsdQuoted ? `${rate.codigoMoneda}/USD` : `USD/${rate.codigoMoneda}`;
       arsFormat = `${rate.codigoMoneda}/ARS`;
     }
 
