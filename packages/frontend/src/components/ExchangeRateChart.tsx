@@ -110,14 +110,12 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
       });
       label = `${selectedCurrency}/USD`;
     } else if (USD_QUOTED_CURRENCIES.includes(selectedCurrency)) {
-      // XXX/USD: USD/XXX
+      // XXX/USD: 1 / (USD/XXX)
       chartDataArray = sortedHistory.map(h => {
         const item = findHistoryItem(histories[selectedCurrency], h.date);
-        const usdItem = findHistoryItem(histories['USD'], h.date);
-        if (!item?.buy || !usdItem?.buy) return 0;
-        const newRate = usdItem.buy / item.buy;
-        console.log(`[AUD/USD DEBUG] Fecha: ${h.date}, item.buy: ${item.buy}, usdItem.buy: ${usdItem.buy}, valor calculado: ${newRate}`);
-        return newRate;
+        const value = item && item.buy ? 1 / item.buy : 0;
+        console.log(`[AUD/USD DEBUG] Fecha: ${h.date}, item.buy: ${item?.buy}, valor calculado: ${value}`);
+        return value;
       });
       label = `${selectedCurrency}/USD`;
     } else {
