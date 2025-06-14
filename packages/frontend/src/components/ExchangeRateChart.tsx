@@ -183,6 +183,11 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
         cornerRadius: 8,
         caretSize: 8,
         displayColors: true,
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${Number(context.parsed.y).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          }
+        }
       },
       zoom: {
         pan: {
@@ -205,7 +210,13 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
       y: {
         beginAtZero: false,
         grid: { color: dark ? '#334155' : '#e5e7eb' },
-        ticks: { color: dark ? '#fff' : '#22223b', font: { size: 13 } },
+        ticks: {
+          color: dark ? '#fff' : '#22223b',
+          font: { size: 13 },
+          callback: function(value) {
+            return Number(value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          }
+        },
       },
       x: {
         grid: { color: dark ? '#334155' : '#e5e7eb' },
