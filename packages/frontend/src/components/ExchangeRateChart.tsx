@@ -111,10 +111,8 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     } else {
       // USD/XXX: USD/XXX
       chartDataArray = sortedHistory.map(h => {
-        const usdItem = histories['USD']?.find(x => x.date === h.date);
         const item = histories[selectedCurrency]?.find(x => x.date === h.date);
-        if (!usdItem || !item || !usdItem.buy || !item.buy) return 0;
-        return usdItem.buy / item.buy;
+        return item && item.buy ? item.buy : 0;
       });
       label = `USD/${selectedCurrency}`;
     }
