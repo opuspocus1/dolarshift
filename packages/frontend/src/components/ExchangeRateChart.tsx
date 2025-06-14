@@ -41,6 +41,14 @@ interface ExchangeRateChartProps {
 
 const getIsDark = () => document.documentElement.classList.contains('dark');
 
+// Helper to find history item by date (normalize to YYYY-MM-DD)
+function findHistoryItem(history: ExchangeRateHistory[] | undefined, date: string) {
+  if (!history) return undefined;
+  // Some APIs may return date as 'YYYY-MM-DDTHH:mm:ss...' or just 'YYYY-MM-DD'
+  const target = date.slice(0, 10); // Always use YYYY-MM-DD
+  return history.find(x => x.date.slice(0, 10) === target);
+}
+
 const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   histories,
   selectedCurrency,
@@ -86,7 +94,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     if (selectedCurrency === 'ARS') {
       // ARS/USD: 1 / tipoPase
       chartDataArray = sortedHistory.map(h => {
-        const item = histories['ARS']?.find(x => x.date === h.date);
+        const item = findHistoryItem(histories['ARS'], h.date);
         return item && item.buy ? 1 / item.buy : 0;
       });
       label = 'ARS/USD';
@@ -97,21 +105,21 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     } else if (selectedCurrency === 'XAU' || selectedCurrency === 'XAG') {
       // XAU/USD, XAG/USD: tipoPase
       chartDataArray = sortedHistory.map(h => {
-        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        const item = findHistoryItem(histories[selectedCurrency], h.date);
         return item && item.buy ? item.buy : 0;
       });
       label = `${selectedCurrency}/USD`;
     } else if (USD_QUOTED_CURRENCIES.includes(selectedCurrency)) {
       // XXX/USD: 1 / (USD/XXX)
       chartDataArray = sortedHistory.map(h => {
-        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        const item = findHistoryItem(histories[selectedCurrency], h.date);
         return item && item.buy ? 1 / item.buy : 0;
       });
       label = `${selectedCurrency}/USD`;
     } else {
       // USD/XXX: USD/XXX
       chartDataArray = sortedHistory.map(h => {
-        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        const item = findHistoryItem(histories[selectedCurrency], h.date);
         return item && item.buy ? item.buy : 0;
       });
       label = `USD/${selectedCurrency}`;
@@ -125,7 +133,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     } else if (selectedCurrency === 'USD') {
       // USD/ARS: tipoCotizacion
       chartDataArray = sortedHistory.map(h => {
-        const item = histories['USD']?.find(x => x.date === h.date);
+        const item = findHistoryItem(histories['USD'], h.date);
         return item && item.buy ? item.buy : 0;
       });
       label = 'USD/ARS';
@@ -136,7 +144,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
     } else {
       // XXX/ARS: tipoCotizacion
       chartDataArray = sortedHistory.map(h => {
-        const item = histories[selectedCurrency]?.find(x => x.date === h.date);
+        const item = findHistoryItem(histories[selectedCurrency], h.date);
         return item && item.buy ? item.buy : 0;
       });
       label = `${selectedCurrency}/ARS`;
