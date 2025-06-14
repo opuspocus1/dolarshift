@@ -113,7 +113,9 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
       // XXX/USD: 1 / (USD/XXX)
       chartDataArray = sortedHistory.map(h => {
         const item = findHistoryItem(histories[selectedCurrency], h.date);
-        return item && item.buy ? 1 / item.buy : 0;
+        const value = item && item.buy ? 1 / item.buy : 0;
+        console.log(`[AUD/USD DEBUG] Fecha: ${h.date}, item.buy: ${item?.buy}, valor calculado: ${value}`);
+        return value;
       });
       label = `${selectedCurrency}/USD`;
     } else {
