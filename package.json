@@ -8,13 +8,15 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "@vitejs/plugin-react": "^4.5.2",
     "axios": "^1.6.8",
     "chartjs-plugin-zoom": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "i18next": "^25.2.1",
     "react-i18next": "^15.5.2",
-    "react-select": "^5.10.1"
+    "react-select": "^5.10.1",
+    "vite": "^6.3.5"
   },
   "devDependencies": {
     "@types/date-fns": "^2.5.3",
