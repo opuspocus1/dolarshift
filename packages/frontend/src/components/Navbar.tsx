@@ -11,9 +11,9 @@ const Navbar: React.FC = () => {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   const navigation = [
-    { name: 'Dashboard', path: '/' },
-    { name: 'Charts', path: '/charts' },
-    { name: 'Converter', path: '/converter' }
+    { name: 'Divisas', path: '/' },
+    { name: 'Histórico', path: '/charts' },
+    { name: 'Calculadora', path: '/converter' }
   ];
 
   const languages = [
@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <TrendingUp className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">FX Dashboard</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">dolarshift</span>
             </Link>
           </div>
 

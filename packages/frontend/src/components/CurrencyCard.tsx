@@ -130,14 +130,14 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
               <CountryFlag
                 countryCode={currencyToCountry[currency.codigomoneda || currency.code]}
                 svg
-                style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }}
+                style={{ width: '1.5em', height: '1.5em', borderRadius: '50%', marginRight: '0.5em' }}
                 title={currency.codigomoneda || currency.code}
               />
             )}
             <span>{currency.codigomoneda || currency.code}</span>
           </h3>
           <div>
-            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">{currency.descripcion || currency.name}</p>
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1">{currency.descripcion || currency.name}</p>
           </div>
         </div>
       </div>
