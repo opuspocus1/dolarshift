@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 import { ExchangeRate } from '../services/exchangeService';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import CountryFlag from 'react-country-flag';
 
 // Mapeo simple de banderas y símbolos por código de moneda
 const currencyMeta: Record<string, { flag: string; symbol: string }> = {
@@ -42,6 +43,43 @@ const currencyMeta: Record<string, { flag: string; symbol: string }> = {
   XDR: { flag: '💱', symbol: 'XDR' }, // DEG
   // Fallback
   DEFAULT: { flag: '🏳️', symbol: '' }
+};
+
+// Mapeo de código de moneda a código de país para banderas
+const currencyToCountry: Record<string, string> = {
+  USD: 'US',
+  EUR: 'EU',
+  ARS: 'AR',
+  BRL: 'BR',
+  GBP: 'GB',
+  JPY: 'JP',
+  CNY: 'CN',
+  CHF: 'CH',
+  AUD: 'AU',
+  CAD: 'CA',
+  NZD: 'NZ',
+  MXP: 'MX',
+  CLP: 'CL',
+  PEN: 'PE',
+  UYU: 'UY',
+  COP: 'CO',
+  PYG: 'PY',
+  BOB: 'BO',
+  RUB: 'RU',
+  SEK: 'SE',
+  NOK: 'NO',
+  DKK: 'DK',
+  CZK: 'CZ',
+  HUF: 'HU',
+  TRY: 'TR',
+  ILS: 'IL',
+  INR: 'IN',
+  ZAR: 'ZA',
+  SGD: 'SG',
+  HKD: 'HK',
+  CNH: 'CN',
+  AWG: 'AW',
+  // ...otros casos especiales
 };
 
 interface CurrencyCardProps {
@@ -87,6 +125,15 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+            {/* Bandera */}
+            {currencyToCountry[currency.codigomoneda || currency.code] && (
+              <CountryFlag
+                countryCode={currencyToCountry[currency.codigomoneda || currency.code]}
+                svg
+                style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }}
+                title={currency.codigomoneda || currency.code}
+              />
+            )}
             <span>{currency.codigomoneda || currency.code}</span>
           </h3>
           <div>

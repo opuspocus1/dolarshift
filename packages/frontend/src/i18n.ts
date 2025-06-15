@@ -4,8 +4,8 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   es: {
     translation: {
-      title: 'Dashboard de Divisas',
-      subtitle: 'Tasas de cambio actualizadas expresadas en relación al dólar estadounidense (USD)',
+      title: 'dolarshift',
+      subtitle: 'Visualiza las tasas de cambio de todas las divisas en relación al USD y al ARS.',
       search: 'Buscar divisa...',
       date: 'Fecha de cotización',
       prev: 'Anterior',
@@ -13,8 +13,8 @@ const resources = {
       loading: 'Cargando datos...',
       // Charts
       charts: {
-        title: 'Gráficos de Tasas de Cambio',
-        subtitle: 'Gráficos interactivos mostrando tendencias y movimientos de divisas',
+        title: 'Histórico',
+        subtitle: 'Gráfico histórico de la tasa de cambio seleccionada.',
         infoTitle: 'Información del Gráfico',
         howToReadTitle: 'Cómo Leer los Gráficos',
         howToRead1: 'Pase el mouse sobre cualquier punto para ver valores exactos',
@@ -36,9 +36,9 @@ const resources = {
         }
       },
       // Converter
-      converter: {
-        title: 'Dashboard de Divisas',
-        subtitle: 'Tasas de cambio actualizadas expresadas en relación al dólar estadounidense (USD)',
+      calculadora: {
+        title: 'Calculadora',
+        subtitle: 'Calcula el valor de cualquier divisa en tiempo real.',
         quickConvert: 'Conversión Rápida',
         topMovers: 'Mayores Movimientos'
       },

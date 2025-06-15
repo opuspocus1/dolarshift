@@ -130,8 +130,8 @@ const Charts: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <ScrollToTop />
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">{t('charts.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-2">{t('charts.description')}</p>
+        <h1 className="text-3xl font-bold mb-2">Histórico</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-2">Gráfico histórico de la tasa de cambio seleccionada.</p>
       </div>
 
       {/* Filtros compactos en una sola fila */}

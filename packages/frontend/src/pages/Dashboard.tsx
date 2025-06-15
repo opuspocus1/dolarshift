@@ -96,7 +96,7 @@ const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza las tasas de cambio de todas las divisas en relación al USD y al ARS.</p>
             {/* Aclaración sobre el dólar mayorista */}
             <div className="mt-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2">
               El valor USD mostrado corresponde al <b>dólar mayorista oficial</b> publicado por el BCRA.
@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza las tasas de cambio de todas las divisas en relación al USD y al ARS.</p>
           {/* Aclaración sobre el dólar mayorista */}
           <div className="mt-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2">
             El valor USD mostrado corresponde al <b>dólar mayorista oficial</b> publicado por el BCRA.
