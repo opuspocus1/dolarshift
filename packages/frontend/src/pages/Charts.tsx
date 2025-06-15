@@ -12,19 +12,25 @@ import Select, { MultiValue } from 'react-select';
 import { useLocation } from 'react-router-dom';
 import { es } from 'date-fns/locale';
 
+const MONTHS_ES = [
+  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+];
+
 const Charts: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['USD']);
-  const [startDate, setStartDate] = useState<string>(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [startDate, setStartDate] = useState(format(subDays(new Date(), 30), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [histories, setHistories] = useState<Record<string, ExchangeRateHistory[]>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [baseCurrency, setBaseCurrency] = useState<string>('ARS');
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+  const [baseCurrency, setBaseCurrency] = useState('ARS');
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [viewMode, setViewMode] = useState<'USD' | 'ARS'>('USD');
+  const [selectedDropdown, setSelectedDropdown] = useState('');
 
   // Convertir string a Date para DatePicker
   const startDateObj = parse(startDate, 'yyyy-MM-dd', new Date());
@@ -91,7 +97,6 @@ const Charts: React.FC = () => {
   // Dividir monedas: 4 principales y el resto
   const mainCurrencies = currencies.slice(0, 4);
   const otherCurrencies = currencies.slice(4);
-  const [selectedDropdown, setSelectedDropdown] = useState<string>('');
 
   // Unir todas las monedas para el selector, asegurando que las seleccionadas estén presentes
   const allCurrencies = [...mainCurrencies, ...otherCurrencies];
@@ -175,7 +180,28 @@ const Charts: React.FC = () => {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              locale={es}
+              renderCustomHeader={({ date, changeYear, changeMonth }) => (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+                  <select
+                    value={date.getFullYear()}
+                    onChange={({ target: { value } }) => changeYear(Number(value))}
+                    className="bg-[#181e29] text-white border border-gray-700 rounded-md mr-2"
+                  >
+                    {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={date.getMonth()}
+                    onChange={({ target: { value } }) => changeMonth(Number(value))}
+                    className="bg-[#181e29] text-white border border-gray-700 rounded-md"
+                  >
+                    {MONTHS_ES.map((month, i) => (
+                      <option key={i} value={i}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             />
           </div>
           <div>
@@ -189,7 +215,28 @@ const Charts: React.FC = () => {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              locale={es}
+              renderCustomHeader={({ date, changeYear, changeMonth }) => (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+                  <select
+                    value={date.getFullYear()}
+                    onChange={({ target: { value } }) => changeYear(Number(value))}
+                    className="bg-[#181e29] text-white border border-gray-700 rounded-md mr-2"
+                  >
+                    {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                      <option key={year} value={year}>{year}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={date.getMonth()}
+                    onChange={({ target: { value } }) => changeMonth(Number(value))}
+                    className="bg-[#181e29] text-white border border-gray-700 rounded-md"
+                  >
+                    {MONTHS_ES.map((month, i) => (
+                      <option key={i} value={i}>{month}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             />
           </div>
         </div>
