@@ -188,11 +188,10 @@ export const exchangeService = {
       // Formatear las fechas para la API del BCRA
       const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
       const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
-      
-      const response = await axios.get(
-        `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fechadesde=${formattedStartDate}&fechahasta=${formattedEndDate}`
-      );
-      
+      const url = `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fechadesde=${formattedStartDate}&fechahasta=${formattedEndDate}`;
+      console.log('[exchangeService] Consultando historial (chart):', url);
+      const response = await axios.get(url);
+      console.log('[exchangeService] Datos recibidos (chart):', response.data);
       // La respuesta tiene una estructura anidada: results[].detalle[]
       const history: ExchangeRateHistory[] = [];
       response.data.results.forEach((day: any) => {
@@ -206,7 +205,6 @@ export const exchangeService = {
           });
         }
       });
-
       return history;
     } catch (error) {
       console.error('Error fetching chart history:', error);
