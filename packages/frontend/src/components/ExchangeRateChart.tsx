@@ -90,7 +90,6 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
   let chartDataArray: number[] = [];
   let label = '';
   if (viewMode === 'USD') {
-    // Lógica de la izquierda del Dashboard
     if (selectedCurrency === 'ARS') {
       // ARS/USD: 1 / tipoPase
       chartDataArray = sortedHistory.map(h => {
@@ -113,16 +112,16 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
       // XXX/USD: 1 / (USD/XXX)
       chartDataArray = sortedHistory.map(h => {
         const item = findHistoryItem(histories[selectedCurrency], h.date);
-        const value = item && item.buy ? 1 / item.buy : 0;
-        console.log(`[AUD/USD DEBUG] Fecha: ${h.date}, item.buy: ${item?.buy}, valor calculado: ${value}`);
-        return value;
+        return item && item.buy ? 1 / item.buy : 0;
       });
       label = `${selectedCurrency}/USD`;
     } else {
-      // USD/XXX: USD/XXX
+      // USD/XXX: USD/ARS / XXX/ARS
       chartDataArray = sortedHistory.map(h => {
+        const usdItem = findHistoryItem(histories['USD'], h.date);
         const item = findHistoryItem(histories[selectedCurrency], h.date);
-        return item && item.buy ? item.buy : 0;
+        if (!usdItem || !item || !usdItem.buy || !item.buy) return 0;
+        return usdItem.buy / item.buy;
       });
       label = `USD/${selectedCurrency}`;
     }
