@@ -18,7 +18,6 @@ function App() {
             <Route path="/charts" element={<Charts />} />
             <Route path="/converter" element={<Converter />} />
           </Routes>
-          <ApiStatus />
         </div>
       </Router>
     </ThemeProvider>

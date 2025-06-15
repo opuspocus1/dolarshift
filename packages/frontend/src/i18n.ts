@@ -38,7 +38,6 @@ const resources = {
       // Converter
       calculadora: {
         title: 'Calculadora',
-        subtitle: 'Calcula el valor de cualquier divisa en tiempo real.',
         quickConvert: 'Conversión Rápida',
         topMovers: 'Mayores Movimientos'
       },
