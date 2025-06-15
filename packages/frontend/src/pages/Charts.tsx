@@ -170,7 +170,7 @@ const Charts: React.FC = () => {
         </div>
         <div className="flex flex-1 flex-row gap-2 min-w-[200px]">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">{t('charts.dateRange')}</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Desde</label>
             <DatePicker
               selected={startDateObj}
               onChange={date => setStartDate(format(date as Date, 'yyyy-MM-dd'))}
@@ -205,7 +205,7 @@ const Charts: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">&nbsp;</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Hasta</label>
             <DatePicker
               selected={endDateObj}
               onChange={date => setEndDate(format(date as Date, 'yyyy-MM-dd'))}
