@@ -185,27 +185,42 @@ export const exchangeService = {
 
   async getChartHistory(currencyCode: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
     try {
-      // Formatear las fechas para la API del BCRA
-      const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
-      const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
-      const url = `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fechadesde=${formattedStartDate}&fechahasta=${formattedEndDate}`;
-      console.log('[exchangeService] Consultando historial (chart):', url);
-      const response = await axios.get(url);
-      console.log('[exchangeService] Datos recibidos (chart):', response.data);
-      // La respuesta tiene una estructura anidada: results[].detalle[]
-      const history: ExchangeRateHistory[] = [];
-      response.data.results.forEach((day: any) => {
-        const detail = day.detalle[0]; // Tomamos el primer detalle de cada día
-        if (detail) {
-          history.push({
-            date: day.fecha,
-            buy: detail.tipoCotizacion,
-            sell: detail.tipoCotizacion,
-            tipopase: detail.tipoPase
-          });
-        }
-      });
-      return history;
+      const maxDays = 1000;
+      const allHistory: ExchangeRateHistory[] = [];
+      let currentStart = new Date(startDate);
+      const finalEnd = new Date(endDate);
+
+      while (currentStart <= finalEnd) {
+        // Calcular el siguiente tramo (máximo 1000 días)
+        const nextEnd = new Date(currentStart);
+        nextEnd.setDate(nextEnd.getDate() + maxDays - 1);
+        if (nextEnd > finalEnd) nextEnd.setTime(finalEnd.getTime());
+
+        const formattedStartDate = format(currentStart, 'yyyy-MM-dd');
+        const formattedEndDate = format(nextEnd, 'yyyy-MM-dd');
+        const url = `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fechadesde=${formattedStartDate}&fechahasta=${formattedEndDate}`;
+        console.log('[exchangeService] Consultando historial (chart):', url);
+        const response = await axios.get(url);
+        console.log('[exchangeService] Datos recibidos (chart):', response.data);
+        // La respuesta tiene una estructura anidada: results[].detalle[]
+        response.data.results.forEach((day: any) => {
+          const detail = day.detalle[0]; // Tomamos el primer detalle de cada día
+          if (detail) {
+            allHistory.push({
+              date: day.fecha,
+              buy: detail.tipoCotizacion,
+              sell: detail.tipoCotizacion,
+              tipopase: detail.tipoPase
+            });
+          }
+        });
+        // Avanzar al siguiente tramo
+        currentStart = new Date(nextEnd);
+        currentStart.setDate(currentStart.getDate() + 1);
+      }
+      // Ordenar por fecha ascendente
+      allHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      return allHistory;
     } catch (error) {
       console.error('Error fetching chart history:', error);
       throw error;
