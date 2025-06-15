@@ -6,7 +6,7 @@ const CurrencyConverter: React.FC = () => {
   const [rates, setRates] = useState<ExchangeRate[]>([]);
   const [from, setFrom] = useState('USD');
   const [to, setTo] = useState('ARS');
-  const [amount, setAmount] = useState('100');
+  const [amount, setAmount] = useState('1');
   const [result, setResult] = useState<number | null>(null);
 
   useEffect(() => {
