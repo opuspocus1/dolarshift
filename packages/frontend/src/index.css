@@ -44,3 +44,20 @@
 input, select, textarea {
   font-size: 16px !important;
 }
+
+.dark .react-datepicker__month-dropdown-container,
+.dark .react-datepicker__year-dropdown-container,
+.dark .react-datepicker__month-dropdown,
+.dark .react-datepicker__year-dropdown,
+.dark .react-datepicker__month-select,
+.dark .react-datepicker__year-select {
+  background: #181e29 !important;
+  color: #fff !important;
+  border-color: #334155 !important;
+}
+
+.dark .react-datepicker__month-select option,
+.dark .react-datepicker__year-select option {
+  background: #181e29 !important;
+  color: #fff !important;
+}
