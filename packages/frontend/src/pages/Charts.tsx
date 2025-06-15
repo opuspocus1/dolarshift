@@ -29,7 +29,7 @@ const Charts: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [baseCurrency, setBaseCurrency] = useState('ARS');
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
-  const [viewMode, setViewMode] = useState<'USD' | 'ARS'>('USD');
+  const [viewMode, setViewMode] = useState<'USD' | 'ARS'>('ARS');
   const [selectedDropdown, setSelectedDropdown] = useState('');
 
   // Convertir string a Date para DatePicker
@@ -117,13 +117,13 @@ const Charts: React.FC = () => {
       label: `${currency.code} - ${currency.name}`,
     }));
 
-  // When navigating from dashboard, set selected currency and viewMode to USD
+  // When navigating from dashboard, set selected currency and viewMode to ARS
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currencyParam = params.get('currency');
     if (currencyParam) {
       setSelectedCurrency(currencyParam);
-      setViewMode('USD'); // Always show left value (against USD) by default
+      setViewMode('ARS'); // Mostrar por defecto contra ARS
     }
   }, [location.search]);
 
