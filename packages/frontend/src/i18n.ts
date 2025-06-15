@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   es: {
     translation: {
-      title: 'dolarshift',
+      title: 'Divisas',
       subtitle: 'Visualiza las tasas de cambio de todas las divisas en relación al USD y al ARS.',
       search: 'Buscar divisa...',
       date: 'Fecha de cotización',
