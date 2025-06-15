@@ -61,3 +61,7 @@ input, select, textarea {
   background: #181e29 !important;
   color: #fff !important;
 }
+
+.react-datepicker__current-month {
+  display: none !important;
+}

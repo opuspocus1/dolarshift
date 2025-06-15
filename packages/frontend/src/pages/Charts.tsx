@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select, { MultiValue } from 'react-select';
 import { useLocation } from 'react-router-dom';
+import { es } from 'date-fns/locale';
 
 const Charts: React.FC = () => {
   const { t } = useTranslation();
@@ -174,6 +175,7 @@ const Charts: React.FC = () => {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
+              locale={es}
             />
           </div>
           <div>
@@ -187,6 +189,7 @@ const Charts: React.FC = () => {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
+              locale={es}
             />
           </div>
         </div>
