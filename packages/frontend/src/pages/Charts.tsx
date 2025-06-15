@@ -171,6 +171,9 @@ const Charts: React.FC = () => {
               dateFormat="dd/MM/yyyy"
               className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
               calendarClassName="bg-[#181e29] text-white"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
             />
           </div>
           <div>
@@ -181,6 +184,9 @@ const Charts: React.FC = () => {
               dateFormat="dd/MM/yyyy"
               className="w-full p-2 border border-gray-700 bg-[#181e29] text-white rounded-md text-sm focus:ring-2 focus:ring-blue-500"
               calendarClassName="bg-[#181e29] text-white"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
             />
           </div>
         </div>
