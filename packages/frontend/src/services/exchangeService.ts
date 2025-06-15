@@ -153,10 +153,10 @@ export const exchangeService = {
     try {
       const formattedStartDate = format(startDate, 'yyyy-MM-dd');
       const formattedEndDate = format(endDate, 'yyyy-MM-dd');
-      const response = await axios.get(
-        `${BCRA_API_URL}/Cotizaciones/${currency}/${formattedStartDate}/${formattedEndDate}`
-      );
-      
+      const url = `${BCRA_API_URL}/Cotizaciones/${currency}/${formattedStartDate}/${formattedEndDate}`;
+      console.log('[exchangeService] Consultando historial:', url);
+      const response = await axios.get(url);
+      console.log('[exchangeService] Datos recibidos:', response.data);
       return response.data.map((rate: any) => ({
         date: rate.fecha,
         buy: rate.tipoCotizacion,
