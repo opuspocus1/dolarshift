@@ -39,40 +39,14 @@ const Converter: React.FC = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Calculator className="h-8 w-8" />
-            {t('converter.title')}
+            Calculadora
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('converter.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Converter */}
           <div className="lg:col-span-2">
             <CurrencyConverter />
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Market Status */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                <Clock className="h-5 w-5 mr-2" />
-                Market Status
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Last Update:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">Live</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Market:</span>
-                  <span className="font-medium text-green-600 dark:text-green-400">Open</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Data Source:</span>
-                  <span className="font-medium text-gray-900 dark:text-white">BCRA API</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
