@@ -109,10 +109,10 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({
       });
       label = `${selectedCurrency}/USD`;
     } else if (USD_QUOTED_CURRENCIES.includes(selectedCurrency)) {
-      // XXX/USD: 1 / (USD/XXX)
+      // XXX/USD: usar tipoPase directamente (igual que Dashboard)
       chartDataArray = sortedHistory.map(h => {
         const item = findHistoryItem(histories[selectedCurrency], h.date);
-        return item && item.buy ? 1 / item.buy : 0;
+        return item && item.tipopase ? item.tipopase : 0;
       });
       label = `${selectedCurrency}/USD`;
     } else {

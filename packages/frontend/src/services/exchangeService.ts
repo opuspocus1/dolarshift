@@ -33,6 +33,7 @@ export interface ExchangeRateHistory {
   date: string;
   buy: number;
   sell: number;
+  tipopase?: number;
 }
 
 function processExchangeRates(rates: any[]): ExchangeRate[] {
@@ -159,7 +160,8 @@ export const exchangeService = {
       return response.data.map((rate: any) => ({
         date: rate.fecha,
         buy: rate.tipoCotizacion,
-        sell: rate.tipoCotizacion
+        sell: rate.tipoCotizacion,
+        tipopase: rate.tipoPase
       }));
     } catch (error) {
       console.error('Error fetching exchange rate history:', error);
@@ -199,7 +201,8 @@ export const exchangeService = {
           history.push({
             date: day.fecha,
             buy: detail.tipoCotizacion,
-            sell: detail.tipoCotizacion
+            sell: detail.tipoCotizacion,
+            tipopase: detail.tipoPase
           });
         }
       });
