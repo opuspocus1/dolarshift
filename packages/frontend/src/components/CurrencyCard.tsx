@@ -99,6 +99,9 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   if ((currency.codigomoneda || currency.code) === 'USD') {
     displayName = 'DOLAR USA';
   }
+  if ((currency.codigomoneda || currency.code) === 'XDR') {
+    displayName = 'DEG FMI';
+  }
 
   // Formatear la fecha de la API y la hora actual de Buenos Aires
   let formattedDateTime = 'N/A';
