@@ -106,11 +106,11 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   }
 
   // Formatear la tasa de cambio
-  const formatRate = (rate: number | null | undefined) => {
+  const formatRate = (rate: number | null | undefined, fullDecimals = false) => {
     if (rate === null || rate === undefined) return '-';
     return Number(rate).toLocaleString('es-AR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: fullDecimals ? 6 : 2,
+      maximumFractionDigits: fullDecimals ? 12 : 2
     });
   };
 
@@ -144,7 +144,9 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {formatRate(currency.rateAgainstUSD)}
+              {currency.code === 'ARS' && currency.usdFormat === 'ARS/USD'
+                ? formatRate(currency.rateAgainstUSD, true)
+                : formatRate(currency.rateAgainstUSD)}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {currency.usdFormat || '-'}
