@@ -89,7 +89,13 @@ interface CurrencyCardProps {
 
 const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'USD' }) => {
   // Usar solo el código de moneda, sin bandera
-  const meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
+  let meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
+  let displayName = currency.descripcion || currency.name;
+  let displaySymbol = currency.codigomoneda || currency.code;
+  if ((currency.codigomoneda || currency.code) === 'REF') {
+    displayName = 'DOLAR USA COM 3500';
+    displaySymbol = 'USD3500';
+  }
 
   // Formatear la fecha de la API y la hora actual de Buenos Aires
   let formattedDateTime = 'N/A';
@@ -134,10 +140,10 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
                 title={currency.codigomoneda || currency.code}
               />
             )}
-            <span>{currency.codigomoneda || currency.code}</span>
+            <span>{displaySymbol}</span>
           </h3>
         </div>
-        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1 w-full block">{currency.descripcion || currency.name}</p>
+        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1 w-full block">{displayName}</p>
       </div>
       <div className="space-y-4 mt-2">
         {/* Tasa relativa al USD */}
