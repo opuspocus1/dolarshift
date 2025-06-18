@@ -1,0 +1,32 @@
+Cómo se interpretan los pedidos de divisas en DolarShift
+
+1. Selección de moneda y par
+- El usuario elige una moneda base (ej: USD, EUR, ARS).
+- Puede ver su valor:
+  - Contra ARS (ej: USD/ARS)
+  - Contra USD (ej: EUR/USD, ARS/USD)
+- El sistema determina automáticamente el par a mostrar según la selección y el modo de vista.
+
+2. Cálculo de tasas
+- USD/ARS: Se usa el valor de venta (tipoCotizacion) del USD publicado por el BCRA.
+- ARS/USD: Se calcula como 1 / tipoPase (si está disponible) o 1 / tipoCotizacion.
+- XXX/USD: Si la moneda es cotizada contra USD (ej: EUR, GBP), se usa directamente el tipoPase.
+- USD/XXX: Se calcula como USD/ARS / XXX/ARS para monedas que no cotizan directo contra USD.
+
+3. Histórico
+- Cuando el usuario selecciona un rango de fechas:
+  1. El rango se divide en tramos de hasta 1000 días (por límite de la API).
+  2. Se hacen varias requests a la API del BCRA para traer todos los datos.
+  3. Se unen y ordenan los resultados para graficar la evolución del par seleccionado.
+
+4. Conversor
+- El usuario elige una moneda origen, una destino y un monto.
+- El sistema busca la tasa de cambio más reciente para ambas monedas y realiza la conversión:
+  resultado = monto * (tasa_origen / tasa_destino)
+- Siempre se muestra la equivalencia 1:1 debajo del conversor (ej: 1 USD = 1.182 ARS).
+
+5. Visualización
+- En el Dashboard y Charts se muestran ambos formatos:
+  - Valor relativo al USD (ej: EUR/USD)
+  - Valor relativo al ARS (ej: EUR/ARS)
+- El usuario puede alternar entre ver contra USD o contra ARS. 

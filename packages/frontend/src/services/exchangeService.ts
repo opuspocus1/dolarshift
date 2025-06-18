@@ -69,7 +69,7 @@ function processExchangeRates(rates: any[]): ExchangeRate[] {
     // Custom logic for ARS, USD, XAU, XAG
     if (rate.codigoMoneda === 'ARS') {
       // ARS
-      rateAgainstUSD = rate.tipoPase ? 1 / rate.tipoPase : undefined;
+      rateAgainstUSD = rate.tipoPase ? rate.tipoPase : undefined;
       rateAgainstARS = 1;
       usdFormat = 'ARS/USD';
       arsFormat = 'ARS/ARS';
