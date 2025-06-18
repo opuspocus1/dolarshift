@@ -93,6 +93,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   let displayName = currency.descripcion || currency.name;
   let displaySymbol = currency.codigomoneda || currency.code;
   let flagCode = currencyToCountry[currency.codigomoneda || currency.code];
+  let customIcon = null;
   if ((currency.codigomoneda || currency.code) === 'REF') {
     displayName = 'DOLAR USA COM 3500';
     displaySymbol = 'USD3500';
@@ -103,6 +104,10 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   }
   if ((currency.codigomoneda || currency.code) === 'XDR') {
     displayName = 'DEG FMI';
+  }
+  if ((currency.codigomoneda || currency.code) === 'XAU') {
+    flagCode = undefined;
+    customIcon = <span style={{ fontSize: '1.5em', marginRight: '0.5em' }} title="Oro">🥇</span>;
   }
 
   // Formatear la fecha de la API y la hora actual de Buenos Aires
@@ -139,8 +144,8 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
       <div className="flex flex-col items-start mb-4">
         <div className="flex items-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-            {/* Bandera */}
-            {flagCode && (
+            {/* Bandera o icono */}
+            {customIcon ? customIcon : flagCode && (
               <CountryFlag
                 countryCode={flagCode}
                 svg
