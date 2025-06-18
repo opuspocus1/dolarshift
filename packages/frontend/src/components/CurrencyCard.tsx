@@ -109,6 +109,10 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
     flagCode = undefined;
     customIcon = <span style={{ fontSize: '1.5em', marginRight: '0.5em' }} title="Oro">🥇</span>;
   }
+  if ((currency.codigomoneda || currency.code) === 'XAG') {
+    flagCode = undefined;
+    customIcon = <span style={{ fontSize: '1.5em', marginRight: '0.5em' }} title="Plata">🥈</span>;
+  }
 
   // Formatear la fecha de la API y la hora actual de Buenos Aires
   let formattedDateTime = 'N/A';
