@@ -96,6 +96,9 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
     displayName = 'DOLAR USA COM 3500';
     displaySymbol = 'USD3500';
   }
+  if ((currency.codigomoneda || currency.code) === 'USD') {
+    displayName = 'DOLAR USA';
+  }
 
   // Formatear la fecha de la API y la hora actual de Buenos Aires
   let formattedDateTime = 'N/A';
