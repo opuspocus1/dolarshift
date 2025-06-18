@@ -92,9 +92,11 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   let meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
   let displayName = currency.descripcion || currency.name;
   let displaySymbol = currency.codigomoneda || currency.code;
+  let flagCode = currencyToCountry[currency.codigomoneda || currency.code];
   if ((currency.codigomoneda || currency.code) === 'REF') {
     displayName = 'DOLAR USA COM 3500';
     displaySymbol = 'USD3500';
+    flagCode = 'US';
   }
   if ((currency.codigomoneda || currency.code) === 'USD') {
     displayName = 'DOLAR USA';
@@ -138,9 +140,9 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         <div className="flex items-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
             {/* Bandera */}
-            {currencyToCountry[currency.codigomoneda || currency.code] && (
+            {flagCode && (
               <CountryFlag
-                countryCode={currencyToCountry[currency.codigomoneda || currency.code]}
+                countryCode={flagCode}
                 svg
                 style={{ width: '1.5em', height: '1.5em', borderRadius: '50%', marginRight: '0.5em' }}
                 title={currency.codigomoneda || currency.code}
