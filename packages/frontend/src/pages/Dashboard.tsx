@@ -298,7 +298,7 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Cards de monedas o tabla */}
         {viewMode === 'table' ? (
-          <div ref={cardsListRef} className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div ref={cardsListRef} className="mb-8 flex flex-col gap-8">
             <CurrencyTable data={tableDataUSD} pairKey="pair" />
             <CurrencyTable data={tableDataARS} pairKey="pair" />
           </div>
