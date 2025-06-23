@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CountryFlag from 'react-country-flag';
 
 interface CurrencyTableRow {
@@ -31,25 +31,74 @@ const getColor = (value?: number) => {
 };
 
 const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked }) => {
+  const [sortBy, setSortBy] = useState<string>('');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // Función para ordenar los datos
+  const sortedData = React.useMemo(() => {
+    if (!sortBy) return data;
+    const sorted = [...data].sort((a, b) => {
+      const aVal = a[sortBy];
+      const bVal = b[sortBy];
+      if (aVal === undefined || aVal === null) return 1;
+      if (bVal === undefined || bVal === null) return -1;
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      return sortDir === 'asc'
+        ? String(aVal).localeCompare(String(bVal))
+        : String(bVal).localeCompare(String(aVal));
+    });
+    return sorted;
+  }, [data, sortBy, sortDir]);
+
+  // Handler para click en encabezado
+  const handleSort = (col: string) => {
+    if (sortBy === col) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(col);
+      setSortDir('asc');
+    }
+  };
+
   if (stacked) {
     return (
       <div className="overflow-x-auto rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white">Divisa</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Valor</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Día</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">%</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Semanal</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Mensual</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">YTD</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Interanual</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Fecha</th>
+              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>
+                Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>
+                Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>
+                Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>
+                % {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('weekPercent')}>
+                Semanal {sortBy === 'weekPercent' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('monthPercent')}>
+                Mensual {sortBy === 'monthPercent' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('ytdPercent')}>
+                YTD {sortBy === 'ytdPercent' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('yoyPercent')}>
+                Interanual {sortBy === 'yoyPercent' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('date')}>
+                Fecha {sortBy === 'date' && (sortDir === 'asc' ? '↑' : '↓')}
+              </th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row, idx) => (
+            {sortedData.map((row, idx) => (
               <tr key={row.code + '-' + row.side} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
                 <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
                   {row.customIcon ? (
