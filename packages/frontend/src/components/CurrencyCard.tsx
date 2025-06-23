@@ -167,14 +167,10 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {currency.code === 'USD' && currency.arsFormat === 'USD/ARS' && currency.rateAgainstARS
-                ? (1 / currency.rateAgainstARS).toLocaleString('es-AR', { minimumFractionDigits: 6, maximumFractionDigits: 12 })
-                : currency.code === 'ARS' && currency.usdFormat === 'ARS/USD'
-                  ? formatRate(currency.rateAgainstUSD, true)
-                  : formatRate(currency.rateAgainstUSD)}
+              {currency.code === 'USD' ? '1' : formatRate(currency.rateAgainstUSD)}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              {currency.code === 'USD' && currency.arsFormat === 'USD/ARS' ? 'ARS/USD' : (currency.usdFormat || '-')}
+              {currency.code === 'USD' ? 'USD/USD' : (currency.usdFormat || '-')}
             </p>
           </div>
           <div>
