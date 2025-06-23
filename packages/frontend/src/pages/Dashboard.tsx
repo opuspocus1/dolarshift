@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
 import ScrollToTop from '../components/ScrollToTop';
@@ -18,6 +18,10 @@ const Dashboard: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -59,17 +63,65 @@ const Dashboard: React.FC = () => {
   }, []);
 
   // Filtro de búsqueda
-  const filteredCards = cards.filter(card =>
-    card.code.toLowerCase().includes(search.toLowerCase()) ||
-    card.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCards = selectedCurrencies.length > 0
+    ? cards.filter(card => selectedCurrencies.some(sel => sel.code === card.code))
+    : cards.filter(card =>
+        card.code.toLowerCase().includes(search.toLowerCase()) ||
+        card.name.toLowerCase().includes(search.toLowerCase())
+      );
 
   // Paginación
   const totalPages = Math.ceil(filteredCards.length / CARDS_PER_PAGE);
   const paginatedCards = filteredCards.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
 
+  // Manejo de cierre del dropdown al hacer click fuera
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Opciones para el dropdown
+  const currencyOptions = cards.map(card => ({
+    code: card.code,
+    name: card.name
+  }));
+  const filteredOptions = search
+    ? currencyOptions.filter(option =>
+        option.code.toLowerCase().includes(search.toLowerCase()) ||
+        option.name.toLowerCase().includes(search.toLowerCase())
+      ).filter(option => !selectedCurrencies.some(sel => sel.code === option.code))
+    : currencyOptions.filter(option => !selectedCurrencies.some(sel => sel.code === option.code));
+
+  // Selección de una opción (multi)
+  const handleSelectOption = (option: { code: string; name: string }) => {
+    setSelectedCurrencies(prev => [...prev, option]);
+    setSearch('');
+    setShowDropdown(false);
+    setPage(1);
+  };
+
+  // Quitar una divisa seleccionada
+  const handleRemoveSelected = (code: string) => {
+    setSelectedCurrencies(prev => prev.filter(sel => sel.code !== code));
+    setPage(1);
+  };
+
+  // Cambios en el input
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+    setShowDropdown(true);
     setPage(1);
   };
 
@@ -144,13 +196,48 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Eliminar sección de fecha y selector de fecha */}
         <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <input
-            type="text"
-            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
-            placeholder={t('search')}
-            value={search}
-            onChange={handleSearch}
-          />
+          <div className="relative w-full md:w-1/3">
+            <div className="flex flex-wrap gap-1 mb-1">
+              {selectedCurrencies.map(option => (
+                <span key={option.code} className="flex items-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs mr-1 mb-1">
+                  {option.code} - {option.name}
+                  <button
+                    type="button"
+                    className="ml-1 text-blue-500 hover:text-red-500 focus:outline-none"
+                    onClick={() => handleRemoveSelected(option.code)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              placeholder={t('search')}
+              value={search}
+              onChange={handleSearch}
+              onFocus={() => setShowDropdown(true)}
+              autoComplete="off"
+            />
+            {showDropdown && filteredOptions.length > 0 && (
+              <div
+                ref={dropdownRef}
+                className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
+              >
+                {filteredOptions.map(option => (
+                  <div
+                    key={option.code}
+                    className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-900 dark:text-white"
+                    onClick={() => handleSelectOption(option)}
+                  >
+                    {option.code} - {option.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         {/* Cards de monedas */}
         <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
