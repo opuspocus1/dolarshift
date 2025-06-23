@@ -39,12 +39,12 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
             <tr>
               <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white">Divisa</th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Valor</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Day</th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Día</th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">%</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Weekly</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Monthly</th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Semanal</th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Mensual</th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">YTD</th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">YoY</th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Interanual</th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Fecha</th>
             </tr>
           </thead>
