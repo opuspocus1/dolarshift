@@ -267,7 +267,7 @@ const Dashboard: React.FC = () => {
             {showDropdown && filteredOptions.length > 0 && (
               <div
                 ref={dropdownRef}
-                className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
+                className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
               >
                 {filteredOptions.map(option => (
                   <div
