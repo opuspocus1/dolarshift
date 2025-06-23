@@ -39,7 +39,6 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
             <tr>
               <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white">Divisa</th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Valor</th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white">Par</th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Fecha</th>
             </tr>
           </thead>
@@ -52,11 +51,10 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
                   ) : row.flagCode && (
                     <CountryFlag countryCode={row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                   )}
-                  <span className="font-semibold text-gray-900 dark:text-white">{row.code}</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">{row.label}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-200">{row.name}</span>
                 </td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 12 }) : '-'}</td>
-                <td className="px-3 py-2 text-left text-xs text-gray-900 dark:text-white">{row.label}</td>
                 <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date}</td>
               </tr>
             ))}
