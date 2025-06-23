@@ -6,6 +6,7 @@ import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import CurrencyTable from '../components/CurrencyTable';
+import { Table, LayoutGrid } from 'lucide-react';
 
 const CARDS_PER_PAGE = 16;
 
@@ -23,6 +24,7 @@ const Dashboard: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -255,10 +257,35 @@ const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
-        {/* Cards de monedas */}
-        <div ref={cardsListRef} className="mb-8">
-          <CurrencyTable data={tableData} />
+        {/* Botón de alternar vista */}
+        <div className="flex justify-end mb-2">
+          <button
+            className="flex items-center gap-2 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+            onClick={() => setViewMode(viewMode === 'table' ? 'cards' : 'table')}
+            aria-label="Alternar vista"
+          >
+            {viewMode === 'table' ? <LayoutGrid className="w-4 h-4" /> : <Table className="w-4 h-4" />}
+            {viewMode === 'table' ? 'Vista de cuadrados' : 'Vista de tabla'}
+          </button>
         </div>
+        {/* Cards de monedas o tabla */}
+        {viewMode === 'table' ? (
+          <div ref={cardsListRef} className="mb-8">
+            <CurrencyTable data={tableData} />
+          </div>
+        ) : (
+          <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {paginatedCards.map((currency) => (
+              <div
+                key={currency.code}
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/charts?currency=${currency.code}`)}
+              >
+                <CurrencyCard currency={currency} />
+              </div>
+            ))}
+          </div>
+        )}
         {/* Paginación */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center space-x-4 mt-4">
