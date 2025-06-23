@@ -149,7 +149,8 @@ const Dashboard: React.FC = () => {
   const tableData = paginatedCards.map(card => ({
     code: card.code,
     name: card.name,
-    flagCode: card.code.slice(0,2), // Ejemplo: 'US' para USD, ajustar si es necesario
+    flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
+    customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
     price: card.rateAgainstARS ?? 0,
     dayValue: 0, // Placeholder, calcular si tienes variación diaria
     dayPercent: 0, // Placeholder, calcular si tienes variación diaria

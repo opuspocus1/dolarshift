@@ -13,6 +13,7 @@ interface CurrencyTableRow {
   ytdPercent?: number;
   yoyPercent?: number;
   date: string;
+  customIcon?: string;
 }
 
 interface CurrencyTableProps {
@@ -47,7 +48,9 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data }) => {
           {data.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
               <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
-                {row.flagCode && (
+                {row.customIcon ? (
+                  <span style={{ fontSize: '1.5em', marginRight: '0.25em' }}>{row.customIcon}</span>
+                ) : row.flagCode && (
                   <CountryFlag countryCode={row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                 )}
                 <span className="font-semibold text-gray-900 dark:text-white">{row.code}</span>
