@@ -155,38 +155,29 @@ const Dashboard: React.FC = () => {
     if (card.code === 'REF') return 'USD3500/ARS';
     return card.arsFormat || '-';
   }
-  // Mapeo para la tabla izquierda (pares contra USD)
-  const tableDataUSD = paginatedCards.map(card => ({
-    code: card.code,
-    name: card.name,
-    flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
-    customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-    price: card.code === 'USD' ? 1 : card.rateAgainstUSD ?? 0,
-    pair: getUsdPair(card),
-    dayValue: 0,
-    dayPercent: 0,
-    weekPercent: undefined,
-    monthPercent: undefined,
-    ytdPercent: undefined,
-    yoyPercent: undefined,
-    date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
-  }));
-  // Mapeo para la tabla derecha (pares contra ARS)
-  const tableDataARS = paginatedCards.map(card => ({
-    code: card.code,
-    name: card.name,
-    flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
-    customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-    price: card.rateAgainstARS ?? 0,
-    pair: getArsPair(card),
-    dayValue: 0,
-    dayPercent: 0,
-    weekPercent: undefined,
-    monthPercent: undefined,
-    ytdPercent: undefined,
-    yoyPercent: undefined,
-    date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
-  }));
+  // Mapeo para la tabla: dos filas por divisa, usando la lógica de los cards
+  const tableDataStacked = paginatedCards.flatMap(card => [
+    {
+      code: card.code,
+      name: card.name,
+      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
+      customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
+      value: card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD,
+      label: card.code === 'USD' ? 'USD/USD' : card.code === 'REF' ? 'USD/USD3500' : (card.usdFormat || '-'),
+      side: 'left',
+      date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
+    },
+    {
+      code: card.code,
+      name: card.name,
+      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
+      customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
+      value: card.rateAgainstARS,
+      label: card.code === 'REF' ? 'USD3500/ARS' : (card.arsFormat || '-'),
+      side: 'right',
+      date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
+    }
+  ]);
 
   if (loading) {
     return (
@@ -298,9 +289,8 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Cards de monedas o tabla */}
         {viewMode === 'table' ? (
-          <div ref={cardsListRef} className="mb-8 flex flex-col gap-8">
-            <CurrencyTable data={tableDataUSD} pairKey="pair" />
-            <CurrencyTable data={tableDataARS} pairKey="pair" />
+          <div ref={cardsListRef} className="mb-8">
+            <CurrencyTable data={tableDataStacked} stacked />
           </div>
         ) : (
           <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
