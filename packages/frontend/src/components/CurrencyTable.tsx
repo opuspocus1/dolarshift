@@ -109,7 +109,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
                   <span className="font-semibold text-gray-900 dark:text-white">{row.label}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-200">{row.name}</span>
                 </td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 12 }) : '-'}</td>
+                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>

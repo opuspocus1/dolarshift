@@ -144,7 +144,9 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   };
   
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full relative">
+      {/* Porcentaje arriba, centrado y al raz del borde */}
+      <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full text-xs font-semibold text-green-600 dark:text-green-400 border border-gray-200 dark:border-gray-700 shadow">-%</span>
       <div className="flex flex-col items-start mb-4">
         <div className="flex items-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
