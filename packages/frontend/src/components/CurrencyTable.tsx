@@ -32,15 +32,15 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data }) => {
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
           <tr>
-            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-gray-200">Divisa</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">Precio</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">Día</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">%</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">Semanal</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">Mensual</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">YTD</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">YoY</th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-gray-200">Fecha</th>
+            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white">Divisa</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Precio</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Día</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">%</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Semanal</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Mensual</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">YTD</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">YoY</th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white">Fecha</th>
           </tr>
         </thead>
         <tbody>
@@ -50,17 +50,17 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data }) => {
                 {row.flagCode && (
                   <CountryFlag countryCode={row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                 )}
-                <span className="font-semibold">{row.code}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">{row.name}</span>
+                <span className="font-semibold text-gray-900 dark:text-white">{row.code}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-200">{row.name}</span>
               </td>
-              <td className="px-3 py-2 text-right font-mono">{row.price.toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)}`}>{row.dayValue > 0 ? '▲' : row.dayValue < 0 ? '▼' : ''} {Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)}`}>{row.dayPercent > 0 ? '+' : ''}{row.dayPercent.toFixed(2)}%</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)}`}>{row.weekPercent !== undefined ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%' : '-'}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)}`}>{row.monthPercent !== undefined ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%' : '-'}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)}`}>{row.ytdPercent !== undefined ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%' : '-'}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.yoyPercent)}`}>{row.yoyPercent !== undefined ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toFixed(2) + '%' : '-'}</td>
-              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{row.date}</td>
+              <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.price.toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)} text-gray-900 dark:text-white`}>{row.dayValue > 0 ? '▲' : row.dayValue < 0 ? '▼' : ''} {Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>{row.dayPercent > 0 ? '+' : ''}{row.dayPercent.toFixed(2)}%</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)} text-gray-900 dark:text-white`}>{row.weekPercent !== undefined ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>{row.monthPercent !== undefined ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)} text-gray-900 dark:text-white`}>{row.ytdPercent !== undefined ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.yoyPercent)} text-gray-900 dark:text-white`}>{row.yoyPercent !== undefined ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toFixed(2) + '%' : '-'}</td>
+              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date}</td>
             </tr>
           ))}
         </tbody>
