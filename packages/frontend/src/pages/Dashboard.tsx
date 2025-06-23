@@ -5,6 +5,7 @@ import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import CurrencyTable from '../components/CurrencyTable';
 
 const CARDS_PER_PAGE = 16;
 
@@ -142,6 +143,21 @@ const Dashboard: React.FC = () => {
     }
   }, [page]);
 
+  // Mapeo para la tabla
+  const tableData = paginatedCards.map(card => ({
+    code: card.code,
+    name: card.name,
+    flagCode: card.code.slice(0,2), // Ejemplo: 'US' para USD, ajustar si es necesario
+    price: card.rateAgainstARS ?? 0,
+    dayValue: 0, // Placeholder, calcular si tienes variación diaria
+    dayPercent: 0, // Placeholder, calcular si tienes variación diaria
+    weekPercent: undefined,
+    monthPercent: undefined,
+    ytdPercent: undefined,
+    yoyPercent: undefined,
+    date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
+  }));
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
@@ -240,16 +256,8 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         {/* Cards de monedas */}
-        <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {paginatedCards.map((currency) => (
-            <div
-              key={currency.code}
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate(`/charts?currency=${currency.code}`)}
-            >
-              <CurrencyCard currency={currency} />
-            </div>
-          ))}
+        <div ref={cardsListRef} className="mb-8">
+          <CurrencyTable data={tableData} />
         </div>
         {/* Paginación */}
         {totalPages > 1 && (
