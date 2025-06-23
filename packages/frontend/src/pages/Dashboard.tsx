@@ -145,15 +145,42 @@ const Dashboard: React.FC = () => {
     }
   }, [page]);
 
-  // Mapeo para la tabla
-  const tableData = paginatedCards.map(card => ({
+  // Funciones para obtener los textos de par igual que en CurrencyCard
+  function getUsdPair(card) {
+    if (card.code === 'USD') return 'USD/USD';
+    if (card.code === 'REF') return 'USD/USD3500';
+    return card.usdFormat || '-';
+  }
+  function getArsPair(card) {
+    if (card.code === 'REF') return 'USD3500/ARS';
+    return card.arsFormat || '-';
+  }
+  // Mapeo para la tabla izquierda (pares contra USD)
+  const tableDataUSD = paginatedCards.map(card => ({
+    code: card.code,
+    name: card.name,
+    flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
+    customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
+    price: card.code === 'USD' ? 1 : card.rateAgainstUSD ?? 0,
+    pair: getUsdPair(card),
+    dayValue: 0,
+    dayPercent: 0,
+    weekPercent: undefined,
+    monthPercent: undefined,
+    ytdPercent: undefined,
+    yoyPercent: undefined,
+    date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
+  }));
+  // Mapeo para la tabla derecha (pares contra ARS)
+  const tableDataARS = paginatedCards.map(card => ({
     code: card.code,
     name: card.name,
     flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
     customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
     price: card.rateAgainstARS ?? 0,
-    dayValue: 0, // Placeholder, calcular si tienes variación diaria
-    dayPercent: 0, // Placeholder, calcular si tienes variación diaria
+    pair: getArsPair(card),
+    dayValue: 0,
+    dayPercent: 0,
     weekPercent: undefined,
     monthPercent: undefined,
     ytdPercent: undefined,
@@ -271,8 +298,9 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Cards de monedas o tabla */}
         {viewMode === 'table' ? (
-          <div ref={cardsListRef} className="mb-8">
-            <CurrencyTable data={tableData} />
+          <div ref={cardsListRef} className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CurrencyTable data={tableDataUSD} pairKey="pair" />
+            <CurrencyTable data={tableDataARS} pairKey="pair" />
           </div>
         ) : (
           <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
