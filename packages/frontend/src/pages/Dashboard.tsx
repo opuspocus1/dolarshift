@@ -155,12 +155,18 @@ const Dashboard: React.FC = () => {
     if (card.code === 'REF') return 'USD3500/ARS';
     return card.arsFormat || '-';
   }
+
+  // Mapeo de código de moneda a código de país para banderas (igual que en CurrencyCard)
+  const currencyToCountry = {
+    USD: 'US', EUR: 'EU', ARS: 'AR', BRL: 'BR', GBP: 'GB', JPY: 'JP', CNY: 'CN', CHF: 'CH', AUD: 'AU', CAD: 'CA', NZD: 'NZ', MXP: 'MX', CLP: 'CL', PEN: 'PE', UYU: 'UY', COP: 'CO', PYG: 'PY', BOB: 'BO', RUB: 'RU', SEK: 'SE', NOK: 'NO', DKK: 'DK', CZK: 'CZ', HUF: 'HU', TRY: 'TR', ILS: 'IL', INR: 'IN', ZAR: 'ZA', SGD: 'SG', HKD: 'HK', CNH: 'CN', AWG: 'AW'
+  };
+
   // Mapeo para la tabla: dos filas por divisa, usando la lógica de los cards
   const tableDataStacked = paginatedCards.flatMap(card => [
     {
       code: card.code,
       name: card.name,
-      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
+      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
       value: card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD,
       label: card.code === 'USD' ? 'USD/USD' : card.code === 'REF' ? 'USD/USD3500' : (card.usdFormat || '-'),
@@ -170,7 +176,7 @@ const Dashboard: React.FC = () => {
     {
       code: card.code,
       name: card.name,
-      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : card.code.slice(0,2),
+      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
       value: card.rateAgainstARS,
       label: card.code === 'REF' ? 'USD3500/ARS' : (card.arsFormat || '-'),
