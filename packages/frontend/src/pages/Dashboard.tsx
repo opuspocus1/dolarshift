@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
-  const [baseCurrency, setBaseCurrency] = useState<'USD' | 'ARS'>('USD');
+  const [baseCurrency, setBaseCurrency] = useState<string>('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -162,15 +162,18 @@ const Dashboard: React.FC = () => {
     USD: 'US', EUR: 'EU', ARS: 'AR', BRL: 'BR', GBP: 'GB', JPY: 'JP', CNY: 'CN', CHF: 'CH', AUD: 'AU', CAD: 'CA', NZD: 'NZ', MXP: 'MX', CLP: 'CL', PEN: 'PE', UYU: 'UY', COP: 'CO', PYG: 'PY', BOB: 'BO', RUB: 'RU', SEK: 'SE', NOK: 'NO', DKK: 'DK', CZK: 'CZ', HUF: 'HU', TRY: 'TR', ILS: 'IL', INR: 'IN', ZAR: 'ZA', SGD: 'SG', HKD: 'HK', CNH: 'CN', AWG: 'AW'
   };
 
+  // Cambiar la lógica de uso de baseCurrency: si baseCurrency es vacío, usar USD por defecto en la lógica de la tabla y cards
+  const effectiveBaseCurrency = baseCurrency || 'USD';
+
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
-    const pair = `${card.code}/${baseCurrency}`;
+    const pair = `${card.code}/${effectiveBaseCurrency}`;
     return {
       code: card.code,
       name: card.name,
       flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-      value: baseCurrency === 'USD' ? (card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD) : card.rateAgainstARS,
+      value: effectiveBaseCurrency === 'USD' ? (card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD) : card.rateAgainstARS,
       label: `${pair} ${card.name}`,
       date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
     };
@@ -228,23 +231,24 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza los tipos de cambio mayoristas de todas las divisas en relación al USD y al ARS</p>
         </div>
+        {/* Píldoras de filtro (independiente del layout de controles) */}
+        <div className="mb-2 min-h-[2.5rem] flex flex-wrap gap-1">
+          {selectedCurrencies.map(option => (
+            <span key={option.code} className="flex items-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs mr-1 mb-1">
+              {option.code} - {option.name}
+              <button
+                type="button"
+                className="ml-1 text-blue-500 hover:text-red-500 focus:outline-none"
+                onClick={() => handleRemoveSelected(option.code)}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
         {/* Controles de búsqueda y moneda base */}
         <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4">
           <div className="relative">
-            <div className="flex flex-wrap gap-1 mb-1">
-              {selectedCurrencies.map(option => (
-                <span key={option.code} className="flex items-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs mr-1 mb-1">
-                  {option.code} - {option.name}
-                  <button
-                    type="button"
-                    className="ml-1 text-blue-500 hover:text-red-500 focus:outline-none"
-                    onClick={() => handleRemoveSelected(option.code)}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
             <input
               ref={inputRef}
               type="text"
@@ -273,12 +277,12 @@ const Dashboard: React.FC = () => {
             )}
           </div>
           <div className="md:w-72 min-w-[18rem]">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moneda Base</label>
             <select
               value={baseCurrency}
-              onChange={(e) => setBaseCurrency(e.target.value as 'USD' | 'ARS')}
+              onChange={(e) => setBaseCurrency(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
             >
+              <option value="" disabled hidden>Moneda Base</option>
               <option value="USD">USD (Dólar Estadounidense)</option>
               <option value="ARS">ARS (Peso Argentino)</option>
             </select>
