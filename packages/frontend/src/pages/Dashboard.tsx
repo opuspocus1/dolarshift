@@ -164,27 +164,16 @@ const Dashboard: React.FC = () => {
 
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
-    if (baseCurrency === 'USD') {
-      return {
-        code: card.code,
-        name: card.name,
-        flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
-        customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-        value: card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD,
-        label: card.code === 'USD' ? 'USD/USD' : card.code === 'REF' ? 'USD/USD3500' : `${card.code}/USD`,
-        date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
-      };
-    } else {
-      return {
-        code: card.code,
-        name: card.name,
-        flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
-        customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-        value: card.rateAgainstARS,
-        label: card.code === 'REF' ? 'USD3500/ARS' : `${card.code}/ARS`,
-        date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
-      };
-    }
+    const pair = `${card.code}/${baseCurrency}`;
+    return {
+      code: card.code,
+      name: card.name,
+      flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
+      customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
+      value: baseCurrency === 'USD' ? (card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD) : card.rateAgainstARS,
+      label: `${pair} ${card.name}`,
+      date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
+    };
   });
 
   if (loading) {
@@ -241,7 +230,7 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Controles de búsqueda y moneda base */}
         <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4">
-          <div className="relative flex-1">
+          <div className="relative">
             <div className="flex flex-wrap gap-1 mb-1">
               {selectedCurrencies.map(option => (
                 <span key={option.code} className="flex items-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs mr-1 mb-1">
@@ -259,7 +248,7 @@ const Dashboard: React.FC = () => {
             <input
               ref={inputRef}
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
               placeholder={t('search')}
               value={search}
               onChange={handleSearch}
