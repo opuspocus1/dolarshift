@@ -106,8 +106,8 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
                 <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
                   {row.customIcon ? (
                     <span style={{ fontSize: '1.5em', marginRight: '0.25em' }}>{row.customIcon}</span>
-                  ) : row.flagCode && (
-                    <CountryFlag countryCode={row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
+                  ) : (
+                    <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                   )}
                   <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
@@ -167,8 +167,8 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
               <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
                 {row.customIcon ? (
                   <span style={{ fontSize: '1.5em', marginRight: '0.25em' }}>{row.customIcon}</span>
-                ) : row.flagCode && (
-                  <CountryFlag countryCode={row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
+                ) : (
+                  <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                 )}
                 <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
                 <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
