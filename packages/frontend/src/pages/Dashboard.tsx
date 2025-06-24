@@ -171,7 +171,7 @@ const Dashboard: React.FC = () => {
         flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
         customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
         value: card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD,
-        label: card.code === 'USD' ? 'USD/USD' : card.code === 'REF' ? 'USD/USD3500' : (card.usdFormat || '-'),
+        label: card.code === 'USD' ? 'USD/USD' : card.code === 'REF' ? 'USD/USD3500' : `${card.code}/USD`,
         date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
       };
     } else {
@@ -181,7 +181,7 @@ const Dashboard: React.FC = () => {
         flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
         customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
         value: card.rateAgainstARS,
-        label: card.code === 'REF' ? 'USD3500/ARS' : (card.arsFormat || '-'),
+        label: card.code === 'REF' ? 'USD3500/ARS' : `${card.code}/ARS`,
         date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
       };
     }
@@ -239,62 +239,60 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza los tipos de cambio mayoristas de todas las divisas en relación al USD y al ARS</p>
         </div>
-        {/* Eliminar sección de fecha y selector de fecha */}
-        <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div className="flex flex-col md:flex-row gap-2 w-full md:w-2/3">
-            <div className="relative w-full md:w-1/2">
-              <div className="flex flex-wrap gap-1 mb-1">
-                {selectedCurrencies.map(option => (
-                  <span key={option.code} className="flex items-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs mr-1 mb-1">
+        {/* Controles de búsqueda y moneda base */}
+        <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4">
+          <div className="relative flex-1">
+            <div className="flex flex-wrap gap-1 mb-1">
+              {selectedCurrencies.map(option => (
+                <span key={option.code} className="flex items-center bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs mr-1 mb-1">
+                  {option.code} - {option.name}
+                  <button
+                    type="button"
+                    className="ml-1 text-blue-500 hover:text-red-500 focus:outline-none"
+                    onClick={() => handleRemoveSelected(option.code)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              placeholder={t('search')}
+              value={search}
+              onChange={handleSearch}
+              onFocus={() => setShowDropdown(true)}
+              autoComplete="off"
+            />
+            {showDropdown && filteredOptions.length > 0 && (
+              <div
+                ref={dropdownRef}
+                className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
+              >
+                {filteredOptions.map(option => (
+                  <div
+                    key={option.code}
+                    className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-900 dark:text-white"
+                    onClick={() => handleSelectOption(option)}
+                  >
                     {option.code} - {option.name}
-                    <button
-                      type="button"
-                      className="ml-1 text-blue-500 hover:text-red-500 focus:outline-none"
-                      onClick={() => handleRemoveSelected(option.code)}
-                    >
-                      ×
-                    </button>
-                  </span>
+                  </div>
                 ))}
               </div>
-              <input
-                ref={inputRef}
-                type="text"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
-                placeholder={t('search')}
-                value={search}
-                onChange={handleSearch}
-                onFocus={() => setShowDropdown(true)}
-                autoComplete="off"
-              />
-              {showDropdown && filteredOptions.length > 0 && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
-                >
-                  {filteredOptions.map(option => (
-                    <div
-                      key={option.code}
-                      className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-900 dark:text-white"
-                      onClick={() => handleSelectOption(option)}
-                    >
-                      {option.code} - {option.name}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="w-full md:w-1/2">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moneda Base</label>
-              <select
-                value={baseCurrency}
-                onChange={(e) => setBaseCurrency(e.target.value as 'USD' | 'ARS')}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
-              >
-                <option value="USD">USD (Dólar Estadounidense)</option>
-                <option value="ARS">ARS (Peso Argentino)</option>
-              </select>
-            </div>
+            )}
+          </div>
+          <div className="md:w-48">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moneda Base</label>
+            <select
+              value={baseCurrency}
+              onChange={(e) => setBaseCurrency(e.target.value as 'USD' | 'ARS')}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+            >
+              <option value="USD">USD (Dólar Estadounidense)</option>
+              <option value="ARS">ARS (Peso Argentino)</option>
+            </select>
           </div>
         </div>
         {/* Botón de alternar vista */}
