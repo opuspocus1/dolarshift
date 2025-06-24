@@ -272,7 +272,7 @@ const Dashboard: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="md:w-48">
+          <div className="md:w-72 min-w-[18rem]">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moneda Base</label>
             <select
               value={baseCurrency}
