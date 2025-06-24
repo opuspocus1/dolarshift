@@ -167,14 +167,22 @@ const Dashboard: React.FC = () => {
 
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
-    const pair = `${card.code}/${effectiveBaseCurrency}`;
+    let pair;
+    let name = card.name;
+    // Caso especial REF: mostrar USD3500/moneda base y nombre DOLAR USA COM 3500
+    if (card.code === 'REF') {
+      pair = `USD3500/${effectiveBaseCurrency}`;
+      name = 'DOLAR USA COM 3500';
+    } else {
+      pair = `${card.code}/${effectiveBaseCurrency}`;
+    }
     return {
       code: card.code,
-      name: card.name,
+      name: name,
       flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
       value: effectiveBaseCurrency === 'USD' ? (card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD) : card.rateAgainstARS,
-      label: `${pair} ${card.name}`,
+      label: `${pair} ${name}`,
       date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
     };
   });
