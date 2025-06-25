@@ -192,8 +192,9 @@ const Dashboard: React.FC = () => {
     const [variations, setVariations] = useState({});
     const [loadingVariations, setLoadingVariations] = useState(false);
     useEffect(() => {
+      setVariations({});
+      setLoadingVariations(true);
       async function fetchVariations() {
-        setLoadingVariations(true);
         const today = new Date();
         const desde = new Date(today);
         desde.setDate(desde.getDate() - 7); // Últimos 7 días
