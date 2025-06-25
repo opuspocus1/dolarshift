@@ -182,7 +182,10 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
                   </>
                 ) : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>{row.dayPercent !== undefined ? (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>
+                {row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
+                  (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : '-'}
+              </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)} text-gray-900 dark:text-white`}>{row.weekPercent !== undefined ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%' : '-'}</td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>{row.monthPercent !== undefined ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%' : '-'}</td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)} text-gray-900 dark:text-white`}>{row.ytdPercent !== undefined ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%' : '-'}</td>

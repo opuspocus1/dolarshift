@@ -6,7 +6,7 @@ import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays, isWeekend } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import CurrencyTable from '../components/CurrencyTable';
-import { Table, LayoutGrid } from 'lucide-react';
+import { Table, LayoutGrid, Loader2 } from 'lucide-react';
 
 const CARDS_PER_PAGE = 16;
 
@@ -190,13 +190,14 @@ const Dashboard: React.FC = () => {
   // Hook para cargar variaciones diarias para todas las divisas mostradas (versión robusta)
   function useDailyVariations(codes, baseCurrency) {
     const [variations, setVariations] = useState({});
+    const [loadingVariations, setLoadingVariations] = useState(false);
     useEffect(() => {
       async function fetchVariations() {
+        setLoadingVariations(true);
         const today = new Date();
         const desde = new Date(today);
         desde.setDate(desde.getDate() - 7); // Últimos 7 días
         const result = {};
-        // Si base es USD, necesitamos históricos de cada moneda y de USD
         let usdHistory = [];
         if (baseCurrency === 'USD') {
           usdHistory = await exchangeService.getChartHistory(
@@ -212,22 +213,18 @@ const Dashboard: React.FC = () => {
               desde.toISOString().slice(0, 10),
               today.toISOString().slice(0, 10)
             );
-            // Filtrar días con datos válidos
             const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
             if (diasConDatos.length >= 2) {
               let valores = [];
               if (baseCurrency === 'USD') {
-                // Para cada día, buscar el valor de USD en ese día
                 valores = diasConDatos.map(h => {
                   const usd = (usdHistory || []).find(u => u.date === h.date);
                   if (usd && usd.buy) {
-                    // Fórmula: (XXX/USD) = (XXX/ARS) / (USD/ARS)
                     return h.buy / usd.buy;
                   }
                   return null;
                 }).filter(v => v !== null);
               } else {
-                // ARS base: usar buy directo
                 valores = diasConDatos.map(h => h.buy);
               }
               if (valores.length >= 2) {
@@ -247,15 +244,16 @@ const Dashboard: React.FC = () => {
           }
         }
         setVariations(result);
+        setLoadingVariations(false);
       }
       fetchVariations();
     }, [codes, baseCurrency]);
-    return variations;
+    return { variations, loadingVariations };
   }
 
   // En el componente Dashboard:
   const codesForTable = paginatedCards.map(card => card.code);
-  const dailyVariations = useDailyVariations(codesForTable, effectiveBaseCurrency);
+  const { variations: dailyVariations, loadingVariations } = useDailyVariations(codesForTable, effectiveBaseCurrency);
 
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
@@ -404,9 +402,17 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Cards de monedas o tabla */}
         {viewMode === 'table' ? (
-          <div ref={cardsListRef} className="mb-8">
-            <CurrencyTable data={tableDataSingle} />
-          </div>
+          <>
+            {loadingVariations && (
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
+                <span className="ml-2 text-blue-500">Cargando variaciones...</span>
+              </div>
+            )}
+            <div ref={cardsListRef} className="mb-8">
+              <CurrencyTable data={tableDataSingle} />
+            </div>
+          </>
         ) : (
           <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {paginatedCards.map((currency) => (
