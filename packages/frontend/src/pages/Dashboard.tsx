@@ -10,6 +10,15 @@ import { Table, LayoutGrid, Loader2 } from 'lucide-react';
 
 const CARDS_PER_PAGE = 16;
 
+// Estado inicial de viewMode desde localStorage
+const getInitialViewMode = () => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('dolarshift_viewMode');
+    if (saved === 'cards' || saved === 'table') return saved;
+  }
+  return 'table';
+};
+
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -280,15 +289,6 @@ const Dashboard: React.FC = () => {
       dayPercent: variation.dayPercent
     };
   });
-
-  // Estado inicial de viewMode desde localStorage
-  const getInitialViewMode = () => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dolarshift_viewMode');
-      if (saved === 'cards' || saved === 'table') return saved;
-    }
-    return 'table';
-  };
 
   // Guardar en localStorage cuando cambia viewMode
   useEffect(() => {
