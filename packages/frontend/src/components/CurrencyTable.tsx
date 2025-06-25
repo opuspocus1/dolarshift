@@ -28,8 +28,8 @@ interface CurrencyTableProps {
 
 const getColor = (value?: number) => {
   if (value === undefined) return '';
-  if (value > 0) return 'text-green-600 bg-green-50';
-  if (value < 0) return 'text-red-600 bg-red-50';
+  if (value > 0) return 'text-green-600';
+  if (value < 0) return 'text-red-600';
   return '';
 };
 
