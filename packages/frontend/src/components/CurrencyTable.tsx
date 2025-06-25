@@ -174,7 +174,14 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
                 <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
               </td>
               <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)} text-gray-900 dark:text-white`}>{row.dayValue !== undefined && row.dayValue !== null ? (row.dayValue > 0 ? '▲' : row.dayValue < 0 ? '▼' : '') + Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 }) : '-'}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)} text-gray-900 dark:text-white`}>
+                {row.dayValue !== undefined && row.dayValue !== null ? (
+                  <>
+                    {row.dayValue > 0 ? <span style={{marginRight: '0.25em'}}>▲</span> : row.dayValue < 0 ? <span style={{marginRight: '0.25em'}}>▼</span> : null}
+                    <span>{Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
+                  </>
+                ) : '-'}
+              </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>{row.dayPercent !== undefined ? (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : '-'}</td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)} text-gray-900 dark:text-white`}>{row.weekPercent !== undefined ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%' : '-'}</td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>{row.monthPercent !== undefined ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%' : '-'}</td>
