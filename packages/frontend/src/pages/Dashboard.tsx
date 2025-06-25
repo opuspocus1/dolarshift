@@ -403,12 +403,6 @@ const Dashboard: React.FC = () => {
         {/* Cards de monedas o tabla */}
         {viewMode === 'table' ? (
           <>
-            {loadingVariations && (
-              <div className="flex justify-center items-center py-8">
-                <Loader2 className="animate-spin w-8 h-8 text-blue-500" />
-                <span className="ml-2 text-blue-500">Cargando variaciones...</span>
-              </div>
-            )}
             <div ref={cardsListRef} className="mb-8">
               <CurrencyTable data={tableDataSingle} loadingVariations={loadingVariations} />
             </div>
