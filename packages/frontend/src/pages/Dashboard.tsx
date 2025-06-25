@@ -247,7 +247,7 @@ const Dashboard: React.FC = () => {
         setLoadingVariations(false);
       }
       fetchVariations();
-    }, [codes, baseCurrency]);
+    }, [codes.join(','), baseCurrency]);
     return { variations, loadingVariations };
   }
 
