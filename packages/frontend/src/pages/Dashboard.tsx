@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
   }
 
   // Hook para cargar variaciones diarias para todas las divisas mostradas (versión robusta)
-  function useDailyVariations(codes, baseCurrency) {
+  function useHistoricalVariations(codes, baseCurrency) {
     const [variations, setVariations] = useState({});
     const [loadingVariations, setLoadingVariations] = useState(false);
     useEffect(() => {
@@ -217,7 +217,7 @@ const Dashboard: React.FC = () => {
       async function fetchVariations() {
         const today = new Date();
         const desde = new Date(today);
-        desde.setDate(desde.getDate() - 7); // Últimos 7 días
+        desde.setDate(desde.getDate() - 370); // Últimos 370 días para cubrir todos los casos
         const result = {};
         let usdHistory = [];
         if (baseCurrency === 'USD') {
@@ -235,6 +235,62 @@ const Dashboard: React.FC = () => {
               today.toISOString().slice(0, 10)
             );
             const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
+            if (diasConDatos.length === 0) {
+              result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
+              continue;
+            }
+            // Valor actual: último día con datos
+            const actual = diasConDatos[diasConDatos.length - 1];
+            let actualValue;
+            if (baseCurrency === 'USD') {
+              const usd = (usdHistory || []).find(u => u.date === actual.date);
+              actualValue = usd && usd.buy ? actual.buy / usd.buy : null;
+            } else {
+              actualValue = actual.buy;
+            }
+            // Helper para buscar el valor más cercano a una fecha
+            function getClosestValue(targetDateStr) {
+              const target = new Date(targetDateStr);
+              for (let i = diasConDatos.length - 1; i >= 0; i--) {
+                const d = new Date(diasConDatos[i].date);
+                if (d <= target) {
+                  if (baseCurrency === 'USD') {
+                    const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
+                    return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
+                  } else {
+                    return diasConDatos[i].buy;
+                  }
+                }
+              }
+              return null;
+            }
+            // Semanal: hace 7 días
+            const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
+            // Mensual: hace 30 días
+            const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
+            const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
+            // YTD: primer día hábil del año
+            const year = new Date(actual.date).getFullYear();
+            const ytdValue = (() => {
+              for (let i = 0; i < diasConDatos.length; i++) {
+                const d = new Date(diasConDatos[i].date);
+                if (d.getFullYear() === year) {
+                  if (baseCurrency === 'USD') {
+                    const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
+                    return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
+                  } else {
+                    return diasConDatos[i].buy;
+                  }
+                }
+              }
+              return null;
+            })();
+            // Interanual: hace 365 días
+            const yearAgo = new Date(actual.date); yearAgo.setDate(yearAgo.getDate() - 365);
+            const yoyValue = getClosestValue(yearAgo.toISOString().slice(0, 10));
+            // Diaria (ya implementada)
+            let dayValue = null, dayPercent = null;
             if (diasConDatos.length >= 2) {
               let valores = [];
               if (baseCurrency === 'USD') {
@@ -249,19 +305,18 @@ const Dashboard: React.FC = () => {
                 valores = diasConDatos.map(h => h.buy);
               }
               if (valores.length >= 2) {
-                const valor_actual = valores[valores.length - 1];
-                const valor_cierre_anterior = valores[valores.length - 2];
-                const dayValue = valor_actual - valor_cierre_anterior;
-                const dayPercent = (dayValue / valor_cierre_anterior) * 100;
-                result[code] = { dayValue, dayPercent };
-              } else {
-                result[code] = { dayValue: null, dayPercent: null };
+                dayValue = valores[valores.length - 1] - valores[valores.length - 2];
+                dayPercent = (dayValue / valores[valores.length - 2]) * 100;
               }
-            } else {
-              result[code] = { dayValue: null, dayPercent: null };
             }
+            // Variaciones porcentuales
+            const weekPercent = weekValue ? ((actualValue - weekValue) / weekValue) * 100 : null;
+            const monthPercent = monthValue ? ((actualValue - monthValue) / monthValue) * 100 : null;
+            const ytdPercent = ytdValue ? ((actualValue - ytdValue) / ytdValue) * 100 : null;
+            const yoyPercent = yoyValue ? ((actualValue - yoyValue) / yoyValue) * 100 : null;
+            result[code] = { dayValue, dayPercent, weekPercent, monthPercent, ytdPercent, yoyPercent };
           } catch (e) {
-            result[code] = { dayValue: null, dayPercent: null };
+            result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
           }
         }
         setVariations(result);
@@ -274,7 +329,7 @@ const Dashboard: React.FC = () => {
 
   // En el componente Dashboard:
   const codesForTable = paginatedCards.map(card => card.code);
-  const { variations: dailyVariations, loadingVariations } = useDailyVariations(codesForTable, effectiveBaseCurrency);
+  const { variations: dailyVariations, loadingVariations } = useHistoricalVariations(codesForTable, effectiveBaseCurrency);
 
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
@@ -297,7 +352,11 @@ const Dashboard: React.FC = () => {
       label: `${pair} ${name}`,
       date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : '',
       dayValue: variation.dayValue,
-      dayPercent: variation.dayPercent
+      dayPercent: variation.dayPercent,
+      weekPercent: variation.weekPercent,
+      monthPercent: variation.monthPercent,
+      ytdPercent: variation.ytdPercent,
+      yoyPercent: variation.yoyPercent
     };
   });
 
