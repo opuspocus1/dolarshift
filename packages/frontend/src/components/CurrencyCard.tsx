@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { ExchangeRate } from '../services/exchangeService';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -85,9 +85,18 @@ const currencyToCountry: Record<string, string> = {
 interface CurrencyCardProps {
   currency: ExchangeRate;
   baseCurrency?: string;
+  dayPercent?: number;
+  loadingVariations?: boolean;
 }
 
-const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'USD' }) => {
+const getColor = (value?: number) => {
+  if (value === undefined) return '';
+  if (value > 0) return 'text-green-600 dark:text-green-400';
+  if (value < 0) return 'text-red-600 dark:text-red-400';
+  return '';
+};
+
+const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'USD', dayPercent, loadingVariations }) => {
   // Usar solo el código de moneda, sin bandera
   let meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
   let displayName = currency.descripcion || currency.name;
@@ -146,7 +155,13 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full relative">
       {/* Porcentaje arriba, centrado y al raz del borde */}
-      <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full text-xs font-semibold text-green-600 dark:text-green-400 border border-gray-200 dark:border-gray-700 shadow">-%</span>
+      <span className={`absolute left-1/2 -translate-x-1/2 -top-3 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full text-xs font-semibold border border-gray-200 dark:border-gray-700 shadow ${getColor(dayPercent)}`}>
+        {loadingVariations ? (
+          <Loader2 className="animate-spin w-4 h-4 text-blue-500" />
+        ) : dayPercent !== undefined && dayPercent !== null && !isNaN(dayPercent) ? (
+          (dayPercent > 0 ? '+' : '') + dayPercent.toFixed(2) + '%'
+        ) : '-%'}
+      </span>
       <div className="flex flex-col items-start mb-4">
         <div className="flex items-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">

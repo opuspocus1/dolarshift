@@ -416,7 +416,7 @@ const Dashboard: React.FC = () => {
                 style={{ cursor: 'pointer' }}
                 onClick={() => navigate(`/charts?currency=${currency.code}`)}
               >
-                <CurrencyCard currency={currency} />
+                <CurrencyCard currency={currency} dayPercent={(dailyVariations[currency.code] || {}).dayPercent} loadingVariations={loadingVariations} />
               </div>
             ))}
           </div>
