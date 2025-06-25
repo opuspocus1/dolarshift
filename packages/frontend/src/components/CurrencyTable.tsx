@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CountryFlag from 'react-country-flag';
+import { Loader2 } from 'lucide-react';
 
 interface CurrencyTableRow {
   code: string;
@@ -24,6 +25,7 @@ interface CurrencyTableProps {
   data: CurrencyTableRow[];
   pairKey?: string;
   stacked?: boolean;
+  loadingVariations?: boolean;
 }
 
 const getColor = (value?: number) => {
@@ -33,7 +35,7 @@ const getColor = (value?: number) => {
   return '';
 };
 
-const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked }) => {
+const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, loadingVariations }) => {
   const [sortBy, setSortBy] = useState<string>('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
@@ -180,11 +182,15 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked })
                     {row.dayValue > 0 ? <span style={{marginRight: '0.25em'}}>▲</span> : row.dayValue < 0 ? <span style={{marginRight: '0.25em'}}>▼</span> : null}
                     <span>{Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
                   </>
+                ) : loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>
                 {row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
-                  (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : '-'}
+                  (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)} text-gray-900 dark:text-white`}>{row.weekPercent !== undefined ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%' : '-'}</td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>{row.monthPercent !== undefined ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%' : '-'}</td>

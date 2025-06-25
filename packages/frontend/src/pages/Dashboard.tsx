@@ -410,7 +410,7 @@ const Dashboard: React.FC = () => {
               </div>
             )}
             <div ref={cardsListRef} className="mb-8">
-              <CurrencyTable data={tableDataSingle} />
+              <CurrencyTable data={tableDataSingle} loadingVariations={loadingVariations} />
             </div>
           </>
         ) : (
