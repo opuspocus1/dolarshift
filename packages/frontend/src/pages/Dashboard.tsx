@@ -46,6 +46,7 @@ const Dashboard: React.FC = () => {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>(getInitialViewMode);
   const [baseCurrency, setBaseCurrency] = useState<string>('');
   const [totalPages, setTotalPages] = useState(1);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -314,8 +315,12 @@ const Dashboard: React.FC = () => {
     }
   }, [page]);
 
-  // Resetear página a 1 si cambian filtros, búsqueda, base o cantidad de páginas
+  // Resetear página a 1 si cambian filtros, búsqueda, base o cantidad de páginas, excepto en el primer render
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     setPage(1);
     if (typeof window !== 'undefined') {
       localStorage.setItem('dolarshift_page', '1');
