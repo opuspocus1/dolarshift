@@ -19,6 +19,16 @@ const getInitialViewMode = () => {
   return 'table';
 };
 
+// Estado inicial de page desde localStorage
+const getInitialPage = () => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('dolarshift_page');
+    const num = Number(saved);
+    if (!isNaN(num) && num > 0) return num;
+  }
+  return 1;
+};
+
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -27,7 +37,7 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(getInitialPage);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,6 +45,7 @@ const Dashboard: React.FC = () => {
   const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>(getInitialViewMode);
   const [baseCurrency, setBaseCurrency] = useState<string>('');
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
@@ -296,6 +307,21 @@ const Dashboard: React.FC = () => {
       localStorage.setItem('dolarshift_viewMode', viewMode);
     }
   }, [viewMode]);
+
+  // Guardar en localStorage cuando cambia page
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dolarshift_page', String(page));
+    }
+  }, [page]);
+
+  // Resetear página a 1 si cambian filtros, búsqueda, base o cantidad de páginas
+  useEffect(() => {
+    setPage(1);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dolarshift_page', '1');
+    }
+  }, [search, selectedCurrencies, baseCurrency, totalPages]);
 
   if (loading) {
     return (
