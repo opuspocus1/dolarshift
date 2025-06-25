@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
 import ScrollToTop from '../components/ScrollToTop';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
-import { format, subDays } from 'date-fns';
+import { format, subDays, isWeekend } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import CurrencyTable from '../components/CurrencyTable';
 import { Table, LayoutGrid } from 'lucide-react';
@@ -169,17 +169,69 @@ const Dashboard: React.FC = () => {
   // Cambiar la lógica de uso de baseCurrency: si baseCurrency es vacío, usar USD por defecto en la lógica de la tabla y cards
   const effectiveBaseCurrency = baseCurrency || 'USD';
 
+  // Utilidad para buscar el último día hábil anterior con datos
+  async function getLastBusinessDayWithData(currency, base, today) {
+    let date = subDays(today, 1);
+    let tries = 0;
+    while (tries < 10) { // Máximo 10 días hacia atrás
+      if (!isWeekend(date)) {
+        const history = await exchangeService.getExchangeRateHistory(currency, date, date);
+        if (history && history.length > 0 && history[0].buy) {
+          // Para USD base, usar buy; para ARS base, usar tipocotizacion
+          return { date, value: history[0].buy };
+        }
+      }
+      date = subDays(date, 1);
+      tries++;
+    }
+    return null;
+  }
+
+  // Hook para cargar variaciones diarias para todas las divisas mostradas
+  function useDailyVariations(codes, baseCurrency) {
+    const [variations, setVariations] = useState({});
+    useEffect(() => {
+      async function fetchVariations() {
+        const today = new Date();
+        const result = {};
+        for (const code of codes) {
+          // Valor actual
+          const todayHistory = await exchangeService.getExchangeRateHistory(code, today, today);
+          let valor_actual = todayHistory && todayHistory.length > 0 ? todayHistory[0].buy : null;
+          // Valor anterior
+          const prev = await getLastBusinessDayWithData(code, baseCurrency, today);
+          let valor_cierre_anterior = prev ? prev.value : null;
+          // Cálculo
+          let dayValue = null, dayPercent = null;
+          if (valor_actual !== null && valor_cierre_anterior !== null) {
+            dayValue = valor_actual - valor_cierre_anterior;
+            dayPercent = (dayValue / valor_cierre_anterior) * 100;
+          }
+          result[code] = { dayValue, dayPercent };
+        }
+        setVariations(result);
+      }
+      fetchVariations();
+    }, [codes, baseCurrency]);
+    return variations;
+  }
+
+  // En el componente Dashboard:
+  const codesForTable = paginatedCards.map(card => card.code);
+  const dailyVariations = useDailyVariations(codesForTable, effectiveBaseCurrency);
+
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
     let pair;
     let name = card.name;
-    // Caso especial REF: mostrar USD3500/moneda base y nombre DOLAR USA COM 3500
     if (card.code === 'REF') {
       pair = `USD3500/${effectiveBaseCurrency}`;
       name = 'DOLAR USA COM 3500';
     } else {
       pair = `${card.code}/${effectiveBaseCurrency}`;
     }
+    // Variaciones
+    const variation = dailyVariations[card.code] || {};
     return {
       code: card.code,
       name: name,
@@ -187,7 +239,9 @@ const Dashboard: React.FC = () => {
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
       value: effectiveBaseCurrency === 'USD' ? (card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD) : card.rateAgainstARS,
       label: `${pair} ${name}`,
-      date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : ''
+      date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : '',
+      dayValue: variation.dayValue,
+      dayPercent: variation.dayPercent
     };
   });
 
