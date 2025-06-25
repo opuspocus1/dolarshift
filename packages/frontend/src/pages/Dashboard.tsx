@@ -212,7 +212,6 @@ const Dashboard: React.FC = () => {
     const [variations, setVariations] = useState({});
     const [loadingVariations, setLoadingVariations] = useState(false);
     useEffect(() => {
-      setVariations({});
       setLoadingVariations(true);
       async function fetchVariations() {
         const today = new Date();
