@@ -281,6 +281,22 @@ const Dashboard: React.FC = () => {
     };
   });
 
+  // Estado inicial de viewMode desde localStorage
+  const getInitialViewMode = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('dolarshift_viewMode');
+      if (saved === 'cards' || saved === 'table') return saved;
+    }
+    return 'table';
+  };
+
+  // Guardar en localStorage cuando cambia viewMode
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dolarshift_viewMode', viewMode);
+    }
+  }, [viewMode]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
