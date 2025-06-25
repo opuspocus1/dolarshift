@@ -187,27 +187,38 @@ const Dashboard: React.FC = () => {
     return null;
   }
 
-  // Hook para cargar variaciones diarias para todas las divisas mostradas
+  // Hook para cargar variaciones diarias para todas las divisas mostradas (versión robusta)
   function useDailyVariations(codes, baseCurrency) {
     const [variations, setVariations] = useState({});
     useEffect(() => {
       async function fetchVariations() {
         const today = new Date();
+        const desde = new Date(today);
+        desde.setDate(desde.getDate() - 7); // Últimos 7 días
         const result = {};
         for (const code of codes) {
-          // Valor actual
-          const todayHistory = await exchangeService.getExchangeRateHistory(code, today, today);
-          let valor_actual = todayHistory && todayHistory.length > 0 ? todayHistory[0].buy : null;
-          // Valor anterior
-          const prev = await getLastBusinessDayWithData(code, baseCurrency, today);
-          let valor_cierre_anterior = prev ? prev.value : null;
-          // Cálculo
-          let dayValue = null, dayPercent = null;
-          if (valor_actual !== null && valor_cierre_anterior !== null) {
-            dayValue = valor_actual - valor_cierre_anterior;
-            dayPercent = (dayValue / valor_cierre_anterior) * 100;
+          try {
+            const history = await exchangeService.getChartHistory(
+              code,
+              desde.toISOString().slice(0, 10),
+              today.toISOString().slice(0, 10)
+            );
+            // Filtrar días con datos válidos
+            const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
+            if (diasConDatos.length >= 2) {
+              const actual = diasConDatos[diasConDatos.length - 1];
+              const anterior = diasConDatos[diasConDatos.length - 2];
+              const valor_actual = actual.buy;
+              const valor_cierre_anterior = anterior.buy;
+              const dayValue = valor_actual - valor_cierre_anterior;
+              const dayPercent = (dayValue / valor_cierre_anterior) * 100;
+              result[code] = { dayValue, dayPercent };
+            } else {
+              result[code] = { dayValue: null, dayPercent: null };
+            }
+          } catch (e) {
+            result[code] = { dayValue: null, dayPercent: null };
           }
-          result[code] = { dayValue, dayPercent };
         }
         setVariations(result);
       }
