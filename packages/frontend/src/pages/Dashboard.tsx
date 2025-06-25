@@ -239,7 +239,7 @@ const Dashboard: React.FC = () => {
               result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
               continue;
             }
-            // Valor actual: último día con datos
+            // Usar la última fecha con datos como referencia de 'hoy'
             const actual = diasConDatos[diasConDatos.length - 1];
             let actualValue;
             if (baseCurrency === 'USD') {
@@ -264,13 +264,13 @@ const Dashboard: React.FC = () => {
               }
               return null;
             }
-            // Semanal: hace 7 días
+            // Semanal: hace 7 días desde la última fecha con datos
             const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
             const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
-            // Mensual: hace 30 días
+            // Mensual: hace 30 días desde la última fecha con datos
             const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
             const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
-            // YTD: primer día hábil del año
+            // YTD: primer día hábil del año de la última fecha con datos
             const year = new Date(actual.date).getFullYear();
             const ytdValue = (() => {
               for (let i = 0; i < diasConDatos.length; i++) {
@@ -286,7 +286,7 @@ const Dashboard: React.FC = () => {
               }
               return null;
             })();
-            // Interanual: hace 365 días
+            // Interanual: hace 365 días desde la última fecha con datos
             const yearAgo = new Date(actual.date); yearAgo.setDate(yearAgo.getDate() - 365);
             const yoyValue = getClosestValue(yearAgo.toISOString().slice(0, 10));
             // Diaria (ya implementada)
