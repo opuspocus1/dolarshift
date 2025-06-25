@@ -196,6 +196,15 @@ const Dashboard: React.FC = () => {
         const desde = new Date(today);
         desde.setDate(desde.getDate() - 7); // Últimos 7 días
         const result = {};
+        // Si base es USD, necesitamos históricos de cada moneda y de USD
+        let usdHistory = [];
+        if (baseCurrency === 'USD') {
+          usdHistory = await exchangeService.getChartHistory(
+            'USD',
+            desde.toISOString().slice(0, 10),
+            today.toISOString().slice(0, 10)
+          );
+        }
         for (const code of codes) {
           try {
             const history = await exchangeService.getChartHistory(
@@ -206,13 +215,30 @@ const Dashboard: React.FC = () => {
             // Filtrar días con datos válidos
             const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
             if (diasConDatos.length >= 2) {
-              const actual = diasConDatos[diasConDatos.length - 1];
-              const anterior = diasConDatos[diasConDatos.length - 2];
-              const valor_actual = actual.buy;
-              const valor_cierre_anterior = anterior.buy;
-              const dayValue = valor_actual - valor_cierre_anterior;
-              const dayPercent = (dayValue / valor_cierre_anterior) * 100;
-              result[code] = { dayValue, dayPercent };
+              let valores = [];
+              if (baseCurrency === 'USD') {
+                // Para cada día, buscar el valor de USD en ese día
+                valores = diasConDatos.map(h => {
+                  const usd = (usdHistory || []).find(u => u.date === h.date);
+                  if (usd && usd.buy) {
+                    // Fórmula: (XXX/USD) = (XXX/ARS) / (USD/ARS)
+                    return h.buy / usd.buy;
+                  }
+                  return null;
+                }).filter(v => v !== null);
+              } else {
+                // ARS base: usar buy directo
+                valores = diasConDatos.map(h => h.buy);
+              }
+              if (valores.length >= 2) {
+                const valor_actual = valores[valores.length - 1];
+                const valor_cierre_anterior = valores[valores.length - 2];
+                const dayValue = valor_actual - valor_cierre_anterior;
+                const dayPercent = (dayValue / valor_cierre_anterior) * 100;
+                result[code] = { dayValue, dayPercent };
+              } else {
+                result[code] = { dayValue: null, dayPercent: null };
+              }
             } else {
               result[code] = { dayValue: null, dayPercent: null };
             }
