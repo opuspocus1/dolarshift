@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>(getInitialViewMode);
   const [baseCurrency, setBaseCurrency] = useState<string>('');
 
   useEffect(() => {
