@@ -197,9 +197,21 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%'
                   : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>{row.monthPercent !== undefined ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%' : '-'}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)} text-gray-900 dark:text-white`}>{row.ytdPercent !== undefined ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%' : '-'}</td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.yoyPercent)} text-gray-900 dark:text-white`}>{row.yoyPercent !== undefined ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>
+                {row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
+                  ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%'
+                  : '-'}
+              </td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)} text-gray-900 dark:text-white`}>
+                {row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
+                  ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%'
+                  : '-'}
+              </td>
+              <td className={`px-3 py-2 text-right font-mono ${getColor(row.yoyPercent)} text-gray-900 dark:text-white`}>
+                {row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
+                  ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toFixed(2) + '%'
+                  : '-'}
+              </td>
               <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date}</td>
             </tr>
           ))}
