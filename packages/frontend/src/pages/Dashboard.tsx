@@ -267,6 +267,15 @@ const Dashboard: React.FC = () => {
             // Semanal: hace 7 días desde la última fecha con datos
             const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
             const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
+            // Log de depuración para variación semanal
+            console.log({
+              code,
+              diasConDatos,
+              actualDate: actual.date,
+              weekAgo: weekAgo.toISOString().slice(0, 10),
+              weekValue,
+              actualValue
+            });
             // Mensual: hace 30 días desde la última fecha con datos
             const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
             const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
