@@ -45,7 +45,6 @@ const Dashboard: React.FC = () => {
   const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>(getInitialViewMode);
   const [baseCurrency, setBaseCurrency] = useState<string>('');
-  const [totalPages, setTotalPages] = useState(1);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
