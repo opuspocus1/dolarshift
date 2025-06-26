@@ -217,7 +217,7 @@ const Dashboard: React.FC = () => {
       async function fetchVariations() {
         const today = new Date();
         const desde = new Date(today);
-        desde.setDate(desde.getDate() - 8); // Últimos 8 días para variación semanal
+        desde.setDate(desde.getDate() - 14); // Últimos 14 días para variación semanal robusta
         const result = {};
         let usdHistory = [];
         if (baseCurrency === 'USD') {
