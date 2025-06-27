@@ -147,10 +147,11 @@ export const bcraService = {
           sell: null
         };
       }
+      
       return {
         date: result.fecha,
-        buy: rate.tipoCotizacion ?? null,
-        sell: rate.tipoCotizacion ?? null
+        buy: rate.tipoCotizacion,
+        sell: rate.tipoCotizacion
       };
     });
 
