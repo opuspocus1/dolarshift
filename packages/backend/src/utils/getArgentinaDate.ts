@@ -37,7 +37,7 @@ async function getRealDate(): Promise<Date> {
       console.log(`[getRealDate] Successfully got date from ${apiUrl}: ${apiDate.toISOString()}`);
       return apiDate;
     } catch (error) {
-      console.warn(`[getRealDate] Failed to get date from ${apiUrl}:`, error.message);
+      console.warn(`[getRealDate] Failed to get date from ${apiUrl}:`, error instanceof Error ? error.message : String(error));
       continue; // Intentar con la siguiente API
     }
   }
@@ -51,7 +51,7 @@ export async function getArgentinaDate(): Promise<Date> {
   try {
     return await getRealDate();
   } catch (error) {
-    console.warn('[getArgentinaDate] Failed to get real date, using hardcoded fallback:', error);
+    console.warn('[getArgentinaDate] Failed to get real date, using hardcoded fallback:', error instanceof Error ? error.message : String(error));
     // Fallback a una fecha conocida válida
     return new Date('2024-12-27T14:27:46.000Z');
   }
