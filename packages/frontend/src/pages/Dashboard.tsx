@@ -257,7 +257,6 @@ const Dashboard: React.FC = () => {
         try {
           // Usar el método optimizado para obtener todos los datos de una vez
           const bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate);
-          console.log('[Depuración][bulkData]', bulkHistory);
           
           if (baseCurrency === 'USD') {
             usdHistory = bulkHistory['USD'] || [];
