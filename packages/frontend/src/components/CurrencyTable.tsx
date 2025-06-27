@@ -114,7 +114,11 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
                 </td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}</td>
+                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">
+                  {loadingVariations ? (
+                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                  ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
+                </td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
@@ -175,7 +179,11 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                 <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
                 <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
               </td>
-              <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}</td>
+              <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">
+                {loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
+              </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)} text-gray-900 dark:text-white`}>
                 {row.dayValue !== undefined && row.dayValue !== null ? (
                   <>
