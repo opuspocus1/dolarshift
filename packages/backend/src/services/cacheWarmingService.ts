@@ -48,6 +48,15 @@ class CacheWarmingService {
       nextRun: new Date()
     });
 
+    // Job para precalentar el bulk de todas las monedas
+    this.jobs.set('bulk-history', {
+      id: 'bulk-history',
+      type: 'history',
+      status: 'pending',
+      lastRun: null,
+      nextRun: new Date()
+    });
+
     console.log('[Cache Warming] Jobs initialized');
   }
 
@@ -79,7 +88,8 @@ class CacheWarmingService {
       await Promise.all([
         this.warmCurrenciesCache(),
         this.warmCurrentRatesCache(),
-        this.warmHistoricalRatesCache()
+        this.warmHistoricalRatesCache(),
+        this.warmBulkHistoryCache()
       ]);
 
       console.log('[Cache Warming] All jobs completed successfully');
@@ -184,6 +194,53 @@ class CacheWarmingService {
     }
   }
 
+  private async warmBulkHistoryCache() {
+    const job = this.jobs.get('bulk-history');
+    if (!job) return;
+
+    try {
+      job.status = 'running';
+      job.lastRun = new Date();
+      job.nextRun = new Date(Date.now() + 24 * 60 * 60 * 1000); // Próxima ejecución en 24 horas
+
+      console.log('[Cache Warming] Warming bulk history cache...');
+      const today = new Date();
+      const endDate = subDays(today, 1); // Hasta ayer
+      const startDate = subDays(today, 370); // Último año (370 días para cubrir variaciones)
+      const startDateStr = format(startDate, 'yyyy-MM-dd');
+      const endDateStr = format(endDate, 'yyyy-MM-dd');
+
+      // Obtener la lista dinámica de monedas
+      const currencies = await bcraService.getCurrencies();
+      const allCodes = currencies.map(c => c.code);
+      console.log(`[Cache Warming] Fetching bulk history for ${allCodes.length} currencies (${startDateStr} to ${endDateStr})`);
+
+      const bulkData = {};
+      const promises = allCodes.map(async (currency) => {
+        try {
+          const data = await bcraService.getExchangeRateHistory(currency, startDate, endDate);
+          bulkData[currency] = data;
+        } catch (error) {
+          console.error(`[Cache Warming] Error warming bulk history for ${currency}:`, error);
+          bulkData[currency] = [];
+        }
+      });
+      await Promise.all(promises);
+
+      // Guardar en cache con la misma clave que el endpoint bulk
+      const cacheKey = getCacheKey('bulk_history', startDateStr, endDateStr);
+      cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60); // 7 días TTL
+      console.log(`[Cache Warming] Bulk history cache set for ${allCodes.length} currencies (${startDateStr} to ${endDateStr})`);
+
+      job.status = 'completed';
+      console.log('[Cache Warming] Bulk history cache warmed');
+    } catch (error) {
+      job.status = 'failed';
+      job.error = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[Cache Warming] Error warming bulk history cache:', error);
+    }
+  }
+
   // Métodos públicos para control manual
   public async runJob(jobId: string) {
     const job = this.jobs.get(jobId);
@@ -199,7 +256,11 @@ class CacheWarmingService {
         await this.warmCurrentRatesCache();
         break;
       case 'history':
-        await this.warmHistoricalRatesCache();
+        if (job.id === 'historical-rates') {
+          await this.warmHistoricalRatesCache();
+        } else if (job.id === 'bulk-history') {
+          await this.warmBulkHistoryCache();
+        }
         break;
     }
   }
