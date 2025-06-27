@@ -110,7 +110,7 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
     const cachedData = cacheConfig.historical.get(cacheKey);
     
     if (cachedData) {
-      console.log(`[Cache] History for ${currency} (${startDate}-${endDate}) served from historical cache, records: ${cachedData.length}`);
+      console.log(`[Cache] History for ${currency} (${startDate}-${endDate}) served from historical cache, records: ${Array.isArray(cachedData) ? cachedData.length : 0}`);
       return res.json(cachedData);
     }
 
