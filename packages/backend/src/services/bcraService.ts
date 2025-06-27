@@ -80,11 +80,17 @@ function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExc
 
 export const bcraService = {
   async getExchangeRates(date: Date): Promise<ProcessedExchangeRate[]> {
-    // Asegurarnos de que la fecha sea válida
+    // Asegurarnos de que la fecha sea válida y no sea futura
     const today = new Date();
     const targetDate = date > today ? today : date;
     
-    const formattedDate = format(targetDate, "yyyy-MM-dd'T'HH:mm:ss");
+    // Validación adicional: si la fecha es más de 1 día en el futuro, usar hoy
+    const oneDayFromNow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const finalDate = targetDate > oneDayFromNow ? today : targetDate;
+    
+    console.log(`[BCRA Service] Using date: ${finalDate.toISOString()} (original: ${date.toISOString()})`);
+    
+    const formattedDate = format(finalDate, "yyyy-MM-dd'T'HH:mm:ss");
     const response = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
       params: { fecha: formattedDate },
       headers: {
@@ -108,8 +114,15 @@ export const bcraService = {
   },
 
   async getExchangeRateHistory(currency: string, startDate: Date, endDate: Date) {
-    const formattedStartDate = format(startDate, "yyyy-MM-dd'T'HH:mm:ss");
-    const formattedEndDate = format(endDate, "yyyy-MM-dd'T'HH:mm:ss");
+    // Asegurarnos de que las fechas sean válidas y no sean futuras
+    const today = new Date();
+    const validStartDate = startDate > today ? new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000) : startDate;
+    const validEndDate = endDate > today ? today : endDate;
+    
+    console.log(`[BCRA Service] Historical query for ${currency}: ${validStartDate.toISOString()} to ${validEndDate.toISOString()}`);
+    
+    const formattedStartDate = format(validStartDate, "yyyy-MM-dd'T'HH:mm:ss");
+    const formattedEndDate = format(validEndDate, "yyyy-MM-dd'T'HH:mm:ss");
     
     const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
       params: {

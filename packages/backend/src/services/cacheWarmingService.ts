@@ -1,7 +1,6 @@
 import { bcraService } from './bcraService';
 import { cacheConfig, getCacheKey } from '../config/cache';
 import { format, subDays } from 'date-fns';
-import { getValidDateForQueries } from '../utils/getArgentinaDate';
 
 interface CacheWarmingJob {
   id: string;
@@ -126,7 +125,9 @@ class CacheWarmingService {
 
       console.log('[Cache Warming] Warming current rates cache...');
       
-      const today = await getValidDateForQueries();
+      // Usar directamente la fecha actual del sistema
+      const today = new Date();
+      console.log(`[Cache Warming] Using current date: ${today.toISOString()}`);
 
       const rates = await bcraService.getExchangeRates(today);
       const cacheKey = getCacheKey('rates', format(today, 'yyyy-MM-dd'));
@@ -152,7 +153,9 @@ class CacheWarmingService {
 
       console.log('[Cache Warming] Warming historical rates cache...');
       
-      const today = await getValidDateForQueries();
+      // Usar directamente la fecha actual del sistema
+      const today = new Date();
+      console.log(`[Cache Warming] Using current date for historical: ${today.toISOString()}`);
 
       const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'BRL', 'CLP']; // Principales divisas
       
