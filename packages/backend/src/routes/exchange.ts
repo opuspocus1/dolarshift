@@ -151,7 +151,12 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
     }
 
     // Lista de monedas principales para optimizar
-    const majorCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'BRL', 'CLP', 'AUD', 'CAD', 'CHF', 'CNY'];
+    const majorCurrencies = [
+      'USD', 'EUR', 'GBP', 'JPY', 'BRL', 'CLP', 'AUD', 'CAD', 'CHF', 'CNY',
+      'AWG', 'BOB', 'COP', 'CZK', 'DKK', 'HKD', 'ILS', 'INR', 'MXP', 'NIO',
+      'NOK', 'NZD', 'PEN', 'PYG', 'REF', 'RSD', 'RUB', 'SEK', 'SGD', 'TRY',
+      'UYU', 'VEB', 'VND', 'XAG', 'XAU', 'XDR', 'ZAR'
+    ];
     
     console.log(`[Cache] Fetching bulk history for ${majorCurrencies.length} currencies (${startDate}-${endDate}) from BCRA API`);
     
