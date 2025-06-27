@@ -251,12 +251,11 @@ const Dashboard: React.FC = () => {
         const endDate = today.toISOString().slice(0, 10);
         
         const result: { [key: string]: any } = {};
-        const codes = Object.keys(bulkHistory);
-        
+        let bulkHistory: { [key: string]: any } = {};
         try {
           // Usar el método optimizado para obtener todos los datos de una vez
-          const bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate);
-          
+          bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate) || {};
+          const codes = Object.keys(bulkHistory);
           for (const code of codes) {
             try {
               const history = bulkHistory[code] || [];
@@ -307,7 +306,7 @@ const Dashboard: React.FC = () => {
         } catch (error) {
           console.error('Error fetching bulk history:', error);
           // Fallback: marcar todas las variaciones como null
-          for (const code of codes) {
+          for (const code of codesForTable || []) {
             result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, yearPercent: null };
           }
         }
