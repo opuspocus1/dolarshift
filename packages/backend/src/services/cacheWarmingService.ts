@@ -125,12 +125,14 @@ class CacheWarmingService {
 
       console.log('[Cache Warming] Warming current rates cache...');
       
-      // Usar directamente la fecha actual del sistema
+      // Usar una fecha pasada que sabemos que tiene datos disponibles
+      // La API del BCRA puede tener un delay en la disponibilidad de datos
       const today = new Date();
-      console.log(`[Cache Warming] Using current date: ${today.toISOString()}`);
+      const dataDate = subDays(today, 1); // Usar datos de ayer
+      console.log(`[Cache Warming] Using date: ${dataDate.toISOString()} (yesterday)`);
 
-      const rates = await bcraService.getExchangeRates(today);
-      const cacheKey = getCacheKey('rates', format(today, 'yyyy-MM-dd'));
+      const rates = await bcraService.getExchangeRates(dataDate);
+      const cacheKey = getCacheKey('rates', format(dataDate, 'yyyy-MM-dd'));
       cacheConfig.bcra.set(cacheKey, rates, 60 * 60); // 1 hora TTL
 
       job.status = 'completed';
@@ -153,17 +155,18 @@ class CacheWarmingService {
 
       console.log('[Cache Warming] Warming historical rates cache...');
       
-      // Usar directamente la fecha actual del sistema
+      // Usar fechas pasadas que sabemos que tienen datos disponibles
       const today = new Date();
-      console.log(`[Cache Warming] Using current date for historical: ${today.toISOString()}`);
+      const endDate = subDays(today, 1); // Hasta ayer
+      const startDate = subDays(today, 8); // Desde hace 8 días
+      console.log(`[Cache Warming] Using historical date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
 
       const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'BRL', 'CLP']; // Principales divisas
       
       for (const currency of currencies) {
         try {
-          const startDate = subDays(today, 7);
-          const history = await bcraService.getExchangeRateHistory(currency, startDate, today);
-          const cacheKey = getCacheKey('history', currency, format(startDate, 'yyyy-MM-dd'), format(today, 'yyyy-MM-dd'));
+          const history = await bcraService.getExchangeRateHistory(currency, startDate, endDate);
+          const cacheKey = getCacheKey('history', currency, format(startDate, 'yyyy-MM-dd'), format(endDate, 'yyyy-MM-dd'));
           cacheConfig.historical.set(cacheKey, history, 7 * 24 * 60 * 60); // 7 días TTL
           
           console.log(`[Cache Warming] Historical cache warmed for ${currency}: ${history.length} records`);
