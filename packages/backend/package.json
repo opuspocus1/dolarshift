@@ -2,7 +2,7 @@
   "name": "dolarshift-backend",
   "version": "1.0.0",
   "description": "Backend for DolarShift application",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
