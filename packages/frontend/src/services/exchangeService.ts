@@ -283,8 +283,46 @@ export const exchangeService = {
 
   async getChartHistory(currency: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
     console.log('[exchangeService] getChartHistory', currency, startDate, endDate);
+    
+    // Usar cache del frontend
+    const cacheKey = `chart_history_${currency}_${startDate}_${endDate}`;
+    const cachedData = frontendCache.get(cacheKey);
+    
+    if (cachedData) {
+      console.log(`[Frontend Cache] Chart history for ${currency} (${startDate} to ${endDate}) served from cache`);
+      return cachedData;
+    }
+    
+    console.log(`[Frontend Cache] Fetching chart history for ${currency} from API (${startDate} to ${endDate})`);
     const res = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${startDate}/${endDate}`);
     console.log('[exchangeService] getChartHistory response', res.data?.length);
+    
+    // Cache por 24 horas para datos históricos
+    frontendCache.set(cacheKey, res.data, 24 * 60 * 60 * 1000);
+    
+    return res.data;
+  },
+
+  // Nuevo método optimizado para obtener historial de todas las monedas principales de una vez
+  async getBulkChartHistory(startDate: string, endDate: string): Promise<{ [currency: string]: ExchangeRateHistory[] }> {
+    console.log('[exchangeService] getBulkChartHistory', startDate, endDate);
+    
+    // Usar cache del frontend
+    const cacheKey = `bulk_chart_history_${startDate}_${endDate}`;
+    const cachedData = frontendCache.get(cacheKey);
+    
+    if (cachedData) {
+      console.log(`[Frontend Cache] Bulk chart history (${startDate} to ${endDate}) served from cache`);
+      return cachedData;
+    }
+    
+    console.log(`[Frontend Cache] Fetching bulk chart history from API (${startDate} to ${endDate})`);
+    const res = await axios.get(`${API_BASE_URL}/exchange/rates/history/bulk/${startDate}/${endDate}`);
+    console.log('[exchangeService] getBulkChartHistory response', Object.keys(res.data || {}).length, 'currencies');
+    
+    // Cache por 24 horas para datos históricos
+    frontendCache.set(cacheKey, res.data, 24 * 60 * 60 * 1000);
+    
     return res.data;
   },
 

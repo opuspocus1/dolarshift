@@ -129,6 +129,63 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
   }
 });
 
+// Get historical data for all major currencies at once (optimized endpoint)
+router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
+  try {
+    const { startDate, endDate } = req.params;
+    const startDateObj = new Date(startDate);
+    const endDateObj = new Date(endDate);
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    if (endDateObj > today) {
+      return res.status(400).json({ error: 'No hay cotizaciones para fechas futuras.' });
+    }
+
+    const cacheKey = getCacheKey('bulk_history', startDate, endDate);
+    const cachedData = cacheConfig.historical.get(cacheKey);
+    
+    if (cachedData) {
+      console.log(`[Cache] Bulk history (${startDate}-${endDate}) served from historical cache`);
+      return res.json(cachedData);
+    }
+
+    // Lista de monedas principales para optimizar
+    const majorCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'BRL', 'CLP', 'AUD', 'CAD', 'CHF', 'CNY'];
+    
+    console.log(`[Cache] Fetching bulk history for ${majorCurrencies.length} currencies (${startDate}-${endDate}) from BCRA API`);
+    
+    const bulkData: { [currency: string]: any[] } = {};
+    
+    // Fetch data for all major currencies in parallel
+    const promises = majorCurrencies.map(async (currency) => {
+      try {
+        const data = await bcraService.getExchangeRateHistory(currency, startDateObj, endDateObj);
+        return { currency, data };
+      } catch (error) {
+        console.error(`Error fetching history for ${currency}:`, error);
+        return { currency, data: [] };
+      }
+    });
+    
+    const results = await Promise.all(promises);
+    
+    results.forEach(({ currency, data }) => {
+      bulkData[currency] = data;
+    });
+    
+    // Cache por 7 días para datos históricos
+    cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60);
+    
+    console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(bulkData).length} currencies`);
+    res.json(bulkData);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error('Error fetching bulk currency rates:', axiosError.response?.data || axiosError.message);
+    res.status(500).json({ error: 'Error fetching bulk currency rates', details: axiosError.response?.data || axiosError.message });
+  }
+});
+
 // Cache management endpoints
 router.delete('/cache/clear', (req, res) => {
   clearAllCaches();

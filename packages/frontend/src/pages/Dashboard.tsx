@@ -230,100 +230,110 @@ const Dashboard: React.FC = () => {
         const today = new Date();
         const desde = new Date(today);
         desde.setDate(desde.getDate() - 370); // Pedir 370 días para cubrir mensual e interanual
+        
+        const startDate = desde.toISOString().slice(0, 10);
+        const endDate = today.toISOString().slice(0, 10);
+        
         const result = {};
         let usdHistory = [];
-        if (baseCurrency === 'USD') {
-          usdHistory = await exchangeService.getChartHistory(
-            'USD',
-            desde.toISOString().slice(0, 10),
-            today.toISOString().slice(0, 10)
-          );
-        }
-        for (const code of codes) {
-          try {
-            const history = await exchangeService.getChartHistory(
-              code,
-              desde.toISOString().slice(0, 10),
-              today.toISOString().slice(0, 10)
-            );
-            const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
-            if (diasConDatos.length === 0) {
-              result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
-              continue;
-            }
-            // Usar la última fecha con datos como referencia de 'hoy'
-            const actual = diasConDatos[diasConDatos.length - 1];
-            let actualValue;
-            if (baseCurrency === 'USD') {
-              const usd = (usdHistory || []).find(u => u.date === actual.date);
-              actualValue = usd && usd.buy ? actual.buy / usd.buy : null;
-            } else {
-              actualValue = actual.buy;
-            }
-            function getClosestValue(targetDateStr) {
-              const target = new Date(targetDateStr);
-              for (let i = diasConDatos.length - 1; i >= 0; i--) {
-                const d = new Date(diasConDatos[i].date);
-                if (d <= target) {
-                  if (baseCurrency === 'USD') {
-                    const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
-                    return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
-                  } else {
-                    return diasConDatos[i].buy;
-                  }
-                }
+        
+        try {
+          // Usar el método optimizado para obtener todos los datos de una vez
+          const bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate);
+          
+          if (baseCurrency === 'USD') {
+            usdHistory = bulkHistory['USD'] || [];
+          }
+          
+          for (const code of codes) {
+            try {
+              const history = bulkHistory[code] || [];
+              const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
+              if (diasConDatos.length === 0) {
+                result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
+                continue;
               }
-              return null;
-            }
-            const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
-            const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
-            const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
-            const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
-            const year = new Date(actual.date).getFullYear();
-            const ytdValue = (() => {
-              for (let i = 0; i < diasConDatos.length; i++) {
-                const d = new Date(diasConDatos[i].date);
-                if (d.getFullYear() === year) {
-                  if (baseCurrency === 'USD') {
-                    const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
-                    return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
-                  } else {
-                    return diasConDatos[i].buy;
-                  }
-                }
-              }
-              return null;
-            })();
-            const yearAgo = new Date(actual.date); yearAgo.setDate(yearAgo.getDate() - 365);
-            const yoyValue = getClosestValue(yearAgo.toISOString().slice(0, 10));
-            let dayValue = null, dayPercent = null;
-            if (diasConDatos.length >= 2) {
-              let valores = [];
+              // Usar la última fecha con datos como referencia de 'hoy'
+              const actual = diasConDatos[diasConDatos.length - 1];
+              let actualValue;
               if (baseCurrency === 'USD') {
-                valores = diasConDatos.map(h => {
-                  const usd = (usdHistory || []).find(u => u.date === h.date);
-                  if (usd && usd.buy) {
-                    return h.buy / usd.buy;
-                  }
-                  return null;
-                }).filter(v => v !== null);
+                const usd = (usdHistory || []).find(u => u.date === actual.date);
+                actualValue = usd && usd.buy ? actual.buy / usd.buy : null;
               } else {
-                valores = diasConDatos.map(h => h.buy);
+                actualValue = actual.buy;
               }
-              if (valores.length >= 2) {
-                dayValue = valores[valores.length - 1] - valores[valores.length - 2];
-                dayPercent = (dayValue / valores[valores.length - 2]) * 100;
+              function getClosestValue(targetDateStr) {
+                const target = new Date(targetDateStr);
+                for (let i = diasConDatos.length - 1; i >= 0; i--) {
+                  const d = new Date(diasConDatos[i].date);
+                  if (d <= target) {
+                    if (baseCurrency === 'USD') {
+                      const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
+                      return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
+                    } else {
+                      return diasConDatos[i].buy;
+                    }
+                  }
+                }
+                return null;
               }
+              const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
+              const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
+              const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
+              const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
+              const year = new Date(actual.date).getFullYear();
+              const ytdValue = (() => {
+                for (let i = 0; i < diasConDatos.length; i++) {
+                  const d = new Date(diasConDatos[i].date);
+                  if (d.getFullYear() === year) {
+                    if (baseCurrency === 'USD') {
+                      const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
+                      return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
+                    } else {
+                      return diasConDatos[i].buy;
+                    }
+                  }
+                }
+                return null;
+              })();
+              const yearAgo = new Date(actual.date); yearAgo.setDate(yearAgo.getDate() - 365);
+              const yoyValue = getClosestValue(yearAgo.toISOString().slice(0, 10));
+              let dayValue = null, dayPercent = null;
+              if (diasConDatos.length >= 2) {
+                let valores = [];
+                if (baseCurrency === 'USD') {
+                  valores = diasConDatos.map(h => {
+                    const usd = (usdHistory || []).find(u => u.date === h.date);
+                    if (usd && usd.buy) {
+                      return h.buy / usd.buy;
+                    }
+                    return null;
+                  }).filter(v => v !== null);
+                } else {
+                  valores = diasConDatos.map(h => h.buy);
+                }
+                if (valores.length >= 2) {
+                  dayValue = valores[valores.length - 1] - valores[valores.length - 2];
+                  dayPercent = (dayValue / valores[valores.length - 2]) * 100;
+                }
+              }
+              const weekPercent = weekValue ? ((actualValue - weekValue) / weekValue) * 100 : null;
+              const monthPercent = monthValue ? ((actualValue - monthValue) / monthValue) * 100 : null;
+              const ytdPercent = ytdValue ? ((actualValue - ytdValue) / ytdValue) * 100 : null;
+              const yoyPercent = yoyValue ? ((actualValue - yoyValue) / yoyValue) * 100 : null;
+              result[code] = { dayValue, dayPercent, weekPercent, monthPercent, ytdPercent, yoyPercent };
+            } catch (e) {
+              result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
             }
-            const weekPercent = weekValue ? ((actualValue - weekValue) / weekValue) * 100 : null;
-            const monthPercent = monthValue ? ((actualValue - monthValue) / monthValue) * 100 : null;
-            const ytdPercent = ytdValue ? ((actualValue - ytdValue) / ytdValue) * 100 : null;
-            const yoyPercent = yoyValue ? ((actualValue - yoyValue) / yoyValue) * 100 : null;
-            result[code] = { dayValue, dayPercent, weekPercent, monthPercent, ytdPercent, yoyPercent };
-          } catch (e) {
+          }
+        } catch (error) {
+          console.error('Error fetching bulk history:', error);
+          // Fallback: marcar todas las variaciones como null
+          for (const code of codes) {
             result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
           }
         }
+        
         cache.current[cacheKey] = result; // guardar en cache
         setVariations(result);
         setLoadingVariations(false);
