@@ -388,7 +388,7 @@ const Dashboard: React.FC = () => {
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
       value: card.buy,
       label: `${pair} ${name}`,
-      date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : '',
+      date: card.date ? card.date.split('-').reverse().join('/') : '',
       dayValue: variation.dayValue,
       dayPercent: variation.dayPercent,
       weekPercent: variation.weekPercent,
