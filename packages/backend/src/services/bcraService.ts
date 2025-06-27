@@ -135,8 +135,6 @@ export const bcraService = {
       httpsAgent: agent
     });
 
-    console.log('[BCRA Service] getExchangeRateHistory raw response:', JSON.stringify(response.data.results.slice(0, 5)) + (response.data.results.length > 5 ? ' ...' : ''));
-
     // Procesar el historial para incluir compra y venta
     const mapped = response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
       const rate = result.detalle[0];
@@ -155,7 +153,6 @@ export const bcraService = {
       };
     });
 
-    console.log('[BCRA Service] getExchangeRateHistory mapped:', JSON.stringify(mapped.slice(0, 5)) + (mapped.length > 5 ? ' ...' : ''));
     return mapped;
   },
 
