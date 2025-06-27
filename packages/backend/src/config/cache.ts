@@ -54,7 +54,7 @@ export function getAllCacheStats() {
 // Función para limpiar caches expirados
 export function cleanupExpiredCaches(): void {
   Object.entries(cacheConfig).forEach(([name, cache]) => {
-    cache.prune();
+    // cache.prune(); // Eliminado porque NodeCache no tiene este método
     console.log(`[Cache] Cleaned up expired entries from ${name} cache`);
   });
 }
