@@ -169,10 +169,20 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
         bestStartDate = new Date(maybeStart);
       }
     }
-    if (bestKey) {
+    if (bestKey && bestStartDate && bestEndDate) {
       const bestBulk = cacheConfig.historical.get(bestKey);
       console.log(`[Cache] Bulk history (${startDate}-${endDate}) not found, serving best available: ${bestKey}`);
-      return res.json({ data: bestBulk, rangoRealDevuelto: { startDate: bestStartDate.toISOString().slice(0,10), endDate: bestEndDate.toISOString().slice(0,10) } });
+      return res.json({
+        data: bestBulk,
+        rangoRealDevuelto: {
+          startDate: bestStartDate.toISOString().slice(0, 10),
+          endDate: bestEndDate.toISOString().slice(0, 10)
+        }
+      });
+    } else if (bestKey) {
+      // fallback defensivo
+      const bestBulk = cacheConfig.historical.get(bestKey);
+      return res.json({ data: bestBulk });
     }
 
     // Si no hay ningún bulk cacheado, intentar traer de la API SOLO si el rango pedido es válido y no futuro
