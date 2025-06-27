@@ -49,6 +49,11 @@ const Dashboard: React.FC = () => {
   const [baseCurrency, setBaseCurrency] = useState<string>('');
   const isFirstRender = useRef(true);
 
+  // Limpiar cache del frontend para forzar nueva request al backend
+  React.useEffect(() => {
+    exchangeService.clearCache();
+  }, []);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
