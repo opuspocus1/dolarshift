@@ -135,17 +135,30 @@ export const bcraService = {
       httpsAgent: agent
     });
 
+    console.log('[BCRA Service] getExchangeRateHistory raw response:', JSON.stringify(response.data.results.slice(0, 5)) + (response.data.results.length > 5 ? ' ...' : ''));
+
     // Procesar el historial para incluir compra y venta
-    return response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
+    const mapped = response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
       const buyRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 1);
       const sellRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 2);
 
+      if (!buyRate && !sellRate) {
+        return {
+          date: result.fecha,
+          buy: null,
+          sell: null
+        };
+      }
+
       return {
         date: result.fecha,
-        buy: buyRate?.tipoCotizacion || 0,
-        sell: sellRate?.tipoCotizacion || 0
+        buy: buyRate?.tipoCotizacion ?? null,
+        sell: sellRate?.tipoCotizacion ?? null
       };
     });
+
+    console.log('[BCRA Service] getExchangeRateHistory mapped:', JSON.stringify(mapped.slice(0, 5)) + (mapped.length > 5 ? ' ...' : ''));
+    return mapped;
   },
 
   async getCurrencies() {
