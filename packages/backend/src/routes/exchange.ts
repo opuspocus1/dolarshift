@@ -41,22 +41,50 @@ router.get('/rates/:date', async (req, res) => {
       return res.status(400).json({ error: 'No hay cotizaciones para fechas futuras.' });
     }
 
-    const cacheKey = getCacheKey('rates', date);
-    const cachedData = cacheConfig.bcra.get(cacheKey);
+    let cacheKey = getCacheKey('rates', date);
+    let cachedData = cacheConfig.bcra.get(cacheKey);
     
-    if (cachedData) {
-      console.log(`[Cache] Rates for ${date} served from BCRA cache`);
+    // Si no hay datos para la fecha pedida, buscar la última fecha disponible hacia atrás (hasta 7 días)
+    let tries = 0;
+    let lastDateTried = new Date(dateObj);
+    while ((!cachedData || cachedData.length === 0) && tries < 7) {
+      lastDateTried.setDate(lastDateTried.getDate() - 1);
+      const tryDateStr = format(lastDateTried, 'yyyy-MM-dd');
+      cacheKey = getCacheKey('rates', tryDateStr);
+      cachedData = cacheConfig.bcra.get(cacheKey);
+      tries++;
+    }
+    if (cachedData && cachedData.length > 0) {
+      console.log(`[Cache] Rates for ${date} not found, served from previous available date: ${format(lastDateTried, 'yyyy-MM-dd')}`);
       return res.json(cachedData);
     }
 
-    console.log(`[Cache] Fetching rates for ${date} from BCRA API`);
-    const data = await bcraService.getExchangeRates(dateObj);
-    
-    // Cache por 1 hora para datos actuales, 24 horas para históricos
-    const ttl = isToday(dateObj) ? 60 * 60 : 24 * 60 * 60;
-    cacheConfig.bcra.set(cacheKey, data, ttl);
-    
-    res.json(data);
+    // Si no hay en cache, intentar traer de la API (y si tampoco, buscar hacia atrás)
+    let data = [];
+    tries = 0;
+    lastDateTried = new Date(dateObj);
+    while (data.length === 0 && tries < 7) {
+      try {
+        data = await bcraService.getExchangeRates(lastDateTried);
+      } catch (e) {
+        data = [];
+      }
+      if (data.length === 0) {
+        lastDateTried.setDate(lastDateTried.getDate() - 1);
+      }
+      tries++;
+    }
+    if (data.length > 0) {
+      const tryDateStr = format(lastDateTried, 'yyyy-MM-dd');
+      cacheKey = getCacheKey('rates', tryDateStr);
+      // Cachear el resultado
+      cacheConfig.bcra.set(cacheKey, data, 24 * 60 * 60);
+      console.log(`[API] Rates for ${date} not found, served from previous available date: ${tryDateStr}`);
+      return res.json(data);
+    }
+
+    // Si no hay datos en ningún lado
+    return res.json([]);
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error('Error fetching exchange rates:', axiosError.response?.data || axiosError.message);

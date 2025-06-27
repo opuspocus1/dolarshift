@@ -35,7 +35,7 @@ const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [cards, setCards] = useState<ExchangeRate[]>([]);
-  const [date, setDate] = useState<string>('');
+  const [date, setDate] = useState<string>(format(subDays(new Date(), 1), 'yyyy-MM-dd'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
