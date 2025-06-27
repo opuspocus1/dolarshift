@@ -306,24 +306,26 @@ export const exchangeService = {
   // Nuevo método optimizado para obtener historial de todas las monedas principales de una vez
   async getBulkChartHistory(startDate: string, endDate: string): Promise<{ [currency: string]: ExchangeRateHistory[] }> {
     console.log('[exchangeService] getBulkChartHistory', startDate, endDate);
+    
     // Usar cache del frontend
     const cacheKey = `bulk_chart_history_${startDate}_${endDate}`;
     const cachedData = frontendCache.get(cacheKey);
+    
     if (cachedData) {
       console.log(`[Frontend Cache] Bulk chart history (${startDate} to ${endDate}) served from cache`);
-      // Log detallado de lo que hay en el cache
-      console.log('[getBulkChartHistory] bulkData (from cache):', cachedData);
       return cachedData;
     }
+    
     console.log(`[Frontend Cache] Fetching bulk chart history from API (${startDate} to ${endDate})`);
     const res = await axios.get(`${API_BASE_URL}/exchange/rates/history/bulk/${startDate}/${endDate}`);
+    
     // Soportar nuevo formato: { data, rangoRealDevuelto }
     const bulkData = res.data?.data || res.data;
     console.log('[exchangeService] getBulkChartHistory response', Object.keys(bulkData || {}).length, 'currencies');
-    // Log detallado de lo que llega del backend
-    console.log('[getBulkChartHistory] bulkData (from API):', bulkData);
+    
     // Cache por 24 horas para datos históricos
     frontendCache.set(cacheKey, bulkData, 24 * 60 * 60 * 1000);
+    
     return bulkData;
   },
 
