@@ -82,15 +82,26 @@ export const bcraService = {
   async getExchangeRates(date: Date): Promise<ProcessedExchangeRate[]> {
     // Asegurarnos de que la fecha sea válida y no sea futura
     const today = new Date();
-    const targetDate = date > today ? today : date;
-    
+    let targetDate = date > today ? today : date;
     // Validación adicional: si la fecha es más de 1 día en el futuro, usar hoy
     const oneDayFromNow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    const finalDate = targetDate > oneDayFromNow ? today : targetDate;
-    
-    console.log(`[BCRA Service] Using date: ${finalDate.toISOString()} (original: ${date.toISOString()})`);
-    
-    const formattedDate = format(finalDate, "yyyy-MM-dd'T'HH:mm:ss");
+    if (targetDate > oneDayFromNow) targetDate = today;
+
+    // NUEVO: Si la fecha pedida es hoy o futura, consultar la última fecha real del BCRA
+    let bcraDateStr = null;
+    if (targetDate >= today) {
+      const latest = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
+        },
+        httpsAgent: agent
+      });
+      bcraDateStr = latest.data.results.fecha;
+      targetDate = new Date(bcraDateStr);
+    }
+
+    console.log(`[BCRA Service] Using date: ${targetDate.toISOString()} (original: ${date.toISOString()})`);
+    const formattedDate = format(targetDate, "yyyy-MM-dd'T'HH:mm:ss");
     const response = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
       params: { fecha: formattedDate },
       headers: {
@@ -98,7 +109,6 @@ export const bcraService = {
       },
       httpsAgent: agent
     });
-
     // Procesar los datos para separar compra y venta
     const rates = response.data.results.detalle;
     const processedRates = rates.map((rate: BCRAExchangeRate) => ({
@@ -108,7 +118,6 @@ export const bcraService = {
       sell: rate.tipoCotizacion,
       date: response.data.results.fecha
     }));
-
     // Process rates relative to USD
     return processRatesRelativeToUSD(processedRates);
   },
