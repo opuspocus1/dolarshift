@@ -139,21 +139,18 @@ export const bcraService = {
 
     // Procesar el historial para incluir compra y venta
     const mapped = response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
-      const buyRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 1);
-      const sellRate = result.detalle.find((rate: BCRAExchangeRate) => rate.tipoPase === 2);
-
-      if (!buyRate && !sellRate) {
+      const rate = result.detalle[0];
+      if (!rate) {
         return {
           date: result.fecha,
           buy: null,
           sell: null
         };
       }
-
       return {
         date: result.fecha,
-        buy: buyRate?.tipoCotizacion ?? null,
-        sell: sellRate?.tipoCotizacion ?? null
+        buy: rate.tipoCotizacion ?? null,
+        sell: rate.tipoCotizacion ?? null
       };
     });
 
