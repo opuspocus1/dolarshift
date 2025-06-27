@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { format, subDays } from 'date-fns';
+import { format, subDays, isToday, startOfDay } from 'date-fns';
 
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://dolarshift.onrender.com/api';
 export const BCRA_API_URL = 'https://api.bcra.gob.ar/estadisticascambiarias/v1.0';
@@ -35,6 +35,99 @@ export interface ExchangeRateHistory {
   sell: number;
   tipopase?: number;
 }
+
+// Cache del frontend usando localStorage
+class FrontendCache {
+  private static instance: FrontendCache;
+  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
+
+  static getInstance(): FrontendCache {
+    if (!FrontendCache.instance) {
+      FrontendCache.instance = new FrontendCache();
+    }
+    return FrontendCache.instance;
+  }
+
+  private getCacheKey(type: string, ...params: string[]): string {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    return `${type}_${today}_${params.join('_')}`;
+  }
+
+  set(key: string, data: any, ttl: number = 24 * 60 * 60 * 1000): void {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl
+    });
+    
+    // También guardar en localStorage para persistencia
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        data,
+        timestamp: Date.now(),
+        ttl
+      }));
+    } catch (error) {
+      console.warn('Could not save to localStorage:', error);
+    }
+  }
+
+  get(key: string): any | null {
+    const cached = this.cache.get(key);
+    
+    if (cached) {
+      if (Date.now() - cached.timestamp < cached.ttl) {
+        return cached.data;
+      } else {
+        this.cache.delete(key);
+      }
+    }
+
+    // Intentar recuperar de localStorage
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Date.now() - parsed.timestamp < parsed.ttl) {
+          // Restaurar en memoria
+          this.cache.set(key, parsed);
+          return parsed.data;
+        } else {
+          localStorage.removeItem(key);
+        }
+      }
+    } catch (error) {
+      console.warn('Could not read from localStorage:', error);
+    }
+
+    return null;
+  }
+
+  clear(): void {
+    this.cache.clear();
+    // Limpiar localStorage también
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('currencies_') || key.startsWith('rates_') || key.startsWith('history_')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('Could not clear localStorage:', error);
+    }
+  }
+
+  getStats(): { hits: number; misses: number; keys: number } {
+    return {
+      hits: 0, // Implementar contadores si es necesario
+      misses: 0,
+      keys: this.cache.size
+    };
+  }
+}
+
+const frontendCache = FrontendCache.getInstance();
 
 function processExchangeRates(rates: any[]): ExchangeRate[] {
   // Encontrar la tasa USD
@@ -116,11 +209,22 @@ function processExchangeRates(rates: any[]): ExchangeRate[] {
 export const exchangeService = {
   async getCurrencies(): Promise<Currency[]> {
     try {
-      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
-      return (response.data.results.detalle || []).map((divisa: any) => ({
-        code: divisa.codigoMoneda,
-        name: divisa.descripcion
-      }));
+      const cacheKey = `currencies_${format(new Date(), 'yyyy-MM-dd')}`;
+      const cachedData = frontendCache.get(cacheKey);
+      
+      if (cachedData) {
+        console.log('[Frontend Cache] Currencies served from cache');
+        return cachedData;
+      }
+
+      console.log('[Frontend Cache] Fetching currencies from API');
+      const response = await axios.get(`${API_BASE_URL}/exchange/currencies`);
+      const data = response.data;
+      
+      // Cache por 24 horas
+      frontendCache.set(cacheKey, data, 24 * 60 * 60 * 1000);
+      
+      return data;
     } catch (error) {
       console.error('Error fetching currencies:', error);
       return [];
@@ -129,20 +233,24 @@ export const exchangeService = {
 
   async getExchangeRates(date: Date): Promise<ExchangeRate[]> {
     try {
-      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
-      console.log('[exchangeService] Respuesta BCRA:', response.data);
+      const formattedDate = format(date, 'yyyy-MM-dd');
+      const cacheKey = `rates_${formattedDate}`;
+      const cachedData = frontendCache.get(cacheKey);
+      
+      if (cachedData) {
+        console.log(`[Frontend Cache] Rates for ${formattedDate} served from cache`);
+        return cachedData;
+      }
 
-      const bcraDate = response.data.results.fecha;
-      console.log('[exchangeService] Fecha BCRA:', bcraDate);
-
-      const rates = (response.data.results.detalle || [])
-        .filter((rate: any) => rate && rate.codigoMoneda)
-        .map((rate: any) => ({
-          ...rate,
-          fecha: bcraDate
-        }));
-
-      return processExchangeRates(rates);
+      console.log(`[Frontend Cache] Fetching rates for ${formattedDate} from API`);
+      const response = await axios.get(`${API_BASE_URL}/exchange/rates/${formattedDate}`);
+      const data = response.data;
+      
+      // Cache por 1 hora para datos actuales, 24 horas para históricos
+      const ttl = isToday(date) ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+      frontendCache.set(cacheKey, data, ttl);
+      
+      return data;
     } catch (error) {
       console.error('Error fetching exchange rates:', error);
       return [];
@@ -153,16 +261,22 @@ export const exchangeService = {
     try {
       const formattedStartDate = format(startDate, 'yyyy-MM-dd');
       const formattedEndDate = format(endDate, 'yyyy-MM-dd');
-      const url = `${BCRA_API_URL}/Cotizaciones/${currency}/${formattedStartDate}/${formattedEndDate}`;
-      console.log('[exchangeService] Consultando historial:', url);
-      const response = await axios.get(url);
-      console.log('[exchangeService] Datos recibidos:', response.data);
-      return response.data.map((rate: any) => ({
-        date: rate.fecha,
-        buy: rate.tipoCotizacion,
-        sell: rate.tipoCotizacion,
-        tipopase: rate.tipoPase
-      }));
+      const cacheKey = `history_${currency}_${formattedStartDate}_${formattedEndDate}`;
+      const cachedData = frontendCache.get(cacheKey);
+      
+      if (cachedData) {
+        console.log(`[Frontend Cache] History for ${currency} served from cache`);
+        return cachedData;
+      }
+
+      console.log(`[Frontend Cache] Fetching history for ${currency} from API`);
+      const response = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${formattedStartDate}/${formattedEndDate}`);
+      const data = response.data;
+      
+      // Cache por 24 horas para datos históricos
+      frontendCache.set(cacheKey, data, 24 * 60 * 60 * 1000);
+      
+      return data;
     } catch (error) {
       console.error('Error fetching exchange rate history:', error);
       return [];
@@ -171,16 +285,7 @@ export const exchangeService = {
 
   // Nuevas funciones para Charts
   async getAvailableCurrencies(): Promise<Currency[]> {
-    try {
-      const response = await axios.get(`${BCRA_API_URL}/Cotizaciones`);
-      return (response.data.results.detalle || []).map((item: any) => ({
-        code: item.codigoMoneda,
-        name: item.descripcion
-      }));
-    } catch (error) {
-      console.error('Error fetching available currencies:', error);
-      throw error;
-    }
+    return this.getCurrencies();
   },
 
   async getChartHistory(currencyCode: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
@@ -198,32 +303,29 @@ export const exchangeService = {
 
         const formattedStartDate = format(currentStart, 'yyyy-MM-dd');
         const formattedEndDate = format(nextEnd, 'yyyy-MM-dd');
-        const url = `${BCRA_API_URL}/Cotizaciones/${currencyCode}?fechadesde=${formattedStartDate}&fechahasta=${formattedEndDate}`;
-        console.log('[exchangeService] Consultando historial (chart):', url);
-        const response = await axios.get(url);
-        console.log('[exchangeService] Datos recibidos (chart):', response.data);
-        // La respuesta tiene una estructura anidada: results[].detalle[]
-        response.data.results.forEach((day: any) => {
-          const detail = day.detalle[0]; // Tomamos el primer detalle de cada día
-          if (detail) {
-            allHistory.push({
-              date: day.fecha,
-              buy: detail.tipoCotizacion,
-              sell: detail.tipoCotizacion,
-              tipopase: detail.tipoPase
-            });
-          }
-        });
-        // Avanzar al siguiente tramo
+        
+        const history = await this.getExchangeRateHistory(currencyCode, currentStart, nextEnd);
+        allHistory.push(...history);
+
+        // Mover al siguiente tramo
         currentStart = new Date(nextEnd);
         currentStart.setDate(currentStart.getDate() + 1);
       }
-      // Ordenar por fecha ascendente
-      allHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
       return allHistory;
     } catch (error) {
       console.error('Error fetching chart history:', error);
-      throw error;
+      return [];
     }
+  },
+
+  // Funciones para manejar el cache
+  clearCache(): void {
+    frontendCache.clear();
+    console.log('[Frontend Cache] Cache cleared');
+  },
+
+  getCacheStats(): { hits: number; misses: number; keys: number } {
+    return frontendCache.getStats();
   }
 }; 

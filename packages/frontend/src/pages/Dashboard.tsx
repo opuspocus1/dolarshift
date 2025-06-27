@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
 import ScrollToTop from '../components/ScrollToTop';
+import CacheInfo from '../components/CacheInfo';
+import CacheWarmingStatus from '../components/CacheWarmingStatus';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays, isWeekend } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -374,7 +376,7 @@ const Dashboard: React.FC = () => {
     }
   }, [page]);
 
-  // Resetear página a 1 si cambian filtros, búsqueda, base o cantidad de páginas, excepto en el primer render
+  // Resetear página a 1 si cambian filtros, búsqueda o cantidad de páginas, excepto en el primer render
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -384,7 +386,7 @@ const Dashboard: React.FC = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('dolarshift_page', '1');
     }
-  }, [search, selectedCurrencies, baseCurrency, totalPages]);
+  }, [search, selectedCurrencies, totalPages]);
 
   if (loading) {
     return (
@@ -548,6 +550,8 @@ const Dashboard: React.FC = () => {
         )}
       </div>
       <ScrollToTop />
+      <CacheInfo />
+      <CacheWarmingStatus />
     </div>
   );
 };
