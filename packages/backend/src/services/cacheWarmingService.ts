@@ -215,7 +215,7 @@ class CacheWarmingService {
       const allCodes = currencies.map(c => c.code);
       console.log(`[Cache Warming] Fetching bulk history for ${allCodes.length} currencies (${startDateStr} to ${endDateStr})`);
 
-      const bulkData = {};
+      const bulkData: { [currency: string]: any[] } = {};
       const promises = allCodes.map(async (currency) => {
         try {
           const data = await bcraService.getExchangeRateHistory(currency, startDate, endDate);
