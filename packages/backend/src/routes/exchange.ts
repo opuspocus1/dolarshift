@@ -176,7 +176,12 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
     
     // Cache por 7 días para datos históricos
     cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60);
-    
+
+    // Log detallado de cuántos registros tiene cada moneda
+    Object.entries(bulkData).forEach(([code, arr]) => {
+      console.log(`[BulkHistory][API] ${code}: ${Array.isArray(arr) ? arr.length : 0} registros`);
+    });
+
     console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(bulkData).length} currencies`);
     res.json(bulkData);
   } catch (error) {
