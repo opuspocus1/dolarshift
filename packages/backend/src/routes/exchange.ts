@@ -42,7 +42,7 @@ router.get('/rates/:date', async (req, res) => {
     }
 
     let cacheKey = getCacheKey('rates', date);
-    let cachedData: any[] = Array.isArray(cacheConfig.bcra.get(cacheKey)) ? cacheConfig.bcra.get(cacheKey) : [];
+    let cachedData: any[] = cacheConfig.bcra.get(cacheKey) ?? [];
     
     // Si no hay datos para la fecha pedida, buscar la última fecha disponible hacia atrás (hasta 7 días)
     let tries = 0;
@@ -51,7 +51,7 @@ router.get('/rates/:date', async (req, res) => {
       lastDateTried.setDate(lastDateTried.getDate() - 1);
       const tryDateStr = format(lastDateTried, 'yyyy-MM-dd');
       cacheKey = getCacheKey('rates', tryDateStr);
-      cachedData = Array.isArray(cacheConfig.bcra.get(cacheKey)) ? cacheConfig.bcra.get(cacheKey) : [];
+      cachedData = cacheConfig.bcra.get(cacheKey) ?? [];
       tries++;
     }
     if (cachedData && cachedData.length > 0) {
