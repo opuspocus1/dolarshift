@@ -147,9 +147,35 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
     
     if (cachedData) {
       console.log(`[Cache] Bulk history (${startDate}-${endDate}) served from historical cache`);
-      return res.json(cachedData);
+      return res.json({ data: cachedData, rangoRealDevuelto: { startDate, endDate } });
     }
 
+    // Buscar el último bulk cacheado disponible (menor o igual a hoy)
+    const allKeys = cacheConfig.historical.keys();
+    const bulkKeys = allKeys.filter(k => k.startsWith('bulk_history_'));
+    let bestKey = null;
+    let bestEndDate = null;
+    let bestStartDate = null;
+    for (const key of bulkKeys) {
+      // Formato: bulk_history_YYYY-MM-DD_YYYY-MM-DD
+      const parts = key.split('_');
+      const maybeStart = parts[2];
+      const maybeEnd = parts[3];
+      if (!maybeStart || !maybeEnd) continue;
+      const keyEndDate = new Date(maybeEnd);
+      if (keyEndDate <= today && (!bestEndDate || keyEndDate > bestEndDate)) {
+        bestKey = key;
+        bestEndDate = keyEndDate;
+        bestStartDate = new Date(maybeStart);
+      }
+    }
+    if (bestKey) {
+      const bestBulk = cacheConfig.historical.get(bestKey);
+      console.log(`[Cache] Bulk history (${startDate}-${endDate}) not found, serving best available: ${bestKey}`);
+      return res.json({ data: bestBulk, rangoRealDevuelto: { startDate: bestStartDate.toISOString().slice(0,10), endDate: bestEndDate.toISOString().slice(0,10) } });
+    }
+
+    // Si no hay ningún bulk cacheado, intentar traer de la API SOLO si el rango pedido es válido y no futuro
     // Obtener la lista de monedas dinámicamente
     const currencies = await bcraService.getCurrencies();
     const allCodes = currencies.map(c => c.code);
@@ -174,16 +200,19 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
       bulkData[currency] = data;
     });
     
-    // Cache por 7 días para datos históricos
-    cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60);
-
-    // Log detallado de cuántos registros tiene cada moneda
-    Object.entries(bulkData).forEach(([code, arr]) => {
-      console.log(`[BulkHistory][API] ${code}: ${Array.isArray(arr) ? arr.length : 0} registros`);
-    });
-
-    console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(bulkData).length} currencies`);
-    res.json(bulkData);
+    // Solo cachear si el bulk está completo (todas las monedas tienen datos para la fecha de fin)
+    const allHaveData = allCodes.every(code => Array.isArray(bulkData[code]) && bulkData[code].length > 0);
+    if (allHaveData) {
+      cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60);
+      Object.entries(bulkData).forEach(([code, arr]) => {
+        console.log(`[BulkHistory][API] ${code}: ${Array.isArray(arr) ? arr.length : 0} registros`);
+      });
+      console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(bulkData).length} currencies`);
+      return res.json({ data: bulkData, rangoRealDevuelto: { startDate, endDate } });
+    } else {
+      console.warn(`[API] Bulk history (${startDate}-${endDate}) incompleto, no se cachea ni responde. Se recomienda pedir un rango anterior.`);
+      return res.status(503).json({ error: 'No hay datos completos para el rango pedido. Intente con un rango anterior.' });
+    }
   } catch (error) {
     const axiosError = error as AxiosError;
     console.error('Error fetching bulk currency rates:', axiosError.response?.data || axiosError.message);
