@@ -165,11 +165,11 @@ class CacheWarmingService {
       
       for (const currency of currencies) {
         try {
+          console.log(`[Cache Warming] Fetching history for ${currency} (${format(startDate, 'yyyy-MM-dd')} to ${format(endDate, 'yyyy-MM-dd')})`);
           const history = await bcraService.getExchangeRateHistory(currency, startDate, endDate);
           const cacheKey = getCacheKey('history', currency, format(startDate, 'yyyy-MM-dd'), format(endDate, 'yyyy-MM-dd'));
           cacheConfig.historical.set(cacheKey, history, 7 * 24 * 60 * 60); // 7 días TTL
-          
-          console.log(`[Cache Warming] Historical cache warmed for ${currency}: ${history.length} records`);
+          console.log(`[Cache Warming] Historical cache set for ${currency} (${format(startDate, 'yyyy-MM-dd')} to ${format(endDate, 'yyyy-MM-dd')}) with ${history.length} records`);
         } catch (error) {
           console.error(`[Cache Warming] Error warming historical cache for ${currency}:`, error);
         }

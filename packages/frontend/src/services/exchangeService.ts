@@ -263,19 +263,15 @@ export const exchangeService = {
       const formattedEndDate = format(endDate, 'yyyy-MM-dd');
       const cacheKey = `history_${currency}_${formattedStartDate}_${formattedEndDate}`;
       const cachedData = frontendCache.get(cacheKey);
-      
       if (cachedData) {
-        console.log(`[Frontend Cache] History for ${currency} served from cache`);
+        console.log(`[Frontend Cache] History for ${currency} (${formattedStartDate} to ${formattedEndDate}) served from cache`);
         return cachedData;
       }
-
-      console.log(`[Frontend Cache] Fetching history for ${currency} from API`);
+      console.log(`[Frontend Cache] Fetching history for ${currency} from API (${formattedStartDate} to ${formattedEndDate})`);
       const response = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${formattedStartDate}/${formattedEndDate}`);
       const data = response.data;
-      
       // Cache por 24 horas para datos históricos
       frontendCache.set(cacheKey, data, 24 * 60 * 60 * 1000);
-      
       return data;
     } catch (error) {
       console.error('Error fetching exchange rate history:', error);
