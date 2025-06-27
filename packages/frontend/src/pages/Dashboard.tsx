@@ -265,7 +265,6 @@ const Dashboard: React.FC = () => {
             try {
               const history = bulkHistory[code] || [];
               const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
-              console.log(`[Variaciones][${code}] históricos recibidos:`, Array.isArray(history) ? history.length : 0, 'con datos:', diasConDatos.length);
               if (diasConDatos.length === 0) {
                 console.warn(`[Variaciones][${code}] Sin datos suficientes para calcular variaciones. history:`, history);
                 result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
