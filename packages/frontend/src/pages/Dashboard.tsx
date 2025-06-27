@@ -354,7 +354,7 @@ const Dashboard: React.FC = () => {
       name: name,
       flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-      value: effectiveBaseCurrency === 'USD' ? (card.code === 'USD' ? 1 : card.code === 'REF' ? card.rateAgainstUSD : card.rateAgainstUSD) : card.rateAgainstARS,
+      value: card.buy,
       label: `${pair} ${name}`,
       date: card.date ? new Date(card.date).toLocaleDateString('es-AR') : '',
       dayValue: variation.dayValue,
