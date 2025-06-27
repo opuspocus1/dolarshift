@@ -227,6 +227,11 @@ class CacheWarmingService {
       });
       await Promise.all(promises);
 
+      // Log detallado de cuántos registros tiene cada moneda
+      Object.entries(bulkData).forEach(([code, arr]) => {
+        console.log(`[BulkData] ${code}: ${Array.isArray(arr) ? arr.length : 0} registros`);
+      });
+
       // Guardar en cache con la misma clave que el endpoint bulk
       const cacheKey = getCacheKey('bulk_history', startDateStr, endDateStr);
       cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60); // 7 días TTL
