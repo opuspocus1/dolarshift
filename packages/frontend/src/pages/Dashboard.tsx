@@ -371,7 +371,6 @@ const Dashboard: React.FC = () => {
   const { variations: dailyVariations, loadingVariations } = useHistoricalVariations(codesForTable, effectiveBaseCurrency);
 
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
-  console.log('[Dashboard] dailyVariations:', dailyVariations);
   const tableDataSingle = paginatedCards.map(card => {
     let pair;
     let name = card.name;
