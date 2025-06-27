@@ -258,25 +258,22 @@ export const exchangeService = {
   },
 
   async getExchangeRateHistory(currency: string, startDate: Date, endDate: Date): Promise<ExchangeRateHistory[]> {
-    try {
-      const formattedStartDate = format(startDate, 'yyyy-MM-dd');
-      const formattedEndDate = format(endDate, 'yyyy-MM-dd');
-      const cacheKey = `history_${currency}_${formattedStartDate}_${formattedEndDate}`;
-      const cachedData = frontendCache.get(cacheKey);
-      if (cachedData) {
-        console.log(`[Frontend Cache] History for ${currency} (${formattedStartDate} to ${formattedEndDate}) served from cache`);
-        return cachedData;
-      }
-      console.log(`[Frontend Cache] Fetching history for ${currency} from API (${formattedStartDate} to ${formattedEndDate})`);
-      const response = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${formattedStartDate}/${formattedEndDate}`);
-      const data = response.data;
-      // Cache por 24 horas para datos históricos
-      frontendCache.set(cacheKey, data, 24 * 60 * 60 * 1000);
-      return data;
-    } catch (error) {
-      console.error('Error fetching exchange rate history:', error);
-      return [];
+    console.log('[exchangeService] getExchangeRateHistory', currency, startDate, endDate);
+    const formattedStartDate = format(startDate, 'yyyy-MM-dd');
+    const formattedEndDate = format(endDate, 'yyyy-MM-dd');
+    const cacheKey = `history_${currency}_${formattedStartDate}_${formattedEndDate}`;
+    const cachedData = frontendCache.get(cacheKey);
+    if (cachedData) {
+      console.log(`[Frontend Cache] History for ${currency} (${formattedStartDate} to ${formattedEndDate}) served from cache`);
+      return cachedData;
     }
+    console.log(`[Frontend Cache] Fetching history for ${currency} from API (${formattedStartDate} to ${formattedEndDate})`);
+    const response = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${formattedStartDate}/${formattedEndDate}`);
+    const data = response.data;
+    console.log('[exchangeService] getExchangeRateHistory response', data?.length);
+    // Cache por 24 horas para datos históricos
+    frontendCache.set(cacheKey, data, 24 * 60 * 60 * 1000);
+    return data;
   },
 
   // Nuevas funciones para Charts
@@ -284,35 +281,11 @@ export const exchangeService = {
     return this.getCurrencies();
   },
 
-  async getChartHistory(currencyCode: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
-    try {
-      const maxDays = 1000;
-      const allHistory: ExchangeRateHistory[] = [];
-      let currentStart = new Date(startDate);
-      const finalEnd = new Date(endDate);
-
-      while (currentStart <= finalEnd) {
-        // Calcular el siguiente tramo (máximo 1000 días)
-        const nextEnd = new Date(currentStart);
-        nextEnd.setDate(nextEnd.getDate() + maxDays - 1);
-        if (nextEnd > finalEnd) nextEnd.setTime(finalEnd.getTime());
-
-        const formattedStartDate = format(currentStart, 'yyyy-MM-dd');
-        const formattedEndDate = format(nextEnd, 'yyyy-MM-dd');
-        
-        const history = await this.getExchangeRateHistory(currencyCode, currentStart, nextEnd);
-        allHistory.push(...history);
-
-        // Mover al siguiente tramo
-        currentStart = new Date(nextEnd);
-        currentStart.setDate(currentStart.getDate() + 1);
-      }
-
-      return allHistory;
-    } catch (error) {
-      console.error('Error fetching chart history:', error);
-      return [];
-    }
+  async getChartHistory(currency: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
+    console.log('[exchangeService] getChartHistory', currency, startDate, endDate);
+    const res = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${startDate}/${endDate}`);
+    console.log('[exchangeService] getChartHistory response', res.data?.length);
+    return res.data;
   },
 
   // Funciones para manejar el cache

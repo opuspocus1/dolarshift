@@ -110,7 +110,7 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
     const cachedData = cacheConfig.historical.get(cacheKey);
     
     if (cachedData) {
-      console.log(`[Cache] History for ${currency} (${startDate}-${endDate}) served from historical cache`);
+      console.log(`[Cache] History for ${currency} (${startDate}-${endDate}) served from historical cache, records: ${cachedData.length}`);
       return res.json(cachedData);
     }
 
@@ -120,6 +120,7 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
     // Cache por 7 días para datos históricos
     cacheConfig.historical.set(cacheKey, data, 7 * 24 * 60 * 60);
     
+    console.log(`[API] History for ${currency} (${startDate}-${endDate}) fetched from BCRA API, records: ${data.length}`);
     res.json(data);
   } catch (error) {
     const axiosError = error as AxiosError;
