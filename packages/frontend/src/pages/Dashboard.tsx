@@ -273,14 +273,8 @@ const Dashboard: React.FC = () => {
                 result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
                 continue;
               }
-              if (code === 'AWG') {
-                console.log(`[Depuración][AWG] diasConDatos:`, diasConDatos);
-              }
               // Usar la última fecha con datos como referencia de 'hoy'
               const actual = diasConDatos[diasConDatos.length - 1];
-              if (code === 'AWG') {
-                console.log(`[Depuración][AWG] actual:`, actual);
-              }
               let actualValue;
               if (baseCurrency === 'USD') {
                 const usd = (usdHistory || []).find(u => u.date === actual.date);
