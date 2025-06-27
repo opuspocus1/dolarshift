@@ -52,6 +52,18 @@ const Dashboard: React.FC = () => {
   // Limpiar cache del frontend para forzar nueva request al backend
   React.useEffect(() => {
     exchangeService.clearCache();
+    // Limpiar específicamente el cache de bulk chart history del localStorage
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.includes('bulk_chart_history')) {
+          localStorage.removeItem(key);
+          console.log(`[Cache] Removed localStorage key: ${key}`);
+        }
+      });
+    } catch (error) {
+      console.warn('Could not clear localStorage:', error);
+    }
   }, []);
 
   useEffect(() => {
