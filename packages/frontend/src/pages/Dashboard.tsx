@@ -216,7 +216,7 @@ const Dashboard: React.FC = () => {
       async function fetchVariations() {
         const today = new Date();
         const desde = new Date(today);
-        desde.setDate(desde.getDate() - 14); // Últimos 14 días para variación semanal robusta
+        desde.setDate(desde.getDate() - 370); // Pedir 370 días para cubrir mensual e interanual
         const result = {};
         let usdHistory = [];
         if (baseCurrency === 'USD') {
