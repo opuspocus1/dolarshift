@@ -214,8 +214,11 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
     const allHaveData = allCodes.every(code => Array.isArray(bulkData[code]) && bulkData[code].length > 0);
     if (allHaveData) {
       cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60);
+      Object.entries(bulkData).forEach(([code, arr]) => {
+        console.log(`[BulkHistory][API] ${code}: ${Array.isArray(arr) ? arr.length : 0} registros`);
+      });
       console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(bulkData).length} currencies`);
-      res.json(bulkData);
+      return res.json({ data: bulkData, rangoRealDevuelto: { startDate, endDate } });
     } else {
       console.warn(`[API] Bulk history (${startDate}-${endDate}) incompleto, no se cachea ni responde. Se recomienda pedir un rango anterior.`);
       return res.status(503).json({ error: 'No hay datos completos para el rango pedido. Intente con un rango anterior.' });

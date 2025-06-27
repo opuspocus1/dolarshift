@@ -58,6 +58,7 @@ const Dashboard: React.FC = () => {
       keys.forEach(key => {
         if (key.includes('bulk_chart_history')) {
           localStorage.removeItem(key);
+          console.log(`[Cache] Removed localStorage key: ${key}`);
         }
       });
     } catch (error) {
@@ -250,64 +251,117 @@ const Dashboard: React.FC = () => {
         const startDate = desde.toISOString().slice(0, 10);
         const endDate = today.toISOString().slice(0, 10);
         
-        const result: { [key: string]: any } = {};
-        let bulkHistory: { [key: string]: any } = {};
+        const result = {};
+        let usdHistory = [];
+        
         try {
           // Usar el método optimizado para obtener todos los datos de una vez
-          bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate) || {};
-          const codes = Object.keys(bulkHistory);
+          const bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate);
+          console.log('[Depuración][bulkData]', bulkHistory);
+          
+          if (baseCurrency === 'USD') {
+            usdHistory = bulkHistory['USD'] || [];
+          }
+          
           for (const code of codes) {
             try {
               const history = bulkHistory[code] || [];
               const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
-              
+              console.log(`[Variaciones][${code}] históricos recibidos:`, Array.isArray(history) ? history.length : 0, 'con datos:', diasConDatos.length);
               if (diasConDatos.length === 0) {
-                result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, yearPercent: null };
+                console.warn(`[Variaciones][${code}] Sin datos suficientes para calcular variaciones. history:`, history);
+                result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
                 continue;
               }
-              
+              if (code === 'AWG') {
+                console.log(`[Depuración][AWG] diasConDatos:`, diasConDatos);
+              }
               // Usar la última fecha con datos como referencia de 'hoy'
               const actual = diasConDatos[diasConDatos.length - 1];
-              
-              // Buscar datos para diferentes períodos
-              const dayAgo = diasConDatos.find(h => new Date(h.date) < new Date(actual.date));
-              const weekAgo = diasConDatos.find(h => {
-                const date = new Date(h.date);
-                const actualDate = new Date(actual.date);
-                const diffDays = Math.floor((actualDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-                return diffDays >= 7;
-              });
-              const monthAgo = diasConDatos.find(h => {
-                const date = new Date(h.date);
-                const actualDate = new Date(actual.date);
-                const diffDays = Math.floor((actualDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-                return diffDays >= 30;
-              });
-              const yearAgo = diasConDatos.find(h => {
-                const date = new Date(h.date);
-                const actualDate = new Date(actual.date);
-                const diffDays = Math.floor((actualDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-                return diffDays >= 365;
-              });
-              
-              // Calcular variaciones
-              const dayValue = dayAgo ? actual.buy - dayAgo.buy : null;
-              const dayPercent = dayAgo ? ((actual.buy - dayAgo.buy) / dayAgo.buy) * 100 : null;
-              const weekPercent = weekAgo ? ((actual.buy - weekAgo.buy) / weekAgo.buy) * 100 : null;
-              const monthPercent = monthAgo ? ((actual.buy - monthAgo.buy) / monthAgo.buy) * 100 : null;
-              const yearPercent = yearAgo ? ((actual.buy - yearAgo.buy) / yearAgo.buy) * 100 : null;
-              
-              result[code] = { dayValue, dayPercent, weekPercent, monthPercent, yearPercent };
-            } catch (error) {
-              console.error(`Error calculating variations for ${code}:`, error);
-              result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, yearPercent: null };
+              if (code === 'AWG') {
+                console.log(`[Depuración][AWG] actual:`, actual);
+              }
+              let actualValue;
+              if (baseCurrency === 'USD') {
+                const usd = (usdHistory || []).find(u => u.date === actual.date);
+                actualValue = usd && usd.buy ? actual.buy / usd.buy : null;
+              } else {
+                actualValue = actual.buy;
+              }
+              function getClosestValue(targetDateStr) {
+                const target = new Date(targetDateStr);
+                for (let i = diasConDatos.length - 1; i >= 0; i--) {
+                  const d = new Date(diasConDatos[i].date);
+                  if (d <= target) {
+                    if (baseCurrency === 'USD') {
+                      const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
+                      return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
+                    } else {
+                      return diasConDatos[i].buy;
+                    }
+                  }
+                }
+                return null;
+              }
+              const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
+              const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
+              const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
+              const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
+              const year = new Date(actual.date).getFullYear();
+              const ytdValue = (() => {
+                for (let i = 0; i < diasConDatos.length; i++) {
+                  const d = new Date(diasConDatos[i].date);
+                  if (d.getFullYear() === year) {
+                    if (baseCurrency === 'USD') {
+                      const usd = (usdHistory || []).find(u => u.date === diasConDatos[i].date);
+                      return usd && usd.buy ? diasConDatos[i].buy / usd.buy : null;
+                    } else {
+                      return diasConDatos[i].buy;
+                    }
+                  }
+                }
+                return null;
+              })();
+              const yearAgo = new Date(actual.date); yearAgo.setDate(yearAgo.getDate() - 365);
+              const yoyValue = getClosestValue(yearAgo.toISOString().slice(0, 10));
+              let dayValue = null, dayPercent = null;
+              if (diasConDatos.length >= 2) {
+                let valores = [];
+                if (baseCurrency === 'USD') {
+                  valores = diasConDatos.map(h => {
+                    const usd = (usdHistory || []).find(u => u.date === h.date);
+                    if (usd && usd.buy) {
+                      return h.buy / usd.buy;
+                    }
+                    return null;
+                  }).filter(v => v !== null);
+                } else {
+                  valores = diasConDatos.map(h => h.buy);
+                }
+                if (valores.length >= 2) {
+                  dayValue = valores[valores.length - 1] - valores[valores.length - 2];
+                  dayPercent = (dayValue / valores[valores.length - 2]) * 100;
+                } else {
+                  console.warn(`[Variaciones][${code}] No hay suficientes valores para calcular variación diaria. valores:`, valores);
+                }
+              } else {
+                console.warn(`[Variaciones][${code}] No hay suficientes días con datos para variación diaria. diasConDatos:`, diasConDatos);
+              }
+              const weekPercent = weekValue ? ((actualValue - weekValue) / weekValue) * 100 : null;
+              const monthPercent = monthValue ? ((actualValue - monthValue) / monthValue) * 100 : null;
+              const ytdPercent = ytdValue ? ((actualValue - ytdValue) / ytdValue) * 100 : null;
+              const yoyPercent = yoyValue ? ((actualValue - yoyValue) / yoyValue) * 100 : null;
+              result[code] = { dayValue, dayPercent, weekPercent, monthPercent, ytdPercent, yoyPercent };
+            } catch (e) {
+              console.error(`[Variaciones][${code}] Error calculando variaciones:`, e);
+              result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
             }
           }
         } catch (error) {
           console.error('Error fetching bulk history:', error);
           // Fallback: marcar todas las variaciones como null
-          for (const code of codesForTable || []) {
-            result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, yearPercent: null };
+          for (const code of codes) {
+            result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
           }
         }
         

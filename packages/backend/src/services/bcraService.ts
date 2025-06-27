@@ -119,6 +119,8 @@ export const bcraService = {
     const validStartDate = startDate > today ? new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000) : startDate;
     const validEndDate = endDate > today ? today : endDate;
     
+    console.log(`[BCRA Service] Historical query for ${currency}: ${validStartDate.toISOString()} to ${validEndDate.toISOString()}`);
+    
     const formattedStartDate = format(validStartDate, "yyyy-MM-dd'T'HH:mm:ss");
     const formattedEndDate = format(validEndDate, "yyyy-MM-dd'T'HH:mm:ss");
     
@@ -133,25 +135,27 @@ export const bcraService = {
       httpsAgent: agent
     });
 
-    // Procesar el historial para incluir compra y venta
-    const mapped = Array.isArray(response.data.results)
-      ? response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
-          const rate = result.detalle[0];
-          if (!rate) {
-            return {
-              date: result.fecha,
-              buy: null,
-              sell: null
-            };
-          }
-          return {
-            date: result.fecha,
-            buy: rate.tipoCotizacion,
-            sell: rate.tipoCotizacion
-          };
-        })
-      : [];
+    console.log('[BCRA Service] getExchangeRateHistory raw response:', JSON.stringify(response.data.results.slice(0, 5)) + (response.data.results.length > 5 ? ' ...' : ''));
 
+    // Procesar el historial para incluir compra y venta
+    const mapped = response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
+      const rate = result.detalle[0];
+      if (!rate) {
+        return {
+          date: result.fecha,
+          buy: null,
+          sell: null
+        };
+      }
+
+      return {
+        date: result.fecha,
+        buy: rate.tipoCotizacion,
+        sell: rate.tipoCotizacion
+      };
+    });
+
+    console.log('[BCRA Service] getExchangeRateHistory mapped:', JSON.stringify(mapped.slice(0, 5)) + (mapped.length > 5 ? ' ...' : ''));
     return mapped;
   },
 
