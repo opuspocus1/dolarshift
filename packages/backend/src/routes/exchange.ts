@@ -129,7 +129,7 @@ router.get('/rates/:currency/:startDate/:endDate', async (req, res) => {
   }
 });
 
-// Get historical data for all major currencies at once (optimized endpoint)
+// Get historical data for all currencies at once (dynamic bulk endpoint)
 router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
   try {
     const { startDate, endDate } = req.params;
@@ -150,20 +150,15 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
       return res.json(cachedData);
     }
 
-    // Lista de monedas principales para optimizar
-    const majorCurrencies = [
-      'USD', 'EUR', 'GBP', 'JPY', 'BRL', 'CLP', 'AUD', 'CAD', 'CHF', 'CNY',
-      'AWG', 'BOB', 'COP', 'CZK', 'DKK', 'HKD', 'ILS', 'INR', 'MXP', 'NIO',
-      'NOK', 'NZD', 'PEN', 'PYG', 'REF', 'RSD', 'RUB', 'SEK', 'SGD', 'TRY',
-      'UYU', 'VEB', 'VND', 'XAG', 'XAU', 'XDR', 'ZAR'
-    ];
-    
-    console.log(`[Cache] Fetching bulk history for ${majorCurrencies.length} currencies (${startDate}-${endDate}) from BCRA API`);
+    // Obtener la lista de monedas dinámicamente
+    const currencies = await bcraService.getCurrencies();
+    const allCodes = currencies.map(c => c.code);
+    console.log(`[Cache] Fetching bulk history for ${allCodes.length} currencies (${startDate}-${endDate}) from BCRA API`);
     
     const bulkData: { [currency: string]: any[] } = {};
     
-    // Fetch data for all major currencies in parallel
-    const promises = majorCurrencies.map(async (currency) => {
+    // Fetch data for all currencies in parallel
+    const promises = allCodes.map(async (currency) => {
       try {
         const data = await bcraService.getExchangeRateHistory(currency, startDateObj, endDateObj);
         return { currency, data };
