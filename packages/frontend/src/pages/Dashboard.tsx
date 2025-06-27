@@ -90,9 +90,9 @@ const Dashboard: React.FC = () => {
   const filteredCards = selectedCurrencies.length > 0
     ? cards.filter(card => selectedCurrencies.some(sel => sel.code === card.code))
     : cards.filter(card =>
-        card.code.toLowerCase().includes(search.toLowerCase()) ||
-        card.name.toLowerCase().includes(search.toLowerCase())
-      );
+    card.code.toLowerCase().includes(search.toLowerCase()) ||
+    card.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   // Paginación
   const totalPages = Math.ceil(filteredCards.length / CARDS_PER_PAGE);
@@ -464,13 +464,13 @@ const Dashboard: React.FC = () => {
         {/* Controles de búsqueda y moneda base */}
         <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4">
           <div className="relative">
-            <input
+          <input
               ref={inputRef}
-              type="text"
+            type="text"
               className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
-              placeholder={t('search')}
-              value={search}
-              onChange={handleSearch}
+            placeholder={t('search')}
+            value={search}
+            onChange={handleSearch}
               onFocus={() => setShowDropdown(true)}
               autoComplete="off"
             />
@@ -522,17 +522,17 @@ const Dashboard: React.FC = () => {
             </div>
           </>
         ) : (
-          <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {paginatedCards.map((currency) => (
-              <div
-                key={currency.code}
-                style={{ cursor: 'pointer' }}
-                onClick={() => navigate(`/charts?currency=${currency.code}`)}
-              >
+        <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {paginatedCards.map((currency) => (
+            <div
+              key={currency.code}
+              style={{ cursor: 'pointer' }}
+              onClick={() => navigate(`/charts?currency=${currency.code}`)}
+            >
                 <CurrencyCard currency={currency} dayPercent={(dailyVariations[currency.code] || {}).dayPercent} loadingVariations={loadingVariations} />
-              </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
         )}
         {/* Paginación */}
         {totalPages > 1 && (

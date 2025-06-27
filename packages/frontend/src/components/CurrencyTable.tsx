@@ -168,7 +168,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           </tr>
         </thead>
         <tbody>
-          {data.map((row, idx) => (
+          {sortedData.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
               <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
                 {row.customIcon ? (
@@ -185,48 +185,48 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                 ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)} text-gray-900 dark:text-white`}>
-                {row.dayValue !== undefined && row.dayValue !== null ? (
+                {loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : row.dayValue !== undefined && row.dayValue !== null ? (
                   <>
                     {row.dayValue > 0 ? <span style={{marginRight: '0.25em'}}>▲</span> : row.dayValue < 0 ? <span style={{marginRight: '0.25em'}}>▼</span> : null}
                     <span>{Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
                   </>
-                ) : loadingVariations ? (
-                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>
-                {row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
-                  (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : loadingVariations ? (
+                {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                ) : '-'}
+                ) : row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
+                  (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)} text-gray-900 dark:text-white`}>
-                {row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
+                {loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
                   ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%'
-                  : loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : '-'}
+                  : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>
-                {row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
+                {loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
                   ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%'
-                  : loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : '-'}
+                  : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)} text-gray-900 dark:text-white`}>
-                {row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
+                {loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
                   ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%'
-                  : loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : '-'}
+                  : '-'}
               </td>
               <td className={`px-3 py-2 text-right font-mono ${getColor(row.yoyPercent)} text-gray-900 dark:text-white`}>
-                {row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
+                {loadingVariations ? (
+                  <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                ) : row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
                   ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toFixed(2) + '%'
-                  : loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : '-'}
+                  : '-'}
               </td>
               <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date}</td>
             </tr>
