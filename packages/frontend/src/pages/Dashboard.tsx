@@ -211,7 +211,14 @@ const Dashboard: React.FC = () => {
   function useHistoricalVariations(codes, baseCurrency) {
     const [variations, setVariations] = useState({});
     const [loadingVariations, setLoadingVariations] = useState(false);
+    const cache = React.useRef({}); // cache en memoria por sesión
     useEffect(() => {
+      const cacheKey = baseCurrency + '|' + codes.join(',');
+      if (cache.current[cacheKey]) {
+        setVariations(cache.current[cacheKey]);
+        setLoadingVariations(false);
+        return;
+      }
       setLoadingVariations(true);
       async function fetchVariations() {
         const today = new Date();
@@ -247,7 +254,6 @@ const Dashboard: React.FC = () => {
             } else {
               actualValue = actual.buy;
             }
-            // Helper para buscar el valor más cercano a una fecha
             function getClosestValue(targetDateStr) {
               const target = new Date(targetDateStr);
               for (let i = diasConDatos.length - 1; i >= 0; i--) {
@@ -263,22 +269,10 @@ const Dashboard: React.FC = () => {
               }
               return null;
             }
-            // Semanal: hace 7 días desde la última fecha con datos
             const weekAgo = new Date(actual.date); weekAgo.setDate(weekAgo.getDate() - 7);
             const weekValue = getClosestValue(weekAgo.toISOString().slice(0, 10));
-            // Log de depuración para variación semanal
-            console.log({
-              code,
-              diasConDatos,
-              actualDate: actual.date,
-              weekAgo: weekAgo.toISOString().slice(0, 10),
-              weekValue,
-              actualValue
-            });
-            // Mensual: hace 30 días desde la última fecha con datos
             const monthAgo = new Date(actual.date); monthAgo.setDate(monthAgo.getDate() - 30);
             const monthValue = getClosestValue(monthAgo.toISOString().slice(0, 10));
-            // YTD: primer día hábil del año de la última fecha con datos
             const year = new Date(actual.date).getFullYear();
             const ytdValue = (() => {
               for (let i = 0; i < diasConDatos.length; i++) {
@@ -294,10 +288,8 @@ const Dashboard: React.FC = () => {
               }
               return null;
             })();
-            // Interanual: hace 365 días desde la última fecha con datos
             const yearAgo = new Date(actual.date); yearAgo.setDate(yearAgo.getDate() - 365);
             const yoyValue = getClosestValue(yearAgo.toISOString().slice(0, 10));
-            // Diaria (ya implementada)
             let dayValue = null, dayPercent = null;
             if (diasConDatos.length >= 2) {
               let valores = [];
@@ -317,7 +309,6 @@ const Dashboard: React.FC = () => {
                 dayPercent = (dayValue / valores[valores.length - 2]) * 100;
               }
             }
-            // Variaciones porcentuales
             const weekPercent = weekValue ? ((actualValue - weekValue) / weekValue) * 100 : null;
             const monthPercent = monthValue ? ((actualValue - monthValue) / monthValue) * 100 : null;
             const ytdPercent = ytdValue ? ((actualValue - ytdValue) / ytdValue) * 100 : null;
@@ -327,6 +318,7 @@ const Dashboard: React.FC = () => {
             result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
           }
         }
+        cache.current[cacheKey] = result; // guardar en cache
         setVariations(result);
         setLoadingVariations(false);
       }
