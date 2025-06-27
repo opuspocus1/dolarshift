@@ -62,29 +62,33 @@ const Dashboard: React.FC = () => {
 
   // Función para obtener cotizaciones según la fecha
   const fetchData = async (dateOverride?: string) => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
+      const fetchDate = dateOverride || date;
+      console.log('[Dashboard] Fetching rates for', fetchDate);
       // Pedir cotizaciones para la fecha seleccionada
-      const rates = await exchangeService.getExchangeRates(new Date(dateOverride || date));
+      const rates = await exchangeService.getExchangeRates(new Date(fetchDate));
+      console.log('[Dashboard] Rates received:', rates);
       setCards(rates);
-      setDate(rates.length > 0 ? rates[0].date : dateOverride || date);
+      setDate(rates.length > 0 ? rates[0].date : fetchDate);
       setError(null);
       // Si después de las 10am no hay cotizaciones, mostrar mensaje especial
-      const hour = new Date(date).getHours();
+      const hour = new Date(fetchDate).getHours();
       if (rates.length === 0 && hour >= 10 && hour < 18) {
         setError('Aún no hay cotizaciones publicadas para hoy. El mercado abre a las 10am. Si es después de las 12pm y no ves datos, probá seleccionar el día anterior.');
       }
-      } catch (err) {
+    } catch (err) {
       console.error('[Dashboard] Error real al cargar cotizaciones:', err);
       setError('Error cargando datos. Intente nuevamente.');
       setCards([]);
       setDate('');
-      } finally {
-        setLoading(false);
-      }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    // Siempre hacer fetch al cargar la página
     fetchData();
   }, []);
 
