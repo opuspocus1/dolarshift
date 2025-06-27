@@ -58,7 +58,6 @@ const Dashboard: React.FC = () => {
       keys.forEach(key => {
         if (key.includes('bulk_chart_history')) {
           localStorage.removeItem(key);
-          console.log(`[Cache] Removed localStorage key: ${key}`);
         }
       });
     } catch (error) {
