@@ -249,7 +249,9 @@ const Dashboard: React.FC = () => {
             try {
               const history = bulkHistory[code] || [];
               const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
+              console.log(`[Variaciones][${code}] históricos recibidos:`, Array.isArray(history) ? history.length : 0, 'con datos:', diasConDatos.length);
               if (diasConDatos.length === 0) {
+                console.warn(`[Variaciones][${code}] Sin datos suficientes para calcular variaciones. history:`, history);
                 result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
                 continue;
               }
@@ -315,7 +317,11 @@ const Dashboard: React.FC = () => {
                 if (valores.length >= 2) {
                   dayValue = valores[valores.length - 1] - valores[valores.length - 2];
                   dayPercent = (dayValue / valores[valores.length - 2]) * 100;
+                } else {
+                  console.warn(`[Variaciones][${code}] No hay suficientes valores para calcular variación diaria. valores:`, valores);
                 }
+              } else {
+                console.warn(`[Variaciones][${code}] No hay suficientes días con datos para variación diaria. diasConDatos:`, diasConDatos);
               }
               const weekPercent = weekValue ? ((actualValue - weekValue) / weekValue) * 100 : null;
               const monthPercent = monthValue ? ((actualValue - monthValue) / monthValue) * 100 : null;
@@ -323,6 +329,7 @@ const Dashboard: React.FC = () => {
               const yoyPercent = yoyValue ? ((actualValue - yoyValue) / yoyValue) * 100 : null;
               result[code] = { dayValue, dayPercent, weekPercent, monthPercent, ytdPercent, yoyPercent };
             } catch (e) {
+              console.error(`[Variaciones][${code}] Error calculando variaciones:`, e);
               result[code] = { dayValue: null, dayPercent: null, weekPercent: null, monthPercent: null, ytdPercent: null, yoyPercent: null };
             }
           }
