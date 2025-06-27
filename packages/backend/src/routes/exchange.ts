@@ -42,7 +42,7 @@ router.get('/rates/:date', async (req, res) => {
     }
 
     let cacheKey = getCacheKey('rates', date);
-    let cachedData = cacheConfig.bcra.get(cacheKey);
+    let cachedData: any[] = Array.isArray(cacheConfig.bcra.get(cacheKey)) ? cacheConfig.bcra.get(cacheKey) : [];
     
     // Si no hay datos para la fecha pedida, buscar la última fecha disponible hacia atrás (hasta 7 días)
     let tries = 0;
@@ -51,7 +51,7 @@ router.get('/rates/:date', async (req, res) => {
       lastDateTried.setDate(lastDateTried.getDate() - 1);
       const tryDateStr = format(lastDateTried, 'yyyy-MM-dd');
       cacheKey = getCacheKey('rates', tryDateStr);
-      cachedData = cacheConfig.bcra.get(cacheKey);
+      cachedData = Array.isArray(cacheConfig.bcra.get(cacheKey)) ? cacheConfig.bcra.get(cacheKey) : [];
       tries++;
     }
     if (cachedData && cachedData.length > 0) {
@@ -60,7 +60,7 @@ router.get('/rates/:date', async (req, res) => {
     }
 
     // Si no hay en cache, intentar traer de la API (y si tampoco, buscar hacia atrás)
-    let data = [];
+    let data: any[] = [];
     tries = 0;
     lastDateTried = new Date(dateObj);
     while (data.length === 0 && tries < 7) {
@@ -69,7 +69,8 @@ router.get('/rates/:date', async (req, res) => {
       } catch (e) {
         data = [];
       }
-      if (data.length === 0) {
+      if (!Array.isArray(data) || data.length === 0) {
+        data = [];
         lastDateTried.setDate(lastDateTried.getDate() - 1);
       }
       tries++;
