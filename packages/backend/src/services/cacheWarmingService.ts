@@ -134,19 +134,14 @@ class CacheWarmingService {
       job.nextRun = new Date(Date.now() + 60 * 60 * 1000); // Próxima ejecución en 1 hora
 
       console.log('[Cache Warming] Warming current rates cache...');
-      
-      // Usar una fecha pasada que sabemos que tiene datos disponibles
-      // La API del BCRA puede tener un delay en la disponibilidad de datos
-      const today = new Date();
-      const dataDate = subDays(today, 1); // Usar datos de ayer
-      console.log(`[Cache Warming] Using date: ${dataDate.toISOString()} (yesterday)`);
-
-      const rates = await bcraService.getExchangeRates(dataDate);
-      const cacheKey = getCacheKey('rates', format(dataDate, 'yyyy-MM-dd'));
+      // Consultar el endpoint /cotizaciones/ sin fecha para obtener la última cotización real
+      const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // fecha futura para forzar lógica de última fecha
+      const rates = await bcraService.getExchangeRates(futureDate);
+      const lastDate = rates.length > 0 ? rates[0].date : format(new Date(), 'yyyy-MM-dd');
+      const cacheKey = getCacheKey('rates', lastDate);
       cacheConfig.bcra.set(cacheKey, rates, 60 * 60); // 1 hora TTL
-
       job.status = 'completed';
-      console.log(`[Cache Warming] Current rates cache warmed: ${rates.length} rates`);
+      console.log(`[Cache Warming] Current rates cache warmed for ${lastDate}: ${rates.length} rates`);
     } catch (error) {
       job.status = 'failed';
       job.error = error instanceof Error ? error.message : 'Unknown error';
