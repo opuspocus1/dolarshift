@@ -391,19 +391,28 @@ const Dashboard: React.FC = () => {
     // Variaciones
     const variation = dailyVariations[card.code] || {};
 
-    // Lógica de conversión para metales preciosos
+    // Lógica de conversión para el valor respecto a la moneda base seleccionada
     let value = card.buy;
-    if ((card.code === 'XAU' || card.code === 'XAG')) {
-      let valorUSD = 1;
-      if (effectiveBaseCurrency === 'ARS') {
-        const usd = cards.find(c => c.code === 'USD');
-        valorUSD = usd ? usd.buy : 1;
-      } else if (effectiveBaseCurrency !== 'USD') {
-        const usd = cards.find(c => c.code === 'USD');
-        const base = cards.find(c => c.code === effectiveBaseCurrency);
-        valorUSD = usd && base ? usd.buy / base.buy : 1;
+    if (effectiveBaseCurrency === 'ARS') {
+      value = card.buy;
+    } else if (effectiveBaseCurrency === 'USD') {
+      const usd = cards.find(c => c.code === 'USD');
+      value = usd && usd.buy ? card.buy / usd.buy : null;
+    } else if (effectiveBaseCurrency !== card.code) {
+      const base = cards.find(c => c.code === effectiveBaseCurrency);
+      value = base && base.buy ? card.buy / base.buy : null;
+    }
+    // Lógica especial para metales preciosos
+    if (card.code === 'XAU' || card.code === 'XAG') {
+      const usd = cards.find(c => c.code === 'USD');
+      const base = cards.find(c => c.code === effectiveBaseCurrency);
+      if (effectiveBaseCurrency === 'USD') {
+        value = card.tipopase;
+      } else if (effectiveBaseCurrency === 'ARS') {
+        value = card.tipopase && usd ? card.tipopase * usd.buy : null;
+      } else if (effectiveBaseCurrency !== card.code) {
+        value = card.tipopase && usd && base ? card.tipopase * (usd.buy / base.buy) : null;
       }
-      value = card.buy * valorUSD;
     }
 
     return {
