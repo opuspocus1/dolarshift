@@ -584,15 +584,15 @@ const Dashboard: React.FC = () => {
             </div>
           </>
         ) : (
-        <div ref={cardsListRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {paginatedCards.map((currency) => (
-            <div
-              key={currency.code}
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate(`/charts?currency=${currency.code}`)}
-            >
-                <CurrencyCard currency={currency} dayPercent={(dailyVariations[currency.code] || {}).dayPercent} loadingVariations={loadingVariations} />
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+          {tableDataSingle.map(card => (
+            <CurrencyCard
+              key={card.code}
+              currency={card}
+              baseCurrency={effectiveBaseCurrency}
+              dayPercent={card.dayPercent}
+              loadingVariations={loadingVariations}
+            />
           ))}
         </div>
         )}
