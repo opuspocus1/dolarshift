@@ -415,6 +415,7 @@ const Dashboard: React.FC = () => {
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
       value: value,
       pairKey: pair,
+      label: `${pair} ${name}`,
       date: card.date,
       ...variation
     };
