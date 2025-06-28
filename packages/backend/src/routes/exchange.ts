@@ -252,18 +252,27 @@ router.get('/rates/history/bulk/:startDate/:endDate', async (req, res) => {
       bulkData[currency] = data;
     });
     
-    // Solo cachear si el bulk está completo (todas las monedas tienen datos para la fecha de fin)
-    const allHaveData = allCodes.every(code => Array.isArray(bulkData[code]) && bulkData[code].length > 0);
-    if (allHaveData) {
-      cacheConfig.historical.set(cacheKey, bulkData, 7 * 24 * 60 * 60);
-      Object.entries(bulkData).forEach(([code, arr]) => {
+    // Filtrar solo las monedas que tienen datos
+    const currenciesWithData = Object.entries(bulkData).filter(([code, arr]) => Array.isArray(arr) && arr.length > 0);
+    
+    if (currenciesWithData.length > 0) {
+      // Crear un objeto solo con las monedas que tienen datos
+      const filteredBulkData: { [currency: string]: any[] } = {};
+      currenciesWithData.forEach(([code, arr]) => {
+        filteredBulkData[code] = arr;
+      });
+      
+      // Cachear el resultado filtrado
+      cacheConfig.historical.set(cacheKey, filteredBulkData, 7 * 24 * 60 * 60);
+      
+      Object.entries(filteredBulkData).forEach(([code, arr]) => {
         console.log(`[BulkHistory][API] ${code}: ${Array.isArray(arr) ? arr.length : 0} registros`);
       });
-      console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(bulkData).length} currencies`);
-      return res.json({ data: bulkData, rangoRealDevuelto: { startDate, endDate } });
+      console.log(`[API] Bulk history (${startDate}-${endDate}) fetched from BCRA API for ${Object.keys(filteredBulkData).length}/${allCodes.length} currencies`);
+      return res.json({ data: filteredBulkData, rangoRealDevuelto: { startDate, endDate } });
     } else {
-      console.warn(`[API] Bulk history (${startDate}-${endDate}) incompleto, no se cachea ni responde. Se recomienda pedir un rango anterior.`);
-      return res.status(503).json({ error: 'No hay datos completos para el rango pedido. Intente con un rango anterior.' });
+      console.warn(`[API] Bulk history (${startDate}-${endDate}) - no data found for any currency`);
+      return res.status(404).json({ error: 'No se encontraron datos para el rango pedido. Intente con un rango anterior.' });
     }
   } catch (error) {
     const axiosError = error as AxiosError;

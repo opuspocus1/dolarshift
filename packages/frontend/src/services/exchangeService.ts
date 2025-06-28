@@ -331,14 +331,55 @@ export const exchangeService = {
       return cachedData;
     }
     // console.log(`[Frontend Cache] Fetching bulk chart history from API (${startDate} to ${endDate})`);
-    const res = await axios.get(`${API_BASE_URL}/exchange/rates/history/bulk/${startDate}/${endDate}`);
-    // Soportar nuevo formato: { data, rangoRealDevuelto }
-    const bulkData = res.data?.data || res.data;
-    // console.log('[exchangeService] getBulkChartHistory response', Object.keys(bulkData || {}).length, 'currencies');
-    // console.log('[getBulkChartHistory] bulkData (from API):', bulkData);
-    // Cache por 24 horas para datos históricos
-    frontendCache.set(cacheKey, bulkData, 24 * 60 * 60 * 1000);
-    return bulkData;
+    
+    try {
+      const res = await axios.get(`${API_BASE_URL}/exchange/rates/history/bulk/${startDate}/${endDate}`);
+      // Soportar nuevo formato: { data, rangoRealDevuelto }
+      const bulkData = res.data?.data || res.data;
+      // console.log('[exchangeService] getBulkChartHistory response', Object.keys(bulkData || {}).length, 'currencies');
+      // console.log('[getBulkChartHistory] bulkData (from API):', bulkData);
+      // Cache por 24 horas para datos históricos
+      frontendCache.set(cacheKey, bulkData, 24 * 60 * 60 * 1000);
+      return bulkData;
+    } catch (error: any) {
+      console.error('Error fetching bulk history:', error);
+      
+      // Si es un error 503 (Service Unavailable), intentar con un rango anterior
+      if (error.response?.status === 503 || error.response?.status === 404) {
+        console.log('[Frontend Cache] Bulk history failed, trying with earlier date range');
+        
+        // Intentar con un rango anterior (7 días antes)
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(endDate);
+        const daysDiff = Math.ceil((endDateObj.getTime() - startDateObj.getTime()) / (1000 * 60 * 60 * 24));
+        
+        const newStartDate = new Date(startDateObj);
+        newStartDate.setDate(newStartDate.getDate() - 7);
+        const newEndDate = new Date(endDateObj);
+        newEndDate.setDate(newEndDate.getDate() - 7);
+        
+        const fallbackStartDate = newStartDate.toISOString().slice(0, 10);
+        const fallbackEndDate = newEndDate.toISOString().slice(0, 10);
+        
+        try {
+          const fallbackRes = await axios.get(`${API_BASE_URL}/exchange/rates/history/bulk/${fallbackStartDate}/${fallbackEndDate}`);
+          const fallbackData = fallbackRes.data?.data || fallbackRes.data;
+          
+          if (fallbackData && Object.keys(fallbackData).length > 0) {
+            console.log(`[Frontend Cache] Fallback bulk history successful for ${fallbackStartDate} to ${fallbackEndDate}`);
+            // Cache por 24 horas para datos históricos
+            frontendCache.set(cacheKey, fallbackData, 24 * 60 * 60 * 1000);
+            return fallbackData;
+          }
+        } catch (fallbackError) {
+          console.error('Fallback bulk history also failed:', fallbackError);
+        }
+      }
+      
+      // Si todo falla, devolver un objeto vacío
+      console.warn('[Frontend Cache] All bulk history attempts failed, returning empty data');
+      return {};
+    }
   },
 
   // Funciones para manejar el cache
