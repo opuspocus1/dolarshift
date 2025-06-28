@@ -58,7 +58,7 @@ function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExc
   return rates
     .filter(rate => rate.code !== 'ARS') // Remove ARS/ARS rate
     .map(rate => {
-      // Para XAU/XAG, devolver el valor tal cual (tipoPase en USD)
+      // Para XAU/XAG, devolver el valor tal cual (sin conversión)
       if (rate.code === 'XAU' || rate.code === 'XAG') {
         return rate;
       }
@@ -66,9 +66,10 @@ function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExc
         return rate;
       }
 
-      // Calculate new rate relative to USD
-      const newBuy = usdRate.buy / rate.buy;
-      const newSell = usdRate.sell / rate.sell;
+      // Convertir desde pesos a la moneda base USD
+      // tipoCotizacion está en pesos, necesitamos convertirlo a USD
+      const newBuy = rate.buy / usdRate.buy;
+      const newSell = rate.sell / usdRate.sell;
 
       // Check if this currency is typically quoted as currency/USD
       const isUsdQuoted = usdQuotedCurrencies.includes(rate.code);
@@ -99,13 +100,16 @@ export const bcraService = {
     // Procesar los datos para separar compra y venta
     const rates = response.data.results.detalle;
     const processedRates = rates.map((rate: BCRAExchangeRate) => {
+      // Usar tipoCotizacion (en pesos) para todas las monedas
       let buy = rate.tipoCotizacion;
       let sell = rate.tipoCotizacion;
-      // Fix SOLO para XAU y XAG
+      
+      // Para XAU y XAG, mantener el comportamiento especial si tipoCotizacion es 0
       if ((rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') && rate.tipoCotizacion === 0 && rate.tipoPase !== 0) {
         buy = rate.tipoPase;
         sell = rate.tipoPase;
       }
+      
       return {
         code: rate.codigoMoneda,
         name: rate.descripcion,
@@ -152,13 +156,16 @@ export const bcraService = {
     // Procesar los datos para separar compra y venta
     const rates = response.data.results.detalle;
     const processedRates = rates.map((rate: BCRAExchangeRate) => {
+      // Usar tipoCotizacion (en pesos) para todas las monedas
       let buy = rate.tipoCotizacion;
       let sell = rate.tipoCotizacion;
-      // Fix SOLO para XAU y XAG
+      
+      // Para XAU y XAG, mantener el comportamiento especial si tipoCotizacion es 0
       if ((rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') && rate.tipoCotizacion === 0 && rate.tipoPase !== 0) {
         buy = rate.tipoPase;
         sell = rate.tipoPase;
       }
+      
       return {
         code: rate.codigoMoneda,
         name: rate.descripcion,
@@ -205,20 +212,21 @@ export const bcraService = {
           sell: null
         };
       }
-      // Usar tipoPase para XAU/XAG, tipoCotizacion para el resto
-      if (rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') {
-        return {
-          date: result.fecha,
-          buy: rate.tipoPase,
-          sell: rate.tipoPase
-        };
-      } else {
-        return {
-          date: result.fecha,
-          buy: rate.tipoCotizacion,
-          sell: rate.tipoCotizacion
-        };
+      // Usar tipoCotizacion (en pesos) para todas las monedas
+      let buy = rate.tipoCotizacion;
+      let sell = rate.tipoCotizacion;
+      
+      // Para XAU y XAG, usar tipoPase si tipoCotizacion es 0
+      if ((rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') && rate.tipoCotizacion === 0 && rate.tipoPase !== 0) {
+        buy = rate.tipoPase;
+        sell = rate.tipoPase;
       }
+      
+      return {
+        date: result.fecha,
+        buy,
+        sell
+      };
     });
 
     console.log('[BCRA Service] getExchangeRateHistory mapped:', JSON.stringify(mapped.slice(0, 5)) + (mapped.length > 5 ? ' ...' : ''));
