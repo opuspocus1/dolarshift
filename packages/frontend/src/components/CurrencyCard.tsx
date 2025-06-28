@@ -179,35 +179,15 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         </div>
         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1 w-full block">{displayName}</p>
       </div>
-      <div className="space-y-4 mt-2">
-        {/* Tasa relativa al USD */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {currency.code === 'USD' ? '1'
-                : currency.code === 'REF' ? formatRate(currency.rateAgainstUSD)
-                : formatRate(currency.rateAgainstUSD)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {currency.code === 'USD' ? 'USD/USD'
-                : currency.code === 'REF' ? 'USD/USD3500'
-                : (currency.usdFormat || '-')}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white">
-              {formatRate(currency.rateAgainstARS)}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {currency.code === 'REF' ? 'USD3500/ARS' : (currency.arsFormat || '-')}
-            </p>
-          </div>
+      {/* Datos principales igual que en la tabla */}
+      <div className="space-y-2 mt-2 w-full">
+        <div className="flex justify-between items-center">
+          <span className="font-semibold text-gray-900 dark:text-white">{currency.pairKey || `${displaySymbol}/${baseCurrency}`}</span>
+          <span className="font-mono text-lg text-gray-900 dark:text-white">{formatRate(currency.value, false)}</span>
         </div>
-        <div className="mt-2">
-          <p className="text-xs text-gray-500 dark:text-gray-400">Fecha</p>
-          <p className="text-sm font-medium text-gray-900 dark:text-white">
-            {formattedDateTime}
-          </p>
+        <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+          <span>{displayName}</span>
+          <span>{formattedDateTime}</span>
         </div>
       </div>
     </div>
