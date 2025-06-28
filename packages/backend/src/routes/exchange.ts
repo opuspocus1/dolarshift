@@ -36,14 +36,41 @@ router.get('/rates/:date', async (req, res) => {
     const dateObj = new Date(date);
     const today = new Date();
     today.setHours(0,0,0,0);
-    
+
+    // NUEVO: Si la fecha pedida es hoy o futura, buscar la fecha más reciente en el cache
+    if (dateObj >= today) {
+      // Buscar la fecha más reciente en el cache
+      const allKeys = cacheConfig.bcra.keys();
+      const rateKeys = allKeys.filter(k => k.startsWith('rates_'));
+      let bestKey = null;
+      let bestDate = null;
+      for (const key of rateKeys) {
+        // Formato: rates_YYYY-MM-DD
+        const parts = key.split('_');
+        const maybeDate = parts[1];
+        if (!maybeDate) continue;
+        const keyDate = new Date(maybeDate);
+        if (!bestDate || keyDate > bestDate) {
+          bestKey = key;
+          bestDate = keyDate;
+        }
+      }
+      if (bestKey && bestDate) {
+        const bestRates = cacheConfig.bcra.get(bestKey);
+        if (bestRates && bestRates.length > 0) {
+          console.log(`[Cache] Rates for ${date} (hoy/futuro) respondido con la fecha más reciente: ${bestKey}`);
+          return res.json(bestRates);
+        }
+      }
+      // Si no hay nada en cache, intentar traer de la API (lógica fallback)
+    }
+
+    // Lógica original para fechas pasadas
     if (dateObj > today) {
       return res.status(400).json({ error: 'No hay cotizaciones para fechas futuras.' });
     }
-
     let cacheKey = getCacheKey('rates', date);
     let cachedData: any[] = cacheConfig.bcra.get(cacheKey) ?? [];
-    
     // Si no hay datos para la fecha pedida, buscar la última fecha disponible hacia atrás (hasta 7 días)
     let tries = 0;
     let lastDateTried = new Date(dateObj);
@@ -58,7 +85,6 @@ router.get('/rates/:date', async (req, res) => {
       console.log(`[Cache] Rates for ${date} not found, served from previous available date: ${format(lastDateTried, 'yyyy-MM-dd')}`);
       return res.json(cachedData);
     }
-
     // Si no hay en cache, intentar traer de la API (y si tampoco, buscar hacia atrás)
     let data: any[] = [];
     tries = 0;
@@ -83,7 +109,6 @@ router.get('/rates/:date', async (req, res) => {
       console.log(`[API] Rates for ${date} not found, served from previous available date: ${tryDateStr}`);
       return res.json(data);
     }
-
     // Si no hay datos en ningún lado
     return res.json([]);
   } catch (error) {
