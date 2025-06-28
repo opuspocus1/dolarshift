@@ -45,42 +45,8 @@ interface CurrencyResponse {
 }
 
 function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExchangeRate[] {
-  // Find USD rate
-  const usdRate = rates.find(rate => rate.code === 'USD');
-  if (!usdRate) {
-    console.warn('USD rate not found, cannot process relative rates');
-    return rates;
-  }
-
-  // List of currencies that are typically quoted as currency/USD
-  const usdQuotedCurrencies = ['EUR', 'GBP', 'CHF', 'JPY', 'AUD', 'CAD', 'NZD'];
-
-  return rates
-    .filter(rate => rate.code !== 'ARS') // Remove ARS/ARS rate
-    .map(rate => {
-      // Para XAU/XAG, devolver el valor tal cual (sin conversión)
-      if (rate.code === 'XAU' || rate.code === 'XAG') {
-        return rate;
-      }
-      if (rate.code === 'USD') {
-        return rate;
-      }
-
-      // Convertir desde pesos a la moneda base USD
-      // tipoCotizacion está en pesos, necesitamos convertirlo a USD
-      const newBuy = rate.buy / usdRate.buy;
-      const newSell = rate.sell / usdRate.sell;
-
-      // Check if this currency is typically quoted as currency/USD
-      const isUsdQuoted = usdQuotedCurrencies.includes(rate.code);
-
-      return {
-        ...rate,
-        buy: isUsdQuoted ? 1 / newBuy : newBuy,
-        sell: isUsdQuoted ? 1 / newSell : newSell,
-        isUsdQuoted
-      };
-    });
+  // No hacer conversión, solo devolver los valores en ARS
+  return rates;
 }
 
 export const bcraService = {
