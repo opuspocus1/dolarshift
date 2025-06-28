@@ -2,8 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import CurrencyCard from '../components/CurrencyCard';
 import ScrollToTop from '../components/ScrollToTop';
-import CacheInfo from '../components/CacheInfo';
-import CacheWarmingStatus from '../components/CacheWarmingStatus';
 import { exchangeService, ExchangeRate } from '../services/exchangeService';
 import { format, subDays, isWeekend } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -609,8 +607,6 @@ const Dashboard: React.FC = () => {
         )}
       </div>
       <ScrollToTop />
-      <CacheInfo />
-      <CacheWarmingStatus />
     </div>
   );
 };
