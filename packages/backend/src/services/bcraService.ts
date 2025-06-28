@@ -201,12 +201,20 @@ export const bcraService = {
           sell: null
         };
       }
-
-      return {
-        date: result.fecha,
-        buy: rate.tipoCotizacion,
-        sell: rate.tipoCotizacion
-      };
+      // Usar tipoPase para XAU/XAG, tipoCotizacion para el resto
+      if (rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') {
+        return {
+          date: result.fecha,
+          buy: rate.tipoPase,
+          sell: rate.tipoPase
+        };
+      } else {
+        return {
+          date: result.fecha,
+          buy: rate.tipoCotizacion,
+          sell: rate.tipoCotizacion
+        };
+      }
     });
 
     console.log('[BCRA Service] getExchangeRateHistory mapped:', JSON.stringify(mapped.slice(0, 5)) + (mapped.length > 5 ? ' ...' : ''));
