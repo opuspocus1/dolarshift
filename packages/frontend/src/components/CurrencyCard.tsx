@@ -117,6 +117,8 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   }
   if ((currency.codigomoneda || currency.code) === 'XDR') {
     displayName = 'DEG FMI';
+    flagCode = undefined;
+    customIcon = <span style={{ fontSize: '1.5em', marginRight: '0.5em' }} title="DEG">💱</span>;
   }
   if ((currency.codigomoneda || currency.code) === 'XAU') {
     flagCode = undefined;
