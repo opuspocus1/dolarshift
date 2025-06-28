@@ -57,7 +57,7 @@ router.get('/rates/:date', async (req, res) => {
       }
       if (bestKey && bestDate) {
         const bestRates = cacheConfig.bcra.get(bestKey);
-        if (bestRates && bestRates.length > 0) {
+        if (Array.isArray(bestRates) && bestRates.length > 0) {
           console.log(`[Cache] Rates for ${date} (hoy/futuro) respondido con la fecha más reciente: ${bestKey}`);
           return res.json(bestRates);
         }
