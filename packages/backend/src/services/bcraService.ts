@@ -58,6 +58,10 @@ function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExc
   return rates
     .filter(rate => rate.code !== 'ARS') // Remove ARS/ARS rate
     .map(rate => {
+      // Para XAU/XAG, devolver el valor tal cual (tipoPase en USD)
+      if (rate.code === 'XAU' || rate.code === 'XAG') {
+        return rate;
+      }
       if (rate.code === 'USD') {
         return rate;
       }
