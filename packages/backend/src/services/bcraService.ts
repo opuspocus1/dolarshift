@@ -94,13 +94,22 @@ export const bcraService = {
     
     // Procesar los datos para separar compra y venta
     const rates = response.data.results.detalle;
-    const processedRates = rates.map((rate: BCRAExchangeRate) => ({
-      code: rate.codigoMoneda,
-      name: rate.descripcion,
-      buy: rate.tipoCotizacion,
-      sell: rate.tipoCotizacion,
-      date: response.data.results.fecha
-    }));
+    const processedRates = rates.map((rate: BCRAExchangeRate) => {
+      let buy = rate.tipoCotizacion;
+      let sell = rate.tipoCotizacion;
+      // Fix SOLO para XAU y XAG
+      if ((rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') && rate.tipoCotizacion === 0 && rate.tipoPase !== 0) {
+        buy = rate.tipoPase;
+        sell = rate.tipoPase;
+      }
+      return {
+        code: rate.codigoMoneda,
+        name: rate.descripcion,
+        buy,
+        sell,
+        date: response.data.results.fecha
+      };
+    });
     
     // Process rates relative to USD
     return processRatesRelativeToUSD(processedRates);
@@ -138,13 +147,22 @@ export const bcraService = {
     });
     // Procesar los datos para separar compra y venta
     const rates = response.data.results.detalle;
-    const processedRates = rates.map((rate: BCRAExchangeRate) => ({
-      code: rate.codigoMoneda,
-      name: rate.descripcion,
-      buy: rate.tipoCotizacion,
-      sell: rate.tipoCotizacion,
-      date: response.data.results.fecha
-    }));
+    const processedRates = rates.map((rate: BCRAExchangeRate) => {
+      let buy = rate.tipoCotizacion;
+      let sell = rate.tipoCotizacion;
+      // Fix SOLO para XAU y XAG
+      if ((rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') && rate.tipoCotizacion === 0 && rate.tipoPase !== 0) {
+        buy = rate.tipoPase;
+        sell = rate.tipoPase;
+      }
+      return {
+        code: rate.codigoMoneda,
+        name: rate.descripcion,
+        buy,
+        sell,
+        date: response.data.results.fecha
+      };
+    });
     // Process rates relative to USD
     return processRatesRelativeToUSD(processedRates);
   },
