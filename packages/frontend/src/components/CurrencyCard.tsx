@@ -179,16 +179,36 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
         </div>
         <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 mt-1 w-full block">{displayName}</p>
       </div>
-      {/* Datos principales igual que en la tabla */}
-      <div className="space-y-2 mt-2 w-full">
-        <div className="flex justify-between items-center">
-          <span className="font-semibold text-gray-900 dark:text-white">{currency.pairKey || `${displaySymbol}/${baseCurrency}`}</span>
-          <span className="font-mono text-lg text-gray-900 dark:text-white">{formatRate(currency.value, false)}</span>
-        </div>
-        <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
-          <span>{displayName}</span>
-          <span>{formattedDateTime}</span>
-        </div>
+      {/* Datos principales igual que en la tabla, en formato compacto */}
+      <div className="w-full mt-2">
+        <table className="w-full text-xs">
+          <tbody>
+            <tr>
+              <td className="font-semibold text-gray-900 dark:text-white">{currency.pairKey || `${displaySymbol}/${baseCurrency}`}</td>
+              <td className="font-mono text-right text-lg text-gray-900 dark:text-white">{formatRate(currency.value, false)}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500 dark:text-gray-400">Día</td>
+              <td className="text-right font-mono">{currency.dayValue !== undefined && currency.dayValue !== null ? Number(currency.dayValue).toLocaleString('es-AR', { minimumFractionDigits: 5, maximumFractionDigits: 5 }) : '-'}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500 dark:text-gray-400">Semanal</td>
+              <td className="text-right font-mono">{currency.weekPercent !== undefined && currency.weekPercent !== null && !isNaN(currency.weekPercent) ? (currency.weekPercent > 0 ? '+' : '') + currency.weekPercent.toFixed(2) + '%' : '-'}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500 dark:text-gray-400">Mensual</td>
+              <td className="text-right font-mono">{currency.monthPercent !== undefined && currency.monthPercent !== null && !isNaN(currency.monthPercent) ? (currency.monthPercent > 0 ? '+' : '') + currency.monthPercent.toFixed(2) + '%' : '-'}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500 dark:text-gray-400">YTD</td>
+              <td className="text-right font-mono">{currency.ytdPercent !== undefined && currency.ytdPercent !== null && !isNaN(currency.ytdPercent) ? (currency.ytdPercent > 0 ? '+' : '') + currency.ytdPercent.toFixed(2) + '%' : '-'}</td>
+            </tr>
+            <tr>
+              <td className="text-gray-500 dark:text-gray-400">Interanual</td>
+              <td className="text-right font-mono">{currency.yoyPercent !== undefined && currency.yoyPercent !== null && !isNaN(currency.yoyPercent) ? (currency.yoyPercent > 0 ? '+' : '') + currency.yoyPercent.toFixed(2) + '%' : '-'}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
