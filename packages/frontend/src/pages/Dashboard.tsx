@@ -456,6 +456,12 @@ const Dashboard: React.FC = () => {
     }
   }, [search, selectedCurrencies, totalPages]);
 
+  useEffect(() => {
+    // Solo setear el modo por defecto al montar
+    const isMobile = window.innerWidth <= 768;
+    setViewMode(isMobile ? 'cards' : 'table');
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
