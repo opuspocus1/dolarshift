@@ -406,13 +406,15 @@ const Dashboard: React.FC = () => {
     if (card.code === 'XAU' || card.code === 'XAG') {
       const usd = cards.find(c => c.code === 'USD');
       const base = cards.find(c => c.code === effectiveBaseCurrency);
+      let metalValue = 0;
       if (effectiveBaseCurrency === 'USD') {
-        value = card.tipopase;
+        metalValue = card.tipopase ?? 0;
       } else if (effectiveBaseCurrency === 'ARS') {
-        value = card.tipopase && usd ? card.tipopase * usd.buy : null;
+        metalValue = card.tipopase && usd ? card.tipopase * usd.buy : 0;
       } else if (effectiveBaseCurrency !== card.code) {
-        value = card.tipopase && usd && base ? card.tipopase * (usd.buy / base.buy) : null;
+        metalValue = card.tipopase && usd && base ? card.tipopase * (usd.buy / base.buy) : 0;
       }
+      value = typeof metalValue === 'number' && !isNaN(metalValue) ? metalValue : 0;
     }
 
     return {
