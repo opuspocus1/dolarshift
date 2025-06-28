@@ -79,6 +79,10 @@ const currencyToCountry: Record<string, string> = {
   HKD: 'HK',
   CNH: 'CN',
   AWG: 'AW',
+  VEB: 'VE', // Venezuela
+  VND: 'VN', // Vietnam
+  RSD: 'RS', // Serbia
+  NIO: 'NI', // Nicaragua
   // ...otros casos especiales
 };
 
