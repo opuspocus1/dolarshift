@@ -392,20 +392,31 @@ const Dashboard: React.FC = () => {
     }
     // Variaciones
     const variation = dailyVariations[card.code] || {};
+
+    // Lógica de conversión para metales preciosos
+    let value = card.buy;
+    if ((card.code === 'XAU' || card.code === 'XAG')) {
+      let valorUSD = 1;
+      if (effectiveBaseCurrency === 'ARS') {
+        const usd = cards.find(c => c.code === 'USD');
+        valorUSD = usd ? usd.buy : 1;
+      } else if (effectiveBaseCurrency !== 'USD') {
+        const usd = cards.find(c => c.code === 'USD');
+        const base = cards.find(c => c.code === effectiveBaseCurrency);
+        valorUSD = usd && base ? usd.buy / base.buy : 1;
+      }
+      value = card.buy * valorUSD;
+    }
+
     return {
       code: card.code,
       name: name,
       flagCode: card.code === 'XAG' || card.code === 'XAU' || card.code === 'XDR' ? undefined : currencyToCountry[card.code],
       customIcon: card.code === 'XAG' ? '🥈' : card.code === 'XAU' ? '🥇' : card.code === 'XDR' ? '💱' : undefined,
-      value: card.buy,
-      label: `${pair} ${name}`,
-      date: card.date ? card.date.split('-').reverse().join('/') : '',
-      dayValue: variation.dayValue,
-      dayPercent: variation.dayPercent,
-      weekPercent: variation.weekPercent,
-      monthPercent: variation.monthPercent,
-      ytdPercent: variation.ytdPercent,
-      yoyPercent: variation.yoyPercent
+      value: value,
+      pairKey: pair,
+      date: card.date,
+      ...variation
     };
   });
 
