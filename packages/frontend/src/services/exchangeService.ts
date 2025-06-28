@@ -207,6 +207,22 @@ function processExchangeRates(rates: any[]): ExchangeRate[] {
 }
 
 export const exchangeService = {
+  async getLatestExchangeRates(): Promise<ExchangeRate[]> {
+    try {
+      console.log('[Frontend Cache] Fetching latest rates from API (no cache)');
+      
+      // Siempre hacer fetch al endpoint latest para obtener el último dato oficial
+      const response = await axios.get(`${API_BASE_URL}/exchange/rates/latest`);
+      const data = response.data;
+      
+      console.log(`[Frontend Cache] Latest rates fetched from API, records: ${Array.isArray(data) ? data.length : 0}`);
+      return data;
+    } catch (error) {
+      console.error('Error fetching latest exchange rates:', error);
+      return [];
+    }
+  },
+
   async getCurrencies(): Promise<Currency[]> {
     try {
       const cacheKey = `currencies_${format(new Date(), 'yyyy-MM-dd')}`;

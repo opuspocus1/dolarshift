@@ -79,6 +79,33 @@ function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExc
 }
 
 export const bcraService = {
+  async getLatestExchangeRates(): Promise<ProcessedExchangeRate[]> {
+    console.log('[BCRA Service] Fetching latest rates from BCRA API (no date parameter)');
+    
+    // Siempre hacer fetch directo al endpoint sin fecha para obtener el último dato oficial
+    const response = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
+      },
+      httpsAgent: agent
+    });
+    
+    console.log(`[BCRA Service] Latest rates fetched, date: ${response.data.results.fecha}`);
+    
+    // Procesar los datos para separar compra y venta
+    const rates = response.data.results.detalle;
+    const processedRates = rates.map((rate: BCRAExchangeRate) => ({
+      code: rate.codigoMoneda,
+      name: rate.descripcion,
+      buy: rate.tipoCotizacion,
+      sell: rate.tipoCotizacion,
+      date: response.data.results.fecha
+    }));
+    
+    // Process rates relative to USD
+    return processRatesRelativeToUSD(processedRates);
+  },
+
   async getExchangeRates(date: Date): Promise<ProcessedExchangeRate[]> {
     // Asegurarnos de que la fecha sea válida y no sea futura
     const today = new Date();

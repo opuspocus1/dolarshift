@@ -29,6 +29,23 @@ router.get('/currencies', async (req, res) => {
   }
 });
 
+// Get latest exchange rates (always from BCRA API, no cache)
+router.get('/rates/latest', async (req, res) => {
+  try {
+    console.log('[API] Fetching latest rates from BCRA API (no cache)');
+    
+    // Siempre hacer fetch directo al endpoint sin fecha para obtener el último dato
+    const response = await bcraService.getLatestExchangeRates();
+    
+    console.log(`[API] Latest rates fetched from BCRA API, records: ${Array.isArray(response) ? response.length : 0}`);
+    res.json(response);
+  } catch (error) {
+    const axiosError = error as AxiosError;
+    console.error('Error fetching latest exchange rates:', axiosError.response?.data || axiosError.message);
+    res.status(500).json({ error: 'Error fetching latest exchange rates', details: axiosError.response?.data || axiosError.message });
+  }
+});
+
 // Get exchange rates for a specific date
 router.get('/rates/:date', async (req, res) => {
   try {

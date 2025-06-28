@@ -82,8 +82,19 @@ const Dashboard: React.FC = () => {
       setLoading(true);
       const fetchDate = dateOverride || date;
       console.log('[Dashboard] Fetching rates for', fetchDate);
-      // Pedir cotizaciones para la fecha seleccionada
-      const rates = await exchangeService.getExchangeRates(new Date(fetchDate));
+      
+      let rates: ExchangeRate[];
+      
+      // Si no hay fecha específica seleccionada (carga inicial), usar el endpoint latest
+      if (!dateOverride && !selectedDate) {
+        console.log('[Dashboard] Using latest rates endpoint for initial load');
+        rates = await exchangeService.getLatestExchangeRates();
+      } else {
+        // Si hay fecha específica seleccionada, usar el endpoint con fecha
+        console.log('[Dashboard] Using date-specific endpoint for selected date');
+        rates = await exchangeService.getExchangeRates(new Date(fetchDate));
+      }
+      
       console.log('[Dashboard] Rates received:', rates);
       setCards(rates);
       setDate(rates.length > 0 ? rates[0].date : fetchDate);
