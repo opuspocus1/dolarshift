@@ -393,9 +393,12 @@ const Dashboard: React.FC = () => {
 
     // Lógica de conversión para el valor respecto a la moneda base seleccionada
     let value = card.buy;
-    // Lógica especial para metales preciosos: el backend entrega el valor en USD
-    // Si la base es USD, mostrar tal cual; si es ARS, multiplicar por USD/ARS; si es otra, multiplicar por (USD/ARS) / (base/ARS)
-    if (card.code === 'XAU' || card.code === 'XAG') {
+    // Si la moneda es igual a la base, el valor debe ser 1
+    if (card.code === effectiveBaseCurrency) {
+      value = 1;
+    } else if (card.code === 'XAU' || card.code === 'XAG') {
+      // Lógica especial para metales preciosos: el backend entrega el valor en USD
+      // Si la base es USD, mostrar tal cual; si es ARS, multiplicar por USD/ARS; si es otra, multiplicar por (USD/ARS) / (base/ARS)
       const usd = cards.find(c => c.code === 'USD');
       const base = cards.find(c => c.code === effectiveBaseCurrency);
       let metalValue = 0;
