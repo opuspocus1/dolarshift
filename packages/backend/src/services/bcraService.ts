@@ -51,8 +51,6 @@ function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExc
 
 export const bcraService = {
   async getLatestExchangeRates(): Promise<ProcessedExchangeRate[]> {
-    console.log('[BCRA Service] Fetching latest rates from BCRA API (no date parameter)');
-    
     // Siempre hacer fetch directo al endpoint sin fecha para obtener el último dato oficial
     const response = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
       headers: {
@@ -110,7 +108,6 @@ export const bcraService = {
       targetDate = new Date(bcraDateStr);
     }
 
-    console.log(`[BCRA Service] Using date: ${targetDate.toISOString()} (original: ${date.toISOString()})`);
     const formattedDate = format(targetDate, "yyyy-MM-dd'T'HH:mm:ss");
     const response = await axios.get<BCRAExchangeRateResponse>(`${BCRA_API_BASE_URL}/Cotizaciones`, {
       params: { fecha: formattedDate },
@@ -150,8 +147,6 @@ export const bcraService = {
     const validStartDate = startDate > today ? new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000) : startDate;
     const validEndDate = endDate > today ? today : endDate;
     
-    console.log(`[BCRA Service] Historical query for ${currency}: ${validStartDate.toISOString()} to ${validEndDate.toISOString()}`);
-    
     const formattedStartDate = format(validStartDate, "yyyy-MM-dd'T'HH:mm:ss");
     const formattedEndDate = format(validEndDate, "yyyy-MM-dd'T'HH:mm:ss");
     
@@ -165,8 +160,6 @@ export const bcraService = {
       },
       httpsAgent: agent
     });
-
-    console.log('[BCRA Service] getExchangeRateHistory raw response:', JSON.stringify(response.data.results.slice(0, 5)) + (response.data.results.length > 5 ? ' ...' : ''));
 
     // Procesar el historial para incluir compra y venta
     const mapped = response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
@@ -195,7 +188,6 @@ export const bcraService = {
       };
     });
 
-    console.log('[BCRA Service] getExchangeRateHistory mapped:', JSON.stringify(mapped.slice(0, 5)) + (mapped.length > 5 ? ' ...' : ''));
     return mapped;
   },
 
