@@ -76,10 +76,10 @@ async function startServer() {
     console.error('[Server] Error during cache warming:', err);
     // Si falla el warming, igual arrancar el server para no dejarlo caído
   }
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-    console.log('[Cache Warming] Service initialized and will start warming cache automatically');
-  });
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+  console.log('[Cache Warming] Service initialized and will start warming cache automatically');
+}); 
 }
 
 startServer(); 
