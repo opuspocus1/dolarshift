@@ -217,10 +217,12 @@ const Dashboard: React.FC = () => {
   }, []);
 
   // Opciones para el dropdown
-  const currencyOptions = cards.map(card => ({
-    code: card.code,
-    name: card.name
-  }));
+  const currencyOptions = cards
+    .filter(card => card.code !== 'ARS')
+    .map(card => ({
+      code: card.code,
+      name: card.name
+    }));
   const filteredOptions = search
     ? currencyOptions.filter(option =>
         option.code.toLowerCase().includes(search.toLowerCase()) ||
