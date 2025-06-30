@@ -178,9 +178,12 @@ const Dashboard: React.FC = () => {
     card.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Eliminar ARS de la lista antes de priorizar y paginar
+  const filteredNoARS = filteredCards.filter(card => card.code !== 'ARS');
+
   // Priorización de monedas principales antes de la paginación
   const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY'];
-  const orderedFilteredCards = [...filteredCards].sort((a, b) => {
+  const orderedFilteredCards = [...filteredNoARS].sort((a, b) => {
     const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
     const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
     if (aPriority === -1 && bPriority === -1) {
