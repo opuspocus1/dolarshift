@@ -178,9 +178,22 @@ const Dashboard: React.FC = () => {
     card.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Priorización de monedas principales antes de la paginación
+  const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY'];
+  const orderedFilteredCards = [...filteredCards].sort((a, b) => {
+    const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
+    const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
+    if (aPriority === -1 && bPriority === -1) {
+      return a.code.localeCompare(b.code);
+    }
+    if (aPriority === -1) return 1;
+    if (bPriority === -1) return -1;
+    return aPriority - bPriority;
+  });
+
   // Paginación
-  const totalPages = Math.ceil(filteredCards.length / CARDS_PER_PAGE);
-  const paginatedCards = filteredCards.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
+  const totalPages = Math.ceil(orderedFilteredCards.length / CARDS_PER_PAGE);
+  const paginatedCards = orderedFilteredCards.slice((page - 1) * CARDS_PER_PAGE, page * CARDS_PER_PAGE);
 
   // Manejo de cierre del dropdown al hacer click fuera
   useEffect(() => {
