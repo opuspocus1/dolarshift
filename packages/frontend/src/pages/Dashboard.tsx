@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
   }
 
   // Función para obtener cotizaciones según la fecha
-  const fetchData = async (dateOverride?: string) => {
+  const fetchData = async (dateOverride?: string, bulkHistoryParam?: any) => {
     try {
       setLoading(true);
       const fetchDate = dateOverride || date;
@@ -131,18 +131,12 @@ const Dashboard: React.FC = () => {
         } else {
           // Buscar en el histórico anual (bulk)
           try {
-            if (!bulkHistory) {
-              rates = [];
-            } else {
-              const startDate = fetchDate;
-              const endDate = fetchDate;
-              // El bulk devuelve un objeto { [currency]: [history] }, tomar la última fecha de cada moneda
-              rates = Object.keys(bulkHistory).map(code => {
-                const arr = bulkHistory[code] || [];
-                const last = arr.find(h => h.date === fetchDate);
-                return last ? { ...last, code } : undefined;
-              }).filter((r): r is ExchangeRate => !!r);
-            }
+            const bulk = bulkHistoryParam || bulkHistory;
+            rates = Object.keys(bulk).map(code => {
+              const arr = bulk[code] || [];
+              const last = arr.find(h => h.date === fetchDate);
+              return last ? { ...last, code } : undefined;
+            }).filter((r): r is ExchangeRate => !!r);
           } catch (err) {
             if (import.meta.env.DEV) {
               console.warn('[Dashboard] Error al buscar en el histórico anual (bulk):', err);
@@ -298,7 +292,7 @@ const Dashboard: React.FC = () => {
   }
 
   // Hook para cargar variaciones diarias para todas las divisas mostradas (versión robusta)
-  function useHistoricalVariations(codes, baseCurrency) {
+  function useHistoricalVariations(codes, baseCurrency, bulkHistoryParam) {
     const [variations, setVariations] = useState({});
     const [loadingVariations, setLoadingVariations] = useState(false);
     const cache = React.useRef({}); // cache en memoria por sesión
@@ -322,21 +316,19 @@ const Dashboard: React.FC = () => {
         let usdHistory = [];
         
         try {
-          // Usar el bulkHistory centralizado
-          const { bulk: bulkHistory, loading: loadingBulk } = useBulkHistory(startDate, endDate);
-          
-          if (!bulkHistory) {
+          const bulk = bulkHistoryParam || bulkHistory;
+          if (!bulk) {
             setVariations({});
             setLoadingVariations(false);
             return;
           }
           if (baseCurrency === 'USD') {
-            usdHistory = bulkHistory['USD'] || [];
+            usdHistory = bulk['USD'] || [];
           }
           
           for (const code of codes) {
             try {
-              const history = bulkHistory[code] || [];
+              const history = bulk[code] || [];
               const diasConDatos = (history || []).filter(h => h.buy != null).sort((a, b) => new Date(a.date) - new Date(b.date));
               if (diasConDatos.length === 0) {
                 console.warn(`[Variaciones][${code}] Sin datos suficientes para calcular variaciones. history:`, history);
@@ -434,13 +426,19 @@ const Dashboard: React.FC = () => {
         setLoadingVariations(false);
       }
       fetchVariations();
-    }, [codes.join(','), baseCurrency]);
+    }, [codes.join(','), baseCurrency, bulkHistoryParam]);
     return { variations, loadingVariations };
   }
 
   // En el componente Dashboard:
+  const today = new Date();
+  const bulkStartDate = new Date(today);
+  bulkStartDate.setDate(bulkStartDate.getDate() - 370);
+  const startDateStr = bulkStartDate.toISOString().slice(0, 10);
+  const endDateStr = today.toISOString().slice(0, 10);
+  const { bulk: bulkHistory, loading: loadingBulk } = useBulkHistory(startDateStr, endDateStr);
   const codesForTable = paginatedCards.map(card => card.code);
-  const { variations: dailyVariations, loadingVariations } = useHistoricalVariations(codesForTable, effectiveBaseCurrency);
+  const { variations: dailyVariations, loadingVariations } = useHistoricalVariations(codesForTable, effectiveBaseCurrency, bulkHistory);
 
   // Mapeo para la tabla: una fila por divisa según la base seleccionada
   const tableDataSingle = paginatedCards.map(card => {
