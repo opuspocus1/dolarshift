@@ -103,6 +103,7 @@ class CacheWarmingService {
         console.log(`[Cache Warming] Latest rates cached for ${latestDate}: ${latestRates.length} rates`);
       }
       job.status = 'completed';
+      console.log('[Cache Warming] Latest rates cache warmed');
     } catch (error) {
       job.status = 'failed';
       job.error = error instanceof Error ? error.message : 'Unknown error';
