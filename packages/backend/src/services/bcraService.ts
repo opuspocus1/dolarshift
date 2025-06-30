@@ -44,11 +44,6 @@ interface CurrencyResponse {
   }>;
 }
 
-function processRatesRelativeToUSD(rates: ProcessedExchangeRate[]): ProcessedExchangeRate[] {
-  // No hacer conversión, solo devolver los valores en ARS
-  return rates;
-}
-
 export const bcraService = {
   async getLatestExchangeRates(): Promise<ProcessedExchangeRate[]> {
     // Siempre hacer fetch directo al endpoint sin fecha para obtener el último dato oficial
@@ -83,8 +78,7 @@ export const bcraService = {
       };
     });
     
-    // Process rates relative to USD
-    return processRatesRelativeToUSD(processedRates);
+    return processedRates;
   },
 
   async getExchangeRates(date: Date): Promise<ProcessedExchangeRate[]> {
@@ -137,8 +131,7 @@ export const bcraService = {
         date: response.data.results.fecha
       };
     });
-    // Process rates relative to USD
-    return processRatesRelativeToUSD(processedRates);
+    return processedRates;
   },
 
   async getExchangeRateHistory(currency: string, startDate: Date, endDate: Date) {
