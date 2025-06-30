@@ -37,24 +37,44 @@ const getColor = (value?: number) => {
 
 const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY'];
 
+const TOP5_CODES = [
+  { code: 'USD/USD', label: 'USD/USD DÓLAR E.E.U.U.', value: 1, flagCode: 'US', name: 'DÓLAR E.E.U.U.' },
+  { code: 'JPY/USD', label: 'JPY/USD YEN', value: undefined, flagCode: 'JP', name: 'YEN' },
+  { code: 'EUR/USD', label: 'EUR/USD EURO', value: undefined, flagCode: 'EU', name: 'EURO' },
+  { code: 'BRL/USD', label: 'BRL/USD REAL', value: undefined, flagCode: 'BR', name: 'REAL' },
+  { code: 'GBP/USD', label: 'GBP/USD LIBRA', value: undefined, flagCode: 'GB', name: 'LIBRA' },
+];
+
+const getTop5AndRest = (data: CurrencyTableRow[]): CurrencyTableRow[] => {
+  // Crear un mapa para acceso rápido
+  const map = new Map(data.map(row => [row.code, row]));
+  // Construir el top 5, usando datos reales si existen, o el objeto por defecto si no
+  const top5 = TOP5_CODES.map(({ code, label, value, flagCode, name }) => {
+    if (map.has(code)) return map.get(code)!;
+    // Si no existe, crear un objeto por defecto (solo con los campos mínimos)
+    return {
+      code,
+      label,
+      value: value === undefined ? undefined : value,
+      flagCode,
+      name,
+      date: data[0]?.date || '', // Usar la fecha del primer dato si existe
+    };
+  });
+  // El resto, ordenado alfabéticamente por code
+  const rest = data
+    .filter(row => !TOP5_CODES.some(t => t.code === row.code) && row.code !== 'ARS')
+    .sort((a, b) => a.code.localeCompare(b.code));
+  return [...top5, ...rest];
+};
+
 const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, loadingVariations }) => {
   const [sortBy, setSortBy] = useState<string>('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   // Función para ordenar los datos
   const orderedData = React.useMemo(() => {
-    return data
-      .filter(row => row.code !== 'ARS')
-      .sort((a, b) => {
-        const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
-        const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
-        if (aPriority === -1 && bPriority === -1) {
-          return a.code.localeCompare(b.code);
-        }
-        if (aPriority === -1) return 1;
-        if (bPriority === -1) return -1;
-        return aPriority - bPriority;
-      });
+    return getTop5AndRest(data);
   }, [data]);
 
   // Handler para click en encabezado
