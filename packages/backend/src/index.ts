@@ -31,6 +31,7 @@ const corsOptions = {
 };
 
 // Apply middleware in correct order
+app.set('trust proxy', 1);
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -45,12 +46,12 @@ app.use(limiter);
 app.use('/api/exchange', exchangeRoutes);
 
 // Endpoint para obtener la fecha actual del backend
-app.get('/api/time', (req, res) => {
+app.get('/api/time', (req: express.Request, res: express.Response) => {
   res.json({ now: new Date().toISOString() });
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok' });
 });
 

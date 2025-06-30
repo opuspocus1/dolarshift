@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { bcraService } from '../services/bcraService';
 import { format, subDays, isToday, startOfDay } from 'date-fns';
 import { AxiosError } from 'axios';
@@ -30,24 +30,38 @@ router.get('/currencies', async (req, res) => {
 });
 
 // Get latest exchange rates (from cache if available, else from BCRA API)
-router.get('/rates/latest', async (req, res) => {
+router.get('/rates/latest', async (req: Request, res: Response) => {
   try {
     const today = format(new Date(), 'yyyy-MM-dd');
-    const cacheKey = getCacheKey('rates', today);
-    const cachedData = cacheConfig.bcra.get(cacheKey);
+    let cacheKey = getCacheKey('rates', today);
+    let cachedData = cacheConfig.bcra.get(cacheKey);
 
-    if (cachedData && Array.isArray(cachedData) && cachedData.length > 0) {
+    // Si no hay datos para hoy, buscar hacia atrás hasta 7 días
+    if (!cachedData || !Array.isArray(cachedData) || cachedData.length === 0) {
+      let found = false;
+      for (let i = 1; i <= 7; i++) {
+        const prevDate = format(subDays(new Date(), i), 'yyyy-MM-dd');
+        cacheKey = getCacheKey('rates', prevDate);
+        cachedData = cacheConfig.bcra.get(cacheKey);
+        if (cachedData && Array.isArray(cachedData) && cachedData.length > 0) {
+          console.log(`[Cache] Latest rates served from cache for previous date: ${prevDate}`);
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        return res.json(cachedData);
+      }
+    } else {
       console.log('[Cache] Latest rates served from cache');
       return res.json(cachedData);
     }
 
+    // Si no hay cache, consultar al BCRA
     console.log('[API] Fetching latest rates from BCRA API (no cache)');
     const response = await bcraService.getLatestExchangeRates();
-
     // Cachear el resultado por 1 hora
-    cacheConfig.bcra.set(cacheKey, response, 60 * 60);
-
-    console.log(`[API] Latest rates fetched from BCRA API, records: ${Array.isArray(response) ? response.length : 0}`);
+    cacheConfig.bcra.set(getCacheKey('rates', today), response, 60 * 60);
     res.json(response);
   } catch (error) {
     const axiosError = error as AxiosError;
