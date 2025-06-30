@@ -88,9 +88,37 @@ const Dashboard: React.FC = () => {
         console.log('[Dashboard] Using latest rates endpoint for initial load');
         rates = await exchangeService.getLatestExchangeRates();
       } else {
-        // Si hay fecha específica seleccionada, usar el endpoint con fecha
-        console.log('[Dashboard] Using date-specific endpoint for selected date');
-        rates = await exchangeService.getExchangeRates(new Date(fetchDate));
+        // Si hay fecha específica seleccionada, buscar en el histórico anual (bulk)
+        const today = new Date();
+        const fetchDateObj = new Date(fetchDate);
+        const diffDays = Math.floor((today.getTime() - fetchDateObj.getTime()) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) {
+          if (import.meta.env.DEV) {
+            console.warn('[Dashboard] Intento de buscar cotización de una fecha futura:', fetchDate);
+          }
+          rates = [];
+        } else if (diffDays === 0) {
+          // Hoy: usar latest
+          rates = await exchangeService.getLatestExchangeRates();
+        } else {
+          // Buscar en el histórico anual (bulk)
+          try {
+            const startDate = fetchDate;
+            const endDate = fetchDate;
+            const bulk = await exchangeService.getBulkChartHistory(startDate, endDate);
+            // El bulk devuelve un objeto { [currency]: [history] }, tomar la última fecha de cada moneda
+            rates = Object.keys(bulk).map(code => {
+              const arr = bulk[code] || [];
+              const last = arr.find(h => h.date === fetchDate);
+              return last ? { ...last, code } : undefined;
+            }).filter((r): r is ExchangeRate => !!r);
+          } catch (err) {
+            if (import.meta.env.DEV) {
+              console.warn('[Dashboard] Error al buscar en el histórico anual (bulk):', err);
+            }
+            rates = [];
+          }
+        }
       }
       
       console.log('[Dashboard] Rates received:', rates);

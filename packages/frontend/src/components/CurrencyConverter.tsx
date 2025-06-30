@@ -11,8 +11,15 @@ const CurrencyConverter: React.FC = () => {
 
   useEffect(() => {
     const fetchRates = async () => {
-      const data = await exchangeService.getExchangeRates(new Date());
-      setRates(data);
+      try {
+        const data = await exchangeService.getLatestExchangeRates();
+        setRates(data);
+      } catch (err) {
+        if (import.meta.env.DEV) {
+          console.warn('[CurrencyConverter] Error al obtener latest rates:', err);
+        }
+        setRates([]);
+      }
     };
     fetchRates();
   }, []);
