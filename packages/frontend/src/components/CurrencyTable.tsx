@@ -35,27 +35,27 @@ const getColor = (value?: number) => {
   return '';
 };
 
+const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY'];
+
 const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, loadingVariations }) => {
   const [sortBy, setSortBy] = useState<string>('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   // Función para ordenar los datos
-  const sortedData = React.useMemo(() => {
-    if (!sortBy) return data;
-    const sorted = [...data].sort((a, b) => {
-      const aVal = a[sortBy];
-      const bVal = b[sortBy];
-      if (aVal === undefined || aVal === null) return 1;
-      if (bVal === undefined || bVal === null) return -1;
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
-      }
-      return sortDir === 'asc'
-        ? String(aVal).localeCompare(String(bVal))
-        : String(bVal).localeCompare(String(aVal));
-    });
-    return sorted;
-  }, [data, sortBy, sortDir]);
+  const orderedData = React.useMemo(() => {
+    return data
+      .filter(row => row.code !== 'ARS')
+      .sort((a, b) => {
+        const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
+        const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
+        if (aPriority === -1 && bPriority === -1) {
+          return a.code.localeCompare(b.code);
+        }
+        if (aPriority === -1) return 1;
+        if (bPriority === -1) return -1;
+        return aPriority - bPriority;
+      });
+  }, [data]);
 
   // Handler para click en encabezado
   const handleSort = (col: string) => {
@@ -103,7 +103,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
             </tr>
           </thead>
           <tbody>
-            {sortedData.map((row, idx) => (
+            {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
                 <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
                   {row.customIcon ? (
@@ -168,7 +168,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((row, idx) => (
+          {orderedData.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
               <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap">
                 {row.customIcon ? (
