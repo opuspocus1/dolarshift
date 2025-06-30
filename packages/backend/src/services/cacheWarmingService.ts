@@ -63,11 +63,6 @@ class CacheWarmingService {
 
   private async runScheduledJobs() {
     if (this.isRunning) {
-      // Solo mostrar este mensaje si no es la primera ejecución
-      const isFirstRun = !this.jobs.get('latest-rates')?.lastRun;
-      if (!isFirstRun) {
-        console.log('[Cache Warming] Jobs already running, skipping...');
-      }
       return;
     }
 
