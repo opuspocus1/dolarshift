@@ -32,6 +32,12 @@ export const cacheConfig = {
 
 // Función para obtener la clave de cache inteligente
 export function getCacheKey(type: string, ...params: string[]): string {
+  // Para bulk_history, usar solo las fechas específicas sin agregar la fecha de hoy
+  if (type === 'bulk_history') {
+    return `${type}_${params.join('_')}`;
+  }
+  
+  // Para otros tipos, agregar la fecha de hoy
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   return `${type}_${today}_${params.join('_')}`;
 }
