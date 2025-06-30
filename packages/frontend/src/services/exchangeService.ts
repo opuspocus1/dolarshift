@@ -302,6 +302,7 @@ export const exchangeService = {
 
     // Intentar usar el bulk anual cacheado si el rango pedido está dentro del bulk
     const today = new Date();
+    const todayStr = format(today, 'yyyy-MM-dd');
     const bulkStart = new Date(today);
     bulkStart.setDate(bulkStart.getDate() - 370); // Bulk cubre ~370 días
     const bulkStartStr = format(bulkStart, 'yyyy-MM-dd');
@@ -309,12 +310,39 @@ export const exchangeService = {
     bulkEnd.setDate(bulkEnd.getDate() - 1); // Bulk hasta ayer
     const bulkEndStr = format(bulkEnd, 'yyyy-MM-dd');
 
-    // Si el rango pedido está completamente dentro del bulk, usar el bulk
+    // Caso 1: Todo el rango está en el bulk
     if (startDate >= bulkStartStr && endDate <= bulkEndStr) {
       const bulk = await this.getBulkChartHistory(bulkStartStr, bulkEndStr);
       const history = bulk[currency] || [];
       // Filtrar solo el rango pedido
       return history.filter(h => h.date >= startDate && h.date <= endDate);
+    }
+
+    // Caso 2: El rango termina en hoy (o después de bulkEnd) y empieza dentro del bulk
+    if (startDate >= bulkStartStr && endDate >= bulkEndStr && startDate <= bulkEndStr && endDate <= todayStr) {
+      // 1. Obtener del bulk hasta bulkEnd
+      const bulk = await this.getBulkChartHistory(bulkStartStr, bulkEndStr);
+      const historyBulk = (bulk[currency] || []).filter(h => h.date >= startDate && h.date <= bulkEndStr);
+      // 2. Obtener el dato de latest para endDate (si existe)
+      let latestDay: ExchangeRateHistory[] = [];
+      if (endDate === todayStr) {
+        // Buscar en cache de latest
+        const cacheKey = `rates_${todayStr}`;
+        const latestRates = frontendCache.get(cacheKey);
+        if (latestRates && Array.isArray(latestRates)) {
+          const found = latestRates.find((r: any) => r.code === currency || r.codigomoneda === currency);
+          if (found) {
+            latestDay = [{
+              date: todayStr,
+              buy: found.buy,
+              sell: found.sell,
+              tipopase: found.tipopase
+            }];
+          }
+        }
+      }
+      // Unir ambos resultados
+      return [...historyBulk, ...latestDay];
     }
 
     // Usar cache del frontend para el rango puntual
