@@ -89,16 +89,27 @@ class CacheWarmingService {
     if (!job) return;
 
     try {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const todayStr = format(now, 'yyyy-MM-dd');
+      // Solo correr si es después de las 16:30 y no se corrió aún para hoy
+      if ((currentHour < 16 || (currentHour === 16 && currentMinute < 30)) && job.lastRun && format(job.lastRun, 'yyyy-MM-dd') === todayStr) {
+        // No es hora de warming o ya se corrió hoy
+        job.nextRun = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 30, 0, 0);
+        job.status = 'pending';
+        return;
+      }
       job.status = 'running';
-      job.lastRun = new Date();
-      job.nextRun = new Date(Date.now() + 60 * 60 * 1000); // Próxima ejecución en 1 hora
+      job.lastRun = now;
+      job.nextRun = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 16, 30, 0, 0); // Próxima ejecución mañana a las 16:30
 
       console.log('[Cache Warming] Warming latest rates cache...');
       const latestRates = await bcraService.getLatestExchangeRates();
       if (Array.isArray(latestRates) && latestRates.length > 0) {
-        const latestDate = latestRates[0]?.date || format(new Date(), 'yyyy-MM-dd');
+        const latestDate = latestRates[0]?.date || format(now, 'yyyy-MM-dd');
         const cacheKey = getCacheKey('rates', latestDate);
-        cacheConfig.bcra.set(cacheKey, latestRates, 60 * 60); // 1 hora
+        cacheConfig.bcra.set(cacheKey, latestRates, 24 * 60 * 60); // 24 horas
         console.log(`[Cache Warming] Latest rates cached for ${latestDate}: ${latestRates.length} rates`);
       }
       job.status = 'completed';
