@@ -74,6 +74,34 @@ const Dashboard: React.FC = () => {
     fetchData(value);
   };
 
+  // Custom hook para centralizar el fetch y cache del bulk anual
+  function useBulkHistory(startDate: string, endDate: string) {
+    const cache = useRef<{ [key: string]: any }>({});
+    const key = `${startDate}|${endDate}`;
+    const [bulk, setBulk] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+      let mounted = true;
+      async function fetchBulk() {
+        if (cache.current[key]) {
+          setBulk(cache.current[key]);
+          setLoading(false);
+          return;
+        }
+        setLoading(true);
+        const data = await exchangeService.getBulkChartHistory(startDate, endDate);
+        cache.current[key] = data;
+        if (mounted) {
+          setBulk(data);
+          setLoading(false);
+        }
+      }
+      fetchBulk();
+      return () => { mounted = false; };
+    }, [startDate, endDate]);
+    return { bulk, loading };
+  }
+
   // Función para obtener cotizaciones según la fecha
   const fetchData = async (dateOverride?: string) => {
     try {
@@ -103,15 +131,18 @@ const Dashboard: React.FC = () => {
         } else {
           // Buscar en el histórico anual (bulk)
           try {
-            const startDate = fetchDate;
-            const endDate = fetchDate;
-            const bulk = await exchangeService.getBulkChartHistory(startDate, endDate);
-            // El bulk devuelve un objeto { [currency]: [history] }, tomar la última fecha de cada moneda
-            rates = Object.keys(bulk).map(code => {
-              const arr = bulk[code] || [];
-              const last = arr.find(h => h.date === fetchDate);
-              return last ? { ...last, code } : undefined;
-            }).filter((r): r is ExchangeRate => !!r);
+            if (!bulkHistory) {
+              rates = [];
+            } else {
+              const startDate = fetchDate;
+              const endDate = fetchDate;
+              // El bulk devuelve un objeto { [currency]: [history] }, tomar la última fecha de cada moneda
+              rates = Object.keys(bulkHistory).map(code => {
+                const arr = bulkHistory[code] || [];
+                const last = arr.find(h => h.date === fetchDate);
+                return last ? { ...last, code } : undefined;
+              }).filter((r): r is ExchangeRate => !!r);
+            }
           } catch (err) {
             if (import.meta.env.DEV) {
               console.warn('[Dashboard] Error al buscar en el histórico anual (bulk):', err);
@@ -291,9 +322,14 @@ const Dashboard: React.FC = () => {
         let usdHistory = [];
         
         try {
-          // Usar el método optimizado para obtener todos los datos de una vez
-          const bulkHistory = await exchangeService.getBulkChartHistory(startDate, endDate);
+          // Usar el bulkHistory centralizado
+          const { bulk: bulkHistory, loading: loadingBulk } = useBulkHistory(startDate, endDate);
           
+          if (!bulkHistory) {
+            setVariations({});
+            setLoadingVariations(false);
+            return;
+          }
           if (baseCurrency === 'USD') {
             usdHistory = bulkHistory['USD'] || [];
           }
