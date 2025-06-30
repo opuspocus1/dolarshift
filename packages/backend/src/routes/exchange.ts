@@ -29,14 +29,24 @@ router.get('/currencies', async (req, res) => {
   }
 });
 
-// Get latest exchange rates (always from BCRA API, no cache)
+// Get latest exchange rates (from cache if available, else from BCRA API)
 router.get('/rates/latest', async (req, res) => {
   try {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const cacheKey = getCacheKey('rates', today);
+    const cachedData = cacheConfig.bcra.get(cacheKey);
+
+    if (cachedData && Array.isArray(cachedData) && cachedData.length > 0) {
+      console.log('[Cache] Latest rates served from cache');
+      return res.json(cachedData);
+    }
+
     console.log('[API] Fetching latest rates from BCRA API (no cache)');
-    
-    // Siempre hacer fetch directo al endpoint sin fecha para obtener el último dato
     const response = await bcraService.getLatestExchangeRates();
-    
+
+    // Cachear el resultado por 1 hora
+    cacheConfig.bcra.set(cacheKey, response, 60 * 60);
+
     console.log(`[API] Latest rates fetched from BCRA API, records: ${Array.isArray(response) ? response.length : 0}`);
     res.json(response);
   } catch (error) {

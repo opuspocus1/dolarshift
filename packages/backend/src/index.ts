@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import { exchangeRoutes } from './routes/exchange';
-import './services/cacheWarmingService'; // Inicializar cache warming automáticamente
+import { cacheWarmingService } from './services/cacheWarmingService'; // Importar el servicio para warming manual
 
 // Load environment variables
 dotenv.config();
@@ -65,8 +65,20 @@ app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ error: 'Not Found' });
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log('[Cache Warming] Service initialized and will start warming cache automatically');
-}); 
+// Start server SOLO después de que el warming termine
+async function startServer() {
+  console.log('[Server] Warming up cache before starting HTTP server...');
+  try {
+    await cacheWarmingService.runAllJobs();
+    console.log('[Server] Cache warming completed. Starting HTTP server...');
+  } catch (err) {
+    console.error('[Server] Error during cache warming:', err);
+    // Si falla el warming, igual arrancar el server para no dejarlo caído
+  }
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+    console.log('[Cache Warming] Service initialized and will start warming cache automatically');
+  });
+}
+
+startServer(); 
