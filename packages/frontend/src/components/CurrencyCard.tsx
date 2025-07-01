@@ -129,11 +129,11 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
     const apiDate = parseISO(currency.date);
     // Fijar la hora a las 16:00
     apiDate.setHours(16, 0, 0, 0);
-    // Formato YYYY-MM-DD 16:00 hs
+    // Formato dd-MM-yyyy 16:00 hs
     const year = apiDate.getFullYear();
     const month = String(apiDate.getMonth() + 1).padStart(2, '0');
     const day = String(apiDate.getDate()).padStart(2, '0');
-    formattedDateTime = `${year}-${month}-${day} 16:00 hs`;
+    formattedDateTime = `${day}-${month}-${year} 16:00 hs`;
   }
 
   // Formatear la tasa de cambio
