@@ -140,7 +140,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
                 <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
-                  <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'}`}>
+                  <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'} h-[2.5em]`}>
                     {row.customIcon ? (
                       <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
                     ) : (
@@ -224,7 +224,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           {orderedData.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
               <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
-                <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'}`}>
+                <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'} h-[2.5em]`}>
                   {row.customIcon ? (
                     <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
                   ) : (
