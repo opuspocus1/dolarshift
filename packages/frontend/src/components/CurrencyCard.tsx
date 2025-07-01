@@ -127,14 +127,13 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   let formattedDateTime = 'N/A';
   if (currency.date) {
     const apiDate = parseISO(currency.date);
-    // Obtener la hora actual de Buenos Aires
-    const nowBuenosAires = new Date(
-      new Date().toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' })
-    );
-    // Combinar fecha de la API y hora actual de Buenos Aires
-    const combinedDate = new Date(apiDate);
-    combinedDate.setHours(nowBuenosAires.getHours(), nowBuenosAires.getMinutes(), 0, 0);
-    formattedDateTime = format(combinedDate, "d 'de' MMMM 'de' yyyy HH:mm", { locale: es }) + ' hs';
+    // Fijar la hora a las 16:00
+    apiDate.setHours(16, 0, 0, 0);
+    // Formato YYYY-MM-DD 16:00 hs
+    const year = apiDate.getFullYear();
+    const month = String(apiDate.getMonth() + 1).padStart(2, '0');
+    const day = String(apiDate.getDate()).padStart(2, '0');
+    formattedDateTime = `${year}-${month}-${day} 16:00 hs`;
   }
 
   // Formatear la tasa de cambio

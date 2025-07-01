@@ -136,7 +136,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
-                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date} 16:30 hs` : '-'}</td>
+                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date} 16:00 hs` : '-'}</td>
                 <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.source || 'BCRA'}</td>
               </tr>
             ))}
@@ -247,7 +247,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
                   : '-'}
               </td>
-              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date} 16:30 hs` : '-'}</td>
+              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date} 16:00 hs` : '-'}</td>
               <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.source || 'BCRA'}</td>
             </tr>
           ))}
