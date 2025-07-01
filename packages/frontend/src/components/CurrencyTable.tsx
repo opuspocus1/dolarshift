@@ -20,6 +20,7 @@ interface CurrencyTableRow {
   customIcon?: string;
   pairKey?: string;
   side?: string;
+  source?: string;
 }
 
 interface CurrencyTableProps {
@@ -94,6 +95,9 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('date')}>
                 Fecha {sortBy === 'date' && (sortDir === 'asc' ? '↑' : '↓')}
               </th>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none">
+                Fuente
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -132,7 +136,8 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
-                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date}</td>
+                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date} 16:30 hs` : '-'}</td>
+                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.source || 'BCRA'}</td>
               </tr>
             ))}
           </tbody>
@@ -171,6 +176,9 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
             </th>
             <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('date')}>
               Fecha {sortBy === 'date' && (sortDir === 'asc' ? '↑' : '↓')}
+            </th>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none">
+              Fuente
             </th>
           </tr>
         </thead>
@@ -239,7 +247,8 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
                   : '-'}
               </td>
-              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date}</td>
+              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date} 16:30 hs` : '-'}</td>
+              <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.source || 'BCRA'}</td>
             </tr>
           ))}
         </tbody>
