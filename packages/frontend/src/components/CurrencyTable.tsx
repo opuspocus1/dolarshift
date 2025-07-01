@@ -38,9 +38,43 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
 
   // Función para ordenar los datos
   const orderedData = React.useMemo(() => {
-    return data
-      .filter(row => row.code !== 'ARS')
-      .sort((a, b) => {
+    let sortedData = data.filter((row: CurrencyTableRow) => row.code !== 'ARS');
+
+    if (sortBy) {
+      sortedData = [...sortedData].sort((a: CurrencyTableRow, b: CurrencyTableRow) => {
+        let aValue: any = a[sortBy as keyof CurrencyTableRow];
+        let bValue: any = b[sortBy as keyof CurrencyTableRow];
+
+        // Ordenar fechas dd-MM-yyyy
+        if (sortBy === 'date' && aValue && bValue) {
+          // dd-MM-yyyy a Date
+          const [da, ma, ya] = aValue.split('-').map(Number);
+          const [db, mb, yb] = bValue.split('-').map(Number);
+          const dateA = new Date(ya, ma - 1, da);
+          const dateB = new Date(yb, mb - 1, db);
+          return sortDir === 'asc' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+        }
+
+        // Ordenar numéricos
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sortDir === 'asc' ? aValue - bValue : bValue - aValue;
+        }
+
+        // Ordenar strings
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortDir === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        }
+
+        // Nulos al final
+        if (aValue == null && bValue == null) return 0;
+        if (aValue == null) return sortDir === 'asc' ? 1 : -1;
+        if (bValue == null) return sortDir === 'asc' ? -1 : 1;
+
+        return 0;
+      });
+    } else {
+      // Orden por prioridad de monedas si no hay sortBy
+      sortedData = [...sortedData].sort((a: CurrencyTableRow, b: CurrencyTableRow) => {
         const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
         const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
         if (aPriority === -1 && bPriority === -1) {
@@ -50,7 +84,9 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         if (bPriority === -1) return -1;
         return aPriority - bPriority;
       });
-  }, [data]);
+    }
+    return sortedData;
+  }, [data, sortBy, sortDir]);
 
   // Handler para click en encabezado
   const handleSort = (col: string) => {
