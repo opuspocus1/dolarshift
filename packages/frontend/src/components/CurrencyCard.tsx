@@ -218,11 +218,6 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
               <td className="text-gray-500 dark:text-gray-400">Interanual</td>
               <td className={`text-right font-mono ${getVariationColor(currency.yoyPercent)}`}>{currency.yoyPercent !== undefined && currency.yoyPercent !== null && !isNaN(currency.yoyPercent) ? (currency.yoyPercent > 0 ? '+' : '') + currency.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
             </tr>
-            <tr>
-              <td colSpan={2} className="text-xs text-gray-500 dark:text-gray-400 pt-2 text-right">
-                {currency.date ? `${format(parseISO(currency.date), 'dd/MM/yyyy HH:mm')} hs` : '-'} | Fuente: {currency.source || 'BCRA'}
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>

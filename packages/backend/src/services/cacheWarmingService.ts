@@ -111,7 +111,7 @@ class CacheWarmingService {
         const cacheKey = getCacheKey('rates', latestDate);
         cacheConfig.bcra.set(cacheKey, latestRates, 24 * 60 * 60); // 24 horas
         console.log(`[Cache Warming] Latest rates cached for ${latestDate}: ${latestRates.length} rates`);
-      }
+        }
       job.status = 'completed';
       console.log('[Cache Warming] Latest rates cache warmed');
     } catch (error) {
@@ -180,7 +180,7 @@ class CacheWarmingService {
         await this.warmLatestRatesCache();
         break;
       case 'bulk':
-        await this.warmBulkHistoryCache();
+          await this.warmBulkHistoryCache();
         break;
     }
   }

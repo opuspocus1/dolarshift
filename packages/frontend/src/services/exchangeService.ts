@@ -299,7 +299,7 @@ export const exchangeService = {
 
   async getChartHistory(currency: string, startDate: string, endDate: string): Promise<ExchangeRateHistory[]> {
     console.log('[exchangeService] getChartHistory', currency, startDate, endDate);
-
+    
     // Intentar usar el bulk anual cacheado si el rango pedido está dentro del bulk
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');
@@ -352,14 +352,14 @@ export const exchangeService = {
       console.log(`[Frontend Cache] Chart history for ${currency} (${startDate} to ${endDate}) served from cache`);
       return cachedData;
     }
-
+    
     console.log(`[Frontend Cache] Fetching chart history for ${currency} from API (${startDate} to ${endDate})`);
     const res = await axios.get(`${API_BASE_URL}/exchange/rates/${currency}/${startDate}/${endDate}`);
     console.log('[exchangeService] getChartHistory response', res.data?.length);
-
+    
     // Cache por 24 horas para datos históricos
     frontendCache.set(cacheKey, res.data, 24 * 60 * 60 * 1000);
-
+    
     return res.data;
   },
 

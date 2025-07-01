@@ -139,28 +139,28 @@ export const bcraService = {
     const today = new Date();
     const validStartDate = startDate > today ? new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000) : startDate;
     const validEndDate = endDate > today ? today : endDate;
-
+    
     // La API del BCRA permite paginar con limit y offset (máx 1000 por request)
     const limit = 1000;
     let offset = 0;
     let allResults: any[] = [];
-
+    
     const formattedStartDate = format(validStartDate, 'yyyy-MM-dd');
     const formattedEndDate = format(validEndDate, 'yyyy-MM-dd');
-
+    
     while (true) {
-      const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
-        params: {
-          fechaDesde: formattedStartDate,
+    const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
+      params: {
+        fechaDesde: formattedStartDate,
           fechaHasta: formattedEndDate,
           limit,
           offset
-        },
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-        },
-        httpsAgent: agent
-      });
+      },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
+      },
+      httpsAgent: agent
+    });
       const results = response.data.results || [];
       if (results.length === 0) {
         break;
