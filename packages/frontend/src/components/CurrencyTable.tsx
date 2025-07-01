@@ -140,9 +140,9 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
                 <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'}`}>
                     {row.customIcon ? (
-                      <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.25em' }}>{row.customIcon}</span>
+                      <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{row.customIcon}</span>
                     ) : (
                       <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                     )}
@@ -224,9 +224,9 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           {orderedData.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
               <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
-                <div className="flex items-center gap-2">
+                <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'}`}>
                   {row.customIcon ? (
-                    <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.25em' }}>{row.customIcon}</span>
+                    <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{row.customIcon}</span>
                   ) : (
                     <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                   )}
