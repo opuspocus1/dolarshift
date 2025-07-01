@@ -139,23 +139,40 @@ export const bcraService = {
     const today = new Date();
     const validStartDate = startDate > today ? new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000) : startDate;
     const validEndDate = endDate > today ? today : endDate;
-    
-    const formattedStartDate = format(validStartDate, "yyyy-MM-dd'T'HH:mm:ss");
-    const formattedEndDate = format(validEndDate, "yyyy-MM-dd'T'HH:mm:ss");
-    
-    const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
-      params: {
-        fechaDesde: formattedStartDate,
-        fechaHasta: formattedEndDate
-      },
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
-      },
-      httpsAgent: agent
-    });
+
+    // La API del BCRA permite paginar con limit y offset (máx 1000 por request)
+    const limit = 1000;
+    let offset = 0;
+    let allResults: any[] = [];
+    let keepFetching = true;
+
+    const formattedStartDate = format(validStartDate, 'yyyy-MM-dd');
+    const formattedEndDate = format(validEndDate, 'yyyy-MM-dd');
+
+    while (keepFetching) {
+      const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
+        params: {
+          fechaDesde: formattedStartDate,
+          fechaHasta: formattedEndDate,
+          limit,
+          offset
+        },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; DolarShift/1.0; +https://dolarshift.com)'
+        },
+        httpsAgent: agent
+      });
+      const results = response.data.results || [];
+      allResults = allResults.concat(results);
+      if (results.length < limit) {
+        keepFetching = false;
+      } else {
+        offset += limit;
+      }
+    }
 
     // Procesar el historial para incluir compra y venta
-    const mapped = response.data.results.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
+    const mapped = allResults.map((result: { fecha: string; detalle: BCRAExchangeRate[] }) => {
       const rate = result.detalle[0];
       if (!rate) {
         return {
@@ -167,13 +184,11 @@ export const bcraService = {
       // Usar tipoCotizacion (en pesos) para todas las monedas
       let buy = rate.tipoCotizacion;
       let sell = rate.tipoCotizacion;
-      
       // Para XAU y XAG, usar tipoPase si tipoCotizacion es 0
       if ((rate.codigoMoneda === 'XAU' || rate.codigoMoneda === 'XAG') && rate.tipoCotizacion === 0 && rate.tipoPase !== 0) {
         buy = rate.tipoPase;
         sell = rate.tipoPase;
       }
-      
       return {
         date: result.fecha,
         buy,
@@ -181,6 +196,8 @@ export const bcraService = {
       };
     });
 
+    // Ordenar por fecha ascendente
+    mapped.sort((a, b) => a.date.localeCompare(b.date));
     return mapped;
   },
 
