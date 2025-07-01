@@ -144,12 +144,11 @@ export const bcraService = {
     const limit = 1000;
     let offset = 0;
     let allResults: any[] = [];
-    let keepFetching = true;
 
     const formattedStartDate = format(validStartDate, 'yyyy-MM-dd');
     const formattedEndDate = format(validEndDate, 'yyyy-MM-dd');
 
-    while (keepFetching) {
+    while (true) {
       const response = await axios.get<BCRAHistoryResponse>(`${BCRA_API_BASE_URL}/Cotizaciones/${currency}`, {
         params: {
           fechaDesde: formattedStartDate,
@@ -163,12 +162,11 @@ export const bcraService = {
         httpsAgent: agent
       });
       const results = response.data.results || [];
-      allResults = allResults.concat(results);
-      if (results.length < limit) {
-        keepFetching = false;
-      } else {
-        offset += limit;
+      if (results.length === 0) {
+        break;
       }
+      allResults = allResults.concat(results);
+      offset += limit;
     }
 
     // Procesar el historial para incluir compra y venta
