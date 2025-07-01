@@ -139,14 +139,16 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           <tbody>
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-                <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap min-h-[2.5em]">
-                  {row.customIcon ? (
-                    <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.25em' }}>{row.customIcon}</span>
-                  ) : (
-                    <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
-                  )}
-                  <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
+                <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
+                  <div className="flex items-center gap-2">
+                    {row.customIcon ? (
+                      <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.25em' }}>{row.customIcon}</span>
+                    ) : (
+                      <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
+                    )}
+                    <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
+                  </div>
                 </td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">
                   {loadingVariations ? (
@@ -221,14 +223,16 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         <tbody>
           {orderedData.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-              <td className="px-3 py-2 flex items-center gap-2 whitespace-nowrap min-h-[2.5em]">
-                {row.customIcon ? (
-                  <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.25em' }}>{row.customIcon}</span>
-                ) : (
-                  <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
-                )}
-                <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
-                <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
+              <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
+                <div className="flex items-center gap-2">
+                  {row.customIcon ? (
+                    <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '0.25em' }}>{row.customIcon}</span>
+                  ) : (
+                    <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
+                  )}
+                  <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
+                </div>
               </td>
               <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">
                 {loadingVariations ? (
