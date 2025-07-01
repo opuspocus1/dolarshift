@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectedCurrencies, setSelectedCurrencies] = useState<{ code: string; name: string }[]>([]);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>(getInitialViewMode);
-  const [baseCurrency, setBaseCurrency] = useState<string>('');
+  const [baseCurrency, setBaseCurrency] = useState<string>('ARS');
   const isFirstRender = useRef(true);
 
   // Limpiar cache del frontend para forzar nueva request al backend
@@ -284,8 +284,8 @@ const Dashboard: React.FC = () => {
     NIO: 'NI'  // Nicaragua
   };
 
-  // Cambiar la lógica de uso de baseCurrency: si baseCurrency es vacío, usar USD por defecto en la lógica de la tabla y cards
-  const effectiveBaseCurrency = baseCurrency || 'USD';
+  // Cambiar la lógica de uso de baseCurrency: si baseCurrency es vacío, usar ARS por defecto en la lógica de la tabla y cards
+  const effectiveBaseCurrency = baseCurrency || 'ARS';
 
   // Utilidad para buscar el último día hábil anterior con datos
   async function getLastBusinessDayWithData(currency, base, today) {
