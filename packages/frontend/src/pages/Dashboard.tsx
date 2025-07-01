@@ -182,7 +182,7 @@ const Dashboard: React.FC = () => {
   const filteredNoARS = filteredCards.filter(card => card.code !== 'ARS');
 
   // Priorización de monedas principales antes de la paginación
-  const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY'];
+  const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY', 'REF', 'XAU', 'XAG'];
   const orderedFilteredCards = [...filteredNoARS].sort((a, b) => {
     const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
     const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
