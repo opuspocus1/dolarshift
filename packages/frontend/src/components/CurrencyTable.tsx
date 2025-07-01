@@ -142,7 +142,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                 <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
                   <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'}`}>
                     {row.customIcon ? (
-                      <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>{row.customIcon}</span>
+                      <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
                     ) : (
                       <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                     )}
@@ -226,7 +226,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
               <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
                 <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'}`}>
                   {row.customIcon ? (
-                    <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>{row.customIcon}</span>
+                    <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
                   ) : (
                     <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                   )}
