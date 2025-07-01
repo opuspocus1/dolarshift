@@ -189,7 +189,18 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Día</td>
-              <td className="text-right font-mono text-gray-900 dark:text-white">{currency.dayValue !== undefined && currency.dayValue !== null ? Number(currency.dayValue).toLocaleString('es-AR', { minimumFractionDigits: 5, maximumFractionDigits: 5 }) : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.dayValue)}`}>
+                {currency.dayValue !== undefined && currency.dayValue !== null ? (
+                  <>
+                    {currency.dayValue > 0 ? (
+                      <span className={getVariationColor(currency.dayValue)} style={{marginRight: '0.25em'}}>▲</span>
+                    ) : currency.dayValue < 0 ? (
+                      <span className={getVariationColor(currency.dayValue)} style={{marginRight: '0.25em'}}>▼</span>
+                    ) : null}
+                    <span>{Math.abs(currency.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
+                  </>
+                ) : '-'}
+              </td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Semanal</td>
