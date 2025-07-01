@@ -113,7 +113,20 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                     <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                   ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
                 </td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)}`}>
+                  {loadingVariations ? (
+                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                  ) : row.dayValue !== undefined && row.dayValue !== null ? (
+                    <>
+                      {row.dayValue > 0 ? (
+                        <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.25em'}}>▲</span>
+                      ) : row.dayValue < 0 ? (
+                        <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.25em'}}>▼</span>
+                      ) : null}
+                      <span>{Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
+                    </>
+                  ) : '-'}
+                </td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
@@ -178,12 +191,16 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)}`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.dayValue !== undefined && row.dayValue !== null ? (
                   <>
-                    {row.dayValue > 0 ? <span style={{marginRight: '0.25em'}}>▲</span> : row.dayValue < 0 ? <span style={{marginRight: '0.25em'}}>▼</span> : null}
+                    {row.dayValue > 0 ? (
+                      <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.25em'}}>▲</span>
+                    ) : row.dayValue < 0 ? (
+                      <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.25em'}}>▼</span>
+                    ) : null}
                     <span>{Math.abs(row.dayValue).toLocaleString('en-US', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
                   </>
                 ) : '-'}
