@@ -183,16 +183,12 @@ const Dashboard: React.FC = () => {
 
   // Priorización de monedas principales antes de la paginación
   const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY', 'REF', 'XAU', 'XAG'];
-  const orderedFilteredCards = [...filteredNoARS].sort((a, b) => {
-    const aPriority = PRIORITY_CURRENCIES.indexOf(a.code);
-    const bPriority = PRIORITY_CURRENCIES.indexOf(b.code);
-    if (aPriority === -1 && bPriority === -1) {
-      return a.code.localeCompare(b.code);
-    }
-    if (aPriority === -1) return 1;
-    if (bPriority === -1) return -1;
-    return aPriority - bPriority;
-  });
+  const topCards = PRIORITY_CURRENCIES
+    .map(code => filteredNoARS.find(card => card.code === code))
+    .filter(Boolean);
+  const otherCards = filteredNoARS.filter(card => !PRIORITY_CURRENCIES.includes(card.code))
+    .sort((a, b) => a.code.localeCompare(b.code));
+  const orderedFilteredCards = [...topCards, ...otherCards];
 
   // Paginación
   const totalPages = Math.ceil(orderedFilteredCards.length / CARDS_PER_PAGE);
