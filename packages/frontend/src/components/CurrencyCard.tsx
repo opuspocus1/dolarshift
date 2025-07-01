@@ -4,6 +4,7 @@ import { ExchangeRate } from '../services/exchangeService';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import CountryFlag from 'react-country-flag';
+import { getVariationColor } from '../utils/format';
 
 // Mapeo simple de banderas y símbolos por código de moneda
 const currencyMeta: Record<string, { flag: string; symbol: string }> = {
@@ -93,13 +94,6 @@ interface CurrencyCardProps {
   loadingVariations?: boolean;
 }
 
-const getColor = (value?: number) => {
-  if (value === undefined) return '';
-  if (value > 0) return 'text-green-600 dark:text-green-400';
-  if (value < 0) return 'text-red-600 dark:text-red-400';
-  return '';
-};
-
 const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'USD', dayPercent, loadingVariations }) => {
   // Usar solo el código de moneda, sin bandera
   let meta = currencyMeta[currency.codigomoneda || currency.code] || currencyMeta.DEFAULT;
@@ -161,7 +155,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full relative">
       {/* Porcentaje arriba, centrado y al raz del borde */}
-      <span className={`absolute left-1/2 -translate-x-1/2 -top-4 bg-white dark:bg-gray-800 px-4 py-1 rounded-full text-lg font-bold border border-gray-200 dark:border-gray-700 shadow ${getColor(dayPercent)}`} style={{ minWidth: '80px', textAlign: 'center' }}>
+      <span className={`absolute left-1/2 -translate-x-1/2 -top-4 bg-white dark:bg-gray-800 px-4 py-1 rounded-full text-lg font-bold border border-gray-200 dark:border-gray-700 shadow ${getVariationColor(dayPercent)}`} style={{ minWidth: '80px', textAlign: 'center' }}>
         {loadingVariations ? (
           <Loader2 className="animate-spin w-4 h-4 text-blue-500" />
         ) : dayPercent !== undefined && dayPercent !== null && !isNaN(dayPercent) ? (
@@ -199,19 +193,19 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Semanal</td>
-              <td className="text-right font-mono text-gray-900 dark:text-white">{currency.weekPercent !== undefined && currency.weekPercent !== null && !isNaN(currency.weekPercent) ? (currency.weekPercent > 0 ? '+' : '') + currency.weekPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.weekPercent)} text-gray-900 dark:text-white`}>{currency.weekPercent !== undefined && currency.weekPercent !== null && !isNaN(currency.weekPercent) ? (currency.weekPercent > 0 ? '+' : '') + currency.weekPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Mensual</td>
-              <td className="text-right font-mono text-gray-900 dark:text-white">{currency.monthPercent !== undefined && currency.monthPercent !== null && !isNaN(currency.monthPercent) ? (currency.monthPercent > 0 ? '+' : '') + currency.monthPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.monthPercent)} text-gray-900 dark:text-white`}>{currency.monthPercent !== undefined && currency.monthPercent !== null && !isNaN(currency.monthPercent) ? (currency.monthPercent > 0 ? '+' : '') + currency.monthPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">YTD</td>
-              <td className="text-right font-mono text-gray-900 dark:text-white">{currency.ytdPercent !== undefined && currency.ytdPercent !== null && !isNaN(currency.ytdPercent) ? (currency.ytdPercent > 0 ? '+' : '') + currency.ytdPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.ytdPercent)} text-gray-900 dark:text-white`}>{currency.ytdPercent !== undefined && currency.ytdPercent !== null && !isNaN(currency.ytdPercent) ? (currency.ytdPercent > 0 ? '+' : '') + currency.ytdPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Interanual</td>
-              <td className="text-right font-mono text-gray-900 dark:text-white">{currency.yoyPercent !== undefined && currency.yoyPercent !== null && !isNaN(currency.yoyPercent) ? (currency.yoyPercent > 0 ? '+' : '') + currency.yoyPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.yoyPercent)} text-gray-900 dark:text-white`}>{currency.yoyPercent !== undefined && currency.yoyPercent !== null && !isNaN(currency.yoyPercent) ? (currency.yoyPercent > 0 ? '+' : '') + currency.yoyPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
           </tbody>
         </table>

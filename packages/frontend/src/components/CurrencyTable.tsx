@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CountryFlag from 'react-country-flag';
 import { Loader2 } from 'lucide-react';
+import { getVariationColor } from '../utils/format';
 
 interface CurrencyTableRow {
   code: string;
@@ -27,13 +28,6 @@ interface CurrencyTableProps {
   stacked?: boolean;
   loadingVariations?: boolean;
 }
-
-const getColor = (value?: number) => {
-  if (value === undefined) return '';
-  if (value > 0) return 'text-green-600';
-  if (value < 0) return 'text-red-600';
-  return '';
-};
 
 const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY', 'REF', 'XAU', 'XAG'];
 
@@ -184,7 +178,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayValue)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)} text-gray-900 dark:text-white`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.dayValue !== undefined && row.dayValue !== null ? (
@@ -194,34 +188,34 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   </>
                 ) : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.dayPercent)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayPercent)} text-gray-900 dark:text-white`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
                   (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toFixed(2) + '%' : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.weekPercent)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.weekPercent)} text-gray-900 dark:text-white`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
                   ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toFixed(2) + '%'
                   : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.monthPercent)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.monthPercent)} text-gray-900 dark:text-white`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
                   ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toFixed(2) + '%'
                   : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.ytdPercent)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.ytdPercent)} text-gray-900 dark:text-white`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
                   ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toFixed(2) + '%'
                   : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getColor(row.yoyPercent)} text-gray-900 dark:text-white`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.yoyPercent)} text-gray-900 dark:text-white`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
