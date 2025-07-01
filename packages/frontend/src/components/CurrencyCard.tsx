@@ -161,7 +161,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-200 border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full relative">
       {/* Porcentaje arriba, centrado y al raz del borde */}
-      <span className={`absolute left-1/2 -translate-x-1/2 -top-3 bg-white dark:bg-gray-800 px-2 py-0.5 rounded-full text-xs font-semibold border border-gray-200 dark:border-gray-700 shadow ${getColor(dayPercent)}`}>
+      <span className={`absolute left-1/2 -translate-x-1/2 -top-4 bg-white dark:bg-gray-800 px-4 py-1 rounded-full text-lg font-bold border border-gray-200 dark:border-gray-700 shadow ${getColor(dayPercent)}`} style={{ minWidth: '80px', textAlign: 'center' }}>
         {loadingVariations ? (
           <Loader2 className="animate-spin w-4 h-4 text-blue-500" />
         ) : dayPercent !== undefined && dayPercent !== null && !isNaN(dayPercent) ? (
@@ -191,7 +191,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
           <tbody>
             <tr>
               <td className="font-semibold text-gray-900 dark:text-white">{currency.pairKey || `${displaySymbol}/${baseCurrency}`}</td>
-              <td className="font-mono text-right text-lg text-gray-900 dark:text-white">{formatRate(currency.value, false)}</td>
+              <td className="font-mono text-right text-3xl font-extrabold text-gray-900 dark:text-white">{formatRate(currency.value, false)}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Día</td>
