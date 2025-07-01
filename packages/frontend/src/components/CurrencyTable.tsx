@@ -35,7 +35,7 @@ const getColor = (value?: number) => {
   return '';
 };
 
-const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY'];
+const PRIORITY_CURRENCIES = ['USD', 'EUR', 'BRL', 'GBP', 'JPY', 'REF', 'XAU', 'XAG'];
 
 const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, loadingVariations }) => {
   const [sortBy, setSortBy] = useState<string>('');
