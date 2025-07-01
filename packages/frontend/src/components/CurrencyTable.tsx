@@ -146,7 +146,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                     ) : (
                       <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                     )}
-                    <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
+                    <span className="font-semibold text-gray-900 dark:text-white" style={row.customIcon ? { marginLeft: '0.18em' } : {}}>{row.label.split(' ')[0]}</span>
                     <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
                   </div>
                 </td>
@@ -230,7 +230,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   ) : (
                     <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
                   )}
-                  <span className="font-semibold text-gray-900 dark:text-white">{row.label.split(' ')[0]}</span>
+                  <span className="font-semibold text-gray-900 dark:text-white" style={row.customIcon ? { marginLeft: '0.18em' } : {}}>{row.label.split(' ')[0]}</span>
                   <span className="text-xs text-gray-500 dark:text-gray-200 ml-1">{row.label.split(' ').slice(1).join(' ')}</span>
                 </div>
               </td>
