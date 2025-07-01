@@ -185,7 +185,7 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
           <tbody>
             <tr>
               <td className="font-semibold text-gray-900 dark:text-white">{currency.pairKey || `${displaySymbol}/${baseCurrency}`}</td>
-              <td className="font-mono text-right text-3xl font-extrabold text-gray-900 dark:text-white">{formatRate(currency.value, false)}</td>
+              <td className="font-mono text-right text-2xl font-bold text-gray-900 dark:text-white">{formatRate(currency.value, false)}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Día</td>
@@ -193,19 +193,19 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Semanal</td>
-              <td className={`text-right font-mono ${getVariationColor(currency.weekPercent)} text-gray-900 dark:text-white`}>{currency.weekPercent !== undefined && currency.weekPercent !== null && !isNaN(currency.weekPercent) ? (currency.weekPercent > 0 ? '+' : '') + currency.weekPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.weekPercent)}`}>{currency.weekPercent !== undefined && currency.weekPercent !== null && !isNaN(currency.weekPercent) ? (currency.weekPercent > 0 ? '+' : '') + currency.weekPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Mensual</td>
-              <td className={`text-right font-mono ${getVariationColor(currency.monthPercent)} text-gray-900 dark:text-white`}>{currency.monthPercent !== undefined && currency.monthPercent !== null && !isNaN(currency.monthPercent) ? (currency.monthPercent > 0 ? '+' : '') + currency.monthPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.monthPercent)}`}>{currency.monthPercent !== undefined && currency.monthPercent !== null && !isNaN(currency.monthPercent) ? (currency.monthPercent > 0 ? '+' : '') + currency.monthPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">YTD</td>
-              <td className={`text-right font-mono ${getVariationColor(currency.ytdPercent)} text-gray-900 dark:text-white`}>{currency.ytdPercent !== undefined && currency.ytdPercent !== null && !isNaN(currency.ytdPercent) ? (currency.ytdPercent > 0 ? '+' : '') + currency.ytdPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.ytdPercent)}`}>{currency.ytdPercent !== undefined && currency.ytdPercent !== null && !isNaN(currency.ytdPercent) ? (currency.ytdPercent > 0 ? '+' : '') + currency.ytdPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
             <tr>
               <td className="text-gray-500 dark:text-gray-400">Interanual</td>
-              <td className={`text-right font-mono ${getVariationColor(currency.yoyPercent)} text-gray-900 dark:text-white`}>{currency.yoyPercent !== undefined && currency.yoyPercent !== null && !isNaN(currency.yoyPercent) ? (currency.yoyPercent > 0 ? '+' : '') + currency.yoyPercent.toFixed(2) + '%' : '-'}</td>
+              <td className={`text-right font-mono ${getVariationColor(currency.yoyPercent)}`}>{currency.yoyPercent !== undefined && currency.yoyPercent !== null && !isNaN(currency.yoyPercent) ? (currency.yoyPercent > 0 ? '+' : '') + currency.yoyPercent.toFixed(2) + '%' : '-'}</td>
             </tr>
           </tbody>
         </table>
