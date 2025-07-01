@@ -221,6 +221,11 @@ const CurrencyCard: React.FC<CurrencyCardProps> = ({ currency, baseCurrency = 'U
           </tbody>
         </table>
       </div>
+      {/* Pie de tarjeta: fecha y fuente */}
+      <div className="flex justify-between items-center mt-4 text-xs text-gray-500 dark:text-gray-400 w-full">
+        <span>Fecha: {formattedDateTime}</span>
+        <span>Fuente: BCRA</span>
+      </div>
     </div>
   );
 };
