@@ -179,10 +179,26 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                     </>
                   ) : '-'}
                 </td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.weekPercent)}`}>
+                  {row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
+                    ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
+                    : '-'}
+                </td>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.monthPercent)}`}>
+                  {row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
+                    ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
+                    : '-'}
+                </td>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.ytdPercent)}`}>
+                  {row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
+                    ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
+                    : '-'}
+                </td>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.yoyPercent)}`}>
+                  {row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
+                    ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
+                    : '-'}
+                </td>
                 <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date.split('-')[2]}-${row.date.split('-')[1]}-${row.date.split('-')[0]} 16:00 hs` : '-'}</td>
                 <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.source || 'BCRA'}</td>
               </tr>
@@ -271,30 +287,22 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                     (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}
                 </td>
                 <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.weekPercent)}`}>
-                  {loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
+                  {row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
                     ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
                     : '-'}
                 </td>
                 <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.monthPercent)}`}>
-                  {loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
+                  {row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
                     ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
                     : '-'}
                 </td>
                 <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.ytdPercent)}`}>
-                  {loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
+                  {row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
                     ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
                     : '-'}
                 </td>
                 <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.yoyPercent)}`}>
-                  {loadingVariations ? (
-                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
-                  ) : row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
+                  {row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
                     ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
                     : '-'}
                 </td>
