@@ -152,7 +152,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           <tbody>
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-                <td className="px-3 py-2 whitespace-nowrap min-h-[2em]">
+                <td className="px-3 py-2 whitespace-nowrap min-h-[2em] pr-2">
                   <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'} h-[2em]`}>
                     {row.customIcon ? (
                       <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
