@@ -117,90 +117,28 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>
-                Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>
-                % {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>
-                Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>
-                Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('weekPercent')}>
-                Semanal {sortBy === 'weekPercent' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('monthPercent')}>
-                Mensual {sortBy === 'monthPercent' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('ytdPercent')}>
-                YTD {sortBy === 'ytdPercent' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('yoyPercent')}>
-                Interanual {sortBy === 'yoyPercent' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('date')}>
-                Fecha {sortBy === 'date' && (sortDir === 'asc' ? '↑' : '↓')}
-              </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none">
-                Fuente
-              </th>
+              <th className="px-1 py-1 text-left text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>% {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}</th>
             </tr>
           </thead>
           <tbody>
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-                <td className="px-3 py-2 whitespace-nowrap min-h-[2em] pr-2">
-                  <div className={`flex items-center gap-2 sm:gap-2 gap-4 h-[2em]`}>
+                <td className="px-1 py-1 whitespace-nowrap min-h-[1.7em]">
+                  <div className="flex items-center gap-1 h-[1.7em]">
                     {row.customIcon ? (
-                      <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
+                      <span style={{ fontSize: '1.1em', width: '1.1em', height: '1.1em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.10em' }}>{row.customIcon}</span>
                     ) : (
-                      <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.5em', height: '1.5em', borderRadius: '50%' }} />
+                      <CountryFlag countryCode={row.code === 'REF' ? 'US' : row.flagCode} svg style={{ width: '1.1em', height: '1.1em', borderRadius: '50%' }} />
                     )}
-                    <span className="font-semibold text-gray-900 dark:text-white mr-3" style={row.customIcon ? { marginLeft: '0.18em' } : {}}>{row.label.split(' ')[0]}</span>
-                    <span className="text-xs text-gray-500 dark:text-gray-200 ml-1 hidden sm:inline">{row.label.split(' ').slice(1).join(' ')}</span>
+                    <span className="font-semibold text-gray-900 dark:text-white text-[11px]" style={row.customIcon ? { marginLeft: '0.10em' } : {}}>{row.label.split(' ')[0]}</span>
                   </div>
                 </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayPercent)}`}>
-                  {row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent)
-                    ? (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
-                    : '-'}
-                </td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">{
-                  row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
-                </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)}`}>
-                  {row.dayValue !== undefined && row.dayValue !== null ? (
-                    <>
-                      {row.dayValue > 0 ? <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.25em'}}>▲</span> : row.dayValue < 0 ? <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.25em'}}>▼</span> : null}
-                      <span>{Math.abs(row.dayValue).toLocaleString('es-AR', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
-                    </>
-                  ) : '-'}
-                </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.weekPercent)}`}>
-                  {row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent)
-                    ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
-                    : '-'}
-                </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.monthPercent)}`}>
-                  {row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent)
-                    ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
-                    : '-'}
-                </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.ytdPercent)}`}>
-                  {row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent)
-                    ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
-                    : '-'}
-                </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.yoyPercent)}`}>
-                  {row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent)
-                    ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'
-                    : '-'}
-                </td>
-                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.date ? `${row.date.split('-')[2]}-${row.date.split('-')[1]}-${row.date.split('-')[0]} 16:00 hs` : '-'}</td>
-                <td className="px-3 py-2 text-right text-xs text-gray-500 dark:text-gray-200 whitespace-nowrap">{row.source || 'BCRA'}</td>
+                <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.dayPercent)}`}>{row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ? (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
+                <td className="px-1 py-1 text-right font-mono text-[11px] text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}</td>
+                <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.dayValue)}`}>{row.dayValue !== undefined && row.dayValue !== null ? (<>{row.dayValue > 0 ? <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.15em'}}>▲</span> : row.dayValue < 0 ? <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.15em'}}>▼</span> : null}<span>{Math.abs(row.dayValue).toLocaleString('es-AR', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span></>) : '-'}</td>
               </tr>
             ))}
           </tbody>
