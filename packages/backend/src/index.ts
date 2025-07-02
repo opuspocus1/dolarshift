@@ -19,7 +19,11 @@ const allowedOrigins = [
 // CORS configuration
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/deploy-preview-\d+--dolarshift\.netlify\.app$/.test(origin)
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
