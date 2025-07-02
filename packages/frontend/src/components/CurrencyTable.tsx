@@ -104,16 +104,16 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>
+              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-1" onClick={() => handleSort('label')}>
                 Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}
               </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-3 sm:order-2" onClick={() => handleSort('value')}>
                 Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}
               </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-4 sm:order-3" onClick={() => handleSort('dayValue')}>
                 Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}
               </th>
-              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>
+              <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-2 sm:order-4" onClick={() => handleSort('dayPercent')}>
                 % {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}
               </th>
               <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('weekPercent')}>
@@ -139,7 +139,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           <tbody>
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-                <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
+                <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em] order-1">
                   <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'} h-[2em]`}>
                     {row.customIcon ? (
                       <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
@@ -150,12 +150,12 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                     <span className="text-xs text-gray-500 dark:text-gray-200 ml-1 hidden sm:inline">{row.label.split(' ').slice(1).join(' ')}</span>
                   </div>
                 </td>
-                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">
+                <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white order-3 sm:order-2">
                   {loadingVariations ? (
                     <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                   ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
                 </td>
-                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)}`}>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)} order-4 sm:order-3`}>
                   {loadingVariations ? (
                     <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                   ) : row.dayValue !== undefined && row.dayValue !== null ? (
@@ -168,6 +168,12 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                       <span>{Math.abs(row.dayValue).toLocaleString('es-AR', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span>
                     </>
                   ) : '-'}
+                </td>
+                <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayPercent)} order-2 sm:order-4`}>
+                  {loadingVariations ? (
+                    <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
+                  ) : row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
+                    (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}
                 </td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
                 <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">-</td>
@@ -188,16 +194,16 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
           <tr>
-            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>
+            <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-1" onClick={() => handleSort('label')}>
               Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}
             </th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-3 sm:order-2" onClick={() => handleSort('value')}>
               Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}
             </th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-4 sm:order-3" onClick={() => handleSort('dayValue')}>
               Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}
             </th>
-            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>
+            <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none order-2 sm:order-4" onClick={() => handleSort('dayPercent')}>
               % {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}
             </th>
             <th className="px-3 py-2 text-right text-xs font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('weekPercent')}>
@@ -223,7 +229,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         <tbody>
           {orderedData.map((row, idx) => (
             <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-              <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em]">
+              <td className="px-3 py-2 whitespace-nowrap min-h-[2.5em] order-1">
                 <div className={`flex items-center ${row.customIcon ? 'gap-1' : 'gap-2'} h-[2em]`}>
                   {row.customIcon ? (
                     <span style={{ fontSize: '1.15em', width: '1.5em', height: '1.5em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.18em' }}>{row.customIcon}</span>
@@ -234,12 +240,12 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   <span className="text-xs text-gray-500 dark:text-gray-200 ml-1 hidden sm:inline">{row.label.split(' ').slice(1).join(' ')}</span>
                 </div>
               </td>
-              <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white">
+              <td className="px-3 py-2 text-right font-mono text-gray-900 dark:text-white order-3 sm:order-2">
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)}`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayValue)} order-4 sm:order-3`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.dayValue !== undefined && row.dayValue !== null ? (
@@ -253,7 +259,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                   </>
                 ) : '-'}
               </td>
-              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayPercent)}`}>
+              <td className={`px-3 py-2 text-right font-mono ${getVariationColor(row.dayPercent)} order-2 sm:order-4`}>
                 {loadingVariations ? (
                   <Loader2 className="animate-spin w-4 h-4 mx-auto text-blue-500" />
                 ) : row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ?
