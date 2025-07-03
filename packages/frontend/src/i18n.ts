@@ -6,7 +6,7 @@ const resources = {
     translation: {
       title: 'Divisas',
       subtitle: 'Visualiza las tasas de cambio de todas las divisas en relación al USD y al ARS.',
-      search: 'Buscar divisa...',
+      search: 'Buscar',
       date: 'Fecha de cotización',
       prev: 'Anterior',
       next: 'Siguiente',
