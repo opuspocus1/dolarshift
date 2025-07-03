@@ -117,7 +117,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         <table className="min-w-max divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
-              <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-left text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>% {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}</th>
@@ -132,8 +132,8 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
           <tbody>
             {orderedData.map((row, idx) => (
               <tr key={row.code} className={idx % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-blue-50 dark:bg-gray-800'}>
-                <td className="px-1 py-1 whitespace-nowrap min-h-[1.7em] text-center">
-                  <div className="flex items-center justify-center gap-1 h-[1.7em]">
+                <td className="px-1 py-1 whitespace-nowrap min-h-[1.7em] text-left">
+                  <div className="flex items-center gap-1 h-[1.7em]">
                     {row.customIcon ? (
                       <span style={{ fontSize: '1.1em', width: '1.1em', height: '1.1em', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: '-0.10em' }}>{row.customIcon}</span>
                     ) : (
