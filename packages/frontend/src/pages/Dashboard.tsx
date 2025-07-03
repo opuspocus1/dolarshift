@@ -585,11 +585,6 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-0 md:py-4 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-0">
-        {/* Header */}
-        {/* <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza los tipos de cambio mayoristas de todas las divisas en relación al USD y al ARS</p>
-        </div> */}
         {/* Píldoras de filtro (independiente del layout de controles) */}
         <div className="mb-2 min-h-[2.5rem] flex flex-wrap gap-1">
           {selectedCurrencies.map(option => (
