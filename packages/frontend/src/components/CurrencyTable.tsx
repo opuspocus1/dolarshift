@@ -113,14 +113,20 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
 
   if (isMobile) {
     return (
-      <div className="overflow-x-auto rounded-lg shadow border border-gray-200 dark:border-gray-700">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="w-full overflow-x-auto rounded-lg shadow border border-gray-200 dark:border-gray-700">
+        <table className="min-w-max divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
               <th className="px-1 py-1 text-left text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>% {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('weekPercent')}>Semanal {sortBy === 'weekPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('monthPercent')}>Mensual {sortBy === 'monthPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('ytdPercent')}>YTD {sortBy === 'ytdPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('yoyPercent')}>Interanual {sortBy === 'yoyPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('date')}>Fecha {sortBy === 'date' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-right text-[11px] font-semibold text-gray-700 dark:text-white">Fuente</th>
             </tr>
           </thead>
           <tbody>
@@ -139,6 +145,12 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
                 <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.dayPercent)}`}>{row.dayPercent !== undefined && row.dayPercent !== null && !isNaN(row.dayPercent) ? (row.dayPercent > 0 ? '+' : '') + row.dayPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
                 <td className="px-1 py-1 text-right font-mono text-[11px] text-gray-900 dark:text-white">{row.value !== undefined && row.value !== null ? Number(row.value).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 5 }) : '-'}</td>
                 <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.dayValue)}`}>{row.dayValue !== undefined && row.dayValue !== null ? (<>{row.dayValue > 0 ? <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.15em'}}>▲</span> : row.dayValue < 0 ? <span className={getVariationColor(row.dayValue)} style={{marginRight: '0.15em'}}>▼</span> : null}<span>{Math.abs(row.dayValue).toLocaleString('es-AR', { minimumFractionDigits: 5, maximumFractionDigits: 5 })}</span></>) : '-'}</td>
+                <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.weekPercent)}`}>{row.weekPercent !== undefined && row.weekPercent !== null && !isNaN(row.weekPercent) ? (row.weekPercent > 0 ? '+' : '') + row.weekPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
+                <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.monthPercent)}`}>{row.monthPercent !== undefined && row.monthPercent !== null && !isNaN(row.monthPercent) ? (row.monthPercent > 0 ? '+' : '') + row.monthPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
+                <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.ytdPercent)}`}>{row.ytdPercent !== undefined && row.ytdPercent !== null && !isNaN(row.ytdPercent) ? (row.ytdPercent > 0 ? '+' : '') + row.ytdPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
+                <td className={`px-1 py-1 text-right font-mono text-[11px] ${getVariationColor(row.yoyPercent)}`}>{row.yoyPercent !== undefined && row.yoyPercent !== null && !isNaN(row.yoyPercent) ? (row.yoyPercent > 0 ? '+' : '') + row.yoyPercent.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '-'}</td>
+                <td className="px-1 py-1 text-right font-mono text-[11px] text-gray-900 dark:text-white">{row.date || '-'}</td>
+                <td className="px-1 py-1 text-right font-mono text-[11px] text-gray-900 dark:text-white">{row.source || '-'}</td>
               </tr>
             ))}
           </tbody>
