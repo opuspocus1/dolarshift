@@ -586,10 +586,10 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza los tipos de cambio mayoristas de todas las divisas en relación al USD y al ARS</p>
-        </div>
+        </div> */}
         {/* Píldoras de filtro (independiente del layout de controles) */}
         <div className="mb-2 min-h-[2.5rem] flex flex-wrap gap-1">
           {selectedCurrencies.map(option => (
@@ -607,11 +607,11 @@ const Dashboard: React.FC = () => {
         </div>
         {/* Controles de búsqueda y moneda base */}
         <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4">
-          <div className="relative">
+          <div className="relative w-full md:w-64">
           <input
               ref={inputRef}
             type="text"
-              className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
@@ -635,7 +635,7 @@ const Dashboard: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="md:w-72 min-w-[18rem]">
+          <div className="w-full md:w-72">
             <select
               value={baseCurrency}
               onChange={(e) => setBaseCurrency(e.target.value)}
