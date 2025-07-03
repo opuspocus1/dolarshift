@@ -650,7 +650,7 @@ const Dashboard: React.FC = () => {
             aria-label="Alternar vista"
           >
             {viewMode === 'table' ? <LayoutGrid className="w-4 h-4" /> : <Table className="w-4 h-4" />}
-            {viewMode === 'table' ? 'Vista de cuadrados' : 'Vista de tabla'}
+            {viewMode === 'table' ? 'Tarjetas' : 'Tablas'}
           </button>
         </div>
         {/* Cards de monedas o tabla */}
