@@ -117,7 +117,7 @@ const CurrencyTable: React.FC<CurrencyTableProps> = ({ data, pairKey, stacked, l
         <table className="min-w-max divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
-              <th className="px-1 py-1 text-left text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('label')}>Divisa {sortBy === 'label' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayPercent')}>% {sortBy === 'dayPercent' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('value')}>Valor {sortBy === 'value' && (sortDir === 'asc' ? '↑' : '↓')}</th>
               <th className="px-1 py-1 text-center text-[11px] font-semibold text-gray-700 dark:text-white cursor-pointer select-none" onClick={() => handleSort('dayValue')}>Día {sortBy === 'dayValue' && (sortDir === 'asc' ? '↑' : '↓')}</th>
