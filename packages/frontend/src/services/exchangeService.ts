@@ -477,10 +477,10 @@ export async function getDollarTickerData(): Promise<DollarTickerData[]> {
   return DOLLAR_TICKER_TYPES.map(type => {
     const today = todayData.find((d: any) => d.casa === type.casa);
     const yesterday = historicData.find((d: any) => d.casa === type.casa);
-    const variacionCompra = (today && yesterday && yesterday.compra)
+    const variacionCompra = (today && yesterday && yesterday.compra && yesterday.compra !== 0)
       ? ((today.compra - yesterday.compra) / yesterday.compra) * 100
       : null;
-    const variacionVenta = (today && yesterday && yesterday.venta)
+    const variacionVenta = (today && yesterday && yesterday.venta && yesterday.venta !== 0)
       ? ((today.venta - yesterday.venta) / yesterday.venta) * 100
       : null;
     return {

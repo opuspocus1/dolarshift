@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Marquee from 'react-fast-marquee';
 import DollarTickerCard from './DollarTickerCard';
 import { getDollarTickerData, DollarTickerData } from '../services/exchangeService';
 
@@ -14,8 +13,8 @@ const DollarTicker: React.FC = () => {
   if (loading) return null;
 
   return (
-    <div className="w-full bg-gray-900 border-b border-gray-800 py-2">
-      <Marquee gradient={false} speed={40} pauseOnHover>
+    <div className="w-full bg-gray-900 dark:bg-gray-800 border-b border-gray-800 py-2">
+      <div className="flex justify-center gap-2 overflow-x-auto px-2">
         {data.map((d) => (
           <DollarTickerCard
             key={d.casa}
@@ -25,7 +24,7 @@ const DollarTicker: React.FC = () => {
             variacion={d.variacionVenta}
           />
         ))}
-      </Marquee>
+      </div>
     </div>
   );
 };
