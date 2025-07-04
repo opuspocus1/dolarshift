@@ -584,9 +584,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-0 md:py-4 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-0 pt-0">
-        {/* Espacio restaurado entre el header y el buscador solo en mobile, ahora más notorio */}
-        <div className="mt-10 md:mt-0" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-0">
         {/* Píldoras de filtro (independiente del layout de controles) */}
         <div className="mb-2 min-h-[2.5rem] flex flex-wrap gap-1">
           {selectedCurrencies.map(option => (
@@ -603,12 +601,12 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
         {/* Controles de búsqueda y moneda base */}
-        <div className="mb-1 flex flex-col md:flex-row md:items-end gap-2 mt-0">
-          <div className="relative w-full md:w-64 mt-0">
+        <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4 mt-0">
+          <div className="relative w-full md:w-64">
           <input
               ref={inputRef}
             type="text"
-              className="w-full px-2 py-0.5 h-[28px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[10px] transition-colors duration-200 mt-0"
+              className="w-full px-3 py-1 h-[32px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[11px] transition-colors duration-200 mt-0"
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
@@ -636,7 +634,7 @@ const Dashboard: React.FC = () => {
             <select
               value={baseCurrency}
               onChange={(e) => setBaseCurrency(e.target.value)}
-              className="w-full px-2 py-0.5 h-[28px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[10px] transition-colors duration-200"
+              className="w-full px-3 py-1 h-[32px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[11px] transition-colors duration-200"
             >
               <option value="" disabled hidden>Moneda Base</option>
               <option value="USD">USD (Dólar Estadounidense)</option>
