@@ -601,7 +601,7 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
         {/* Controles de búsqueda y moneda base */}
-        <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4 mt-0">
+        <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4 mt-0 !mt-0 sm:mt-0 md:mt-0">
           <div className="relative w-full md:w-64">
           <input
               ref={inputRef}
