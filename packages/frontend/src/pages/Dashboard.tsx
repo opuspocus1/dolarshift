@@ -606,7 +606,7 @@ const Dashboard: React.FC = () => {
           <input
               ref={inputRef}
             type="text"
-              className="w-full px-3 py-1.5 h-[38px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors duration-200 mt-0"
+              className="w-full px-3 py-1 h-[32px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[11px] transition-colors duration-200 mt-0"
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
@@ -634,7 +634,7 @@ const Dashboard: React.FC = () => {
             <select
               value={baseCurrency}
               onChange={(e) => setBaseCurrency(e.target.value)}
-              className="w-full px-3 py-1.5 h-[38px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors duration-200"
+              className="w-full px-3 py-1 h-[32px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[11px] transition-colors duration-200"
             >
               <option value="" disabled hidden>Moneda Base</option>
               <option value="USD">USD (Dólar Estadounidense)</option>
