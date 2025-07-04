@@ -584,7 +584,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-0 md:py-4 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2 md:mt-0">
         {/* Píldoras de filtro (independiente del layout de controles) */}
         <div className="mb-2 min-h-[2.5rem] flex flex-wrap gap-1">
           {selectedCurrencies.map(option => (
