@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   const navigation = [
-    { name: 'Divisas', path: '/' },
+    { name: 'Mayorista', path: '/' },
     { name: 'Histórico', path: '/charts' },
     { name: 'Calculadora', path: '/converter' }
   ];
