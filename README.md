@@ -1,4 +1,4 @@
-# DolarShift
+# Mercado Argy
 
 Aplicación para seguimiento de cotizaciones del dólar y otras monedas utilizando datos del BCRA.
 

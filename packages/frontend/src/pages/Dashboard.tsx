@@ -13,7 +13,7 @@ const CARDS_PER_PAGE = 16;
 // Estado inicial de viewMode desde localStorage
 const getInitialViewMode = () => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('dolarshift_viewMode');
+    const saved = localStorage.getItem('mercadoargy_viewMode');
     if (saved === 'cards' || saved === 'table') return saved;
   }
   return 'table';
@@ -22,7 +22,7 @@ const getInitialViewMode = () => {
 // Estado inicial de page desde localStorage
 const getInitialPage = () => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('dolarshift_page');
+    const saved = localStorage.getItem('mercadoargy_page');
     const num = Number(saved);
     if (!isNaN(num) && num > 0) return num;
   }
@@ -509,14 +509,14 @@ const Dashboard: React.FC = () => {
   // Guardar en localStorage cuando cambia viewMode
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dolarshift_viewMode', viewMode);
+      localStorage.setItem('mercadoargy_viewMode', viewMode);
     }
   }, [viewMode]);
 
   // Guardar en localStorage cuando cambia page
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dolarshift_page', String(page));
+      localStorage.setItem('mercadoargy_page', String(page));
     }
   }, [page]);
 
@@ -528,7 +528,7 @@ const Dashboard: React.FC = () => {
     }
     setPage(1);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dolarshift_page', '1');
+      localStorage.setItem('mercadoargy_page', '1');
     }
   }, [search, selectedCurrencies, totalPages]);
 
