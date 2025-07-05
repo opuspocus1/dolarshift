@@ -13,7 +13,7 @@ const CARDS_PER_PAGE = 16;
 // Estado inicial de viewMode desde localStorage
 const getInitialViewMode = () => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('dolarshift_viewMode');
+    const saved = localStorage.getItem('mercadoargy_viewMode');
     if (saved === 'cards' || saved === 'table') return saved;
   }
   return 'table';
@@ -22,7 +22,7 @@ const getInitialViewMode = () => {
 // Estado inicial de page desde localStorage
 const getInitialPage = () => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('dolarshift_page');
+    const saved = localStorage.getItem('mercadoargy_page');
     const num = Number(saved);
     if (!isNaN(num) && num > 0) return num;
   }
@@ -509,14 +509,14 @@ const Dashboard: React.FC = () => {
   // Guardar en localStorage cuando cambia viewMode
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dolarshift_viewMode', viewMode);
+      localStorage.setItem('mercadoargy_viewMode', viewMode);
     }
   }, [viewMode]);
 
   // Guardar en localStorage cuando cambia page
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dolarshift_page', String(page));
+      localStorage.setItem('mercadoargy_page', String(page));
     }
   }, [page]);
 
@@ -528,7 +528,7 @@ const Dashboard: React.FC = () => {
     }
     setPage(1);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('dolarshift_page', '1');
+      localStorage.setItem('mercadoargy_page', '1');
     }
   }, [search, selectedCurrencies, totalPages]);
 
@@ -542,14 +542,14 @@ const Dashboard: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza los tipos de cambio mayoristas de todas las divisas en relación al USD y al ARS</p>
-          </div>
+          </div> */}
           <div className="mb-4 flex justify-between items-center">
             <input
               type="text"
-              className="w-full md:w-1/3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-full px-3 py-1.5 h-10 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm transition-colors duration-200"
               placeholder={t('search')}
               disabled
             />
@@ -583,13 +583,8 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Visualiza los tipos de cambio mayoristas de todas las divisas en relación al USD y al ARS</p>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-0 md:py-4 transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-0">
         {/* Píldoras de filtro (independiente del layout de controles) */}
         <div className="mb-2 min-h-[2.5rem] flex flex-wrap gap-1">
           {selectedCurrencies.map(option => (
@@ -606,12 +601,12 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
         {/* Controles de búsqueda y moneda base */}
-        <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4">
-          <div className="relative">
+        <div className="mb-4 flex flex-col md:flex-row md:items-end gap-4 mt-0 !mt-0">
+          <div className="relative w-full md:w-64">
           <input
               ref={inputRef}
             type="text"
-              className="w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-full px-3 py-1 h-[32px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[11px] transition-colors duration-200 mt-0"
             placeholder={t('search')}
             value={search}
             onChange={handleSearch}
@@ -635,11 +630,11 @@ const Dashboard: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="md:w-72 min-w-[18rem]">
+          <div className="w-full md:w-72 mt-0">
             <select
               value={baseCurrency}
               onChange={(e) => setBaseCurrency(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors duration-200"
+              className="w-full px-3 py-1 h-[32px] border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-[11px] transition-colors duration-200"
             >
               <option value="" disabled hidden>Moneda Base</option>
               <option value="USD">USD (Dólar Estadounidense)</option>
@@ -655,7 +650,7 @@ const Dashboard: React.FC = () => {
             aria-label="Alternar vista"
           >
             {viewMode === 'table' ? <LayoutGrid className="w-4 h-4" /> : <Table className="w-4 h-4" />}
-            {viewMode === 'table' ? 'Vista de cuadrados' : 'Vista de tabla'}
+            {viewMode === 'table' ? 'Tarjetas' : 'Tablas'}
           </button>
         </div>
         {/* Cards de monedas o tabla */}

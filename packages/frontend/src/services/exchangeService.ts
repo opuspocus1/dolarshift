@@ -36,6 +36,27 @@ export interface ExchangeRateHistory {
   tipopase?: number;
 }
 
+// Tipos de dólar a mostrar en el ticker
+export const DOLLAR_TICKER_TYPES = [
+  { casa: 'oficial', nombre: 'Dólar Oficial' },
+  { casa: 'blue', nombre: 'Dólar Blue' },
+  { casa: 'bolsa', nombre: 'Dólar Bolsa' },
+  { casa: 'contadoconliqui', nombre: 'Dólar CCL' },
+  { casa: 'tarjeta', nombre: 'Dólar Tarjeta' },
+  { casa: 'mayorista', nombre: 'Dólar Mayorista' },
+  { casa: 'cripto', nombre: 'Dólar Cripto' },
+];
+
+export interface DollarTickerData {
+  casa: string;
+  nombre: string;
+  compra: number;
+  venta: number;
+  variacionCompra: number | null; // % respecto a ayer
+  variacionVenta: number | null;  // % respecto a ayer
+  fechaActualizacion: string;
+}
+
 // Cache del frontend usando localStorage
 class FrontendCache {
   private static instance: FrontendCache;
@@ -434,5 +455,44 @@ export const exchangeService = {
 
   getCacheStats(): { hits: number; misses: number; keys: number } {
     return frontendCache.getStats();
-  }
-}; 
+  },
+};
+
+export async function getDollarTickerData(): Promise<DollarTickerData[]> {
+  // 1. Obtener valores actuales
+  const todayRes = await axios.get('https://dolarapi.com/v1/dolares');
+  const todayData = todayRes.data;
+
+  // 2. Obtener valores de ayer (fecha de ayer)
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yyyy = yesterday.getFullYear();
+  const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
+  const dd = String(yesterday.getDate()).padStart(2, '0');
+  const yesterdayStr = `${yyyy}-${mm}-${dd}`;
+  const historicRes = await axios.get('https://api.argentinadatos.com/v1/cotizaciones/dolares');
+  const historicData = historicRes.data.filter((item: any) => item.fecha === yesterdayStr);
+
+  // 3. Mapear y calcular variaciones
+  return DOLLAR_TICKER_TYPES.map(type => {
+    const today = todayData.find((d: any) => d.casa === type.casa);
+    const yesterday = historicData.find((d: any) => d.casa === type.casa);
+    const variacionCompra = (today && yesterday && yesterday.compra && yesterday.compra !== 0)
+      ? ((today.compra - yesterday.compra) / yesterday.compra) * 100
+      : null;
+    const variacionVenta = (today && yesterday && yesterday.venta && yesterday.venta !== 0)
+      ? ((today.venta - yesterday.venta) / yesterday.venta) * 100
+      : null;
+    return {
+      casa: type.casa,
+      nombre: type.nombre,
+      compra: today ? today.compra : null,
+      venta: today ? today.venta : null,
+      variacionCompra,
+      variacionVenta,
+      fechaActualizacion: today ? today.fechaActualizacion : '',
+    };
+  });
+}
+
+export default exchangeService; 

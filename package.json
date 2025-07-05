@@ -14,6 +14,7 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "i18next": "^25.2.1",
+    "react-fast-marquee": "^1.6.5",
     "react-i18next": "^15.5.2",
     "react-select": "^5.10.1",
     "vite": "^6.3.5"

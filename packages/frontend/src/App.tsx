@@ -6,12 +6,14 @@ import ApiStatus from './components/ApiStatus';
 import Dashboard from './pages/Dashboard';
 import Charts from './pages/Charts';
 import Converter from './pages/Converter';
+import DollarTicker from './components/DollarTicker';
 
 function App() {
   return (
     <ThemeProvider>
       <Router>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+          <DollarTicker />
           <Navbar />
           <Routes>
             <Route path="/" element={<Dashboard />} />
