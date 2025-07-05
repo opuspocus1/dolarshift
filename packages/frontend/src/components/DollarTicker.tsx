@@ -37,14 +37,15 @@ const DollarTicker: React.FC = () => {
       if (intervalRef.current) window.clearInterval(intervalRef.current);
       intervalRef.current = window.setInterval(() => {
         if (paused) return;
-        el.scrollLeft += 1.2; // velocidad
+        el.scrollLeft += 1.8; // velocidad aumentada
         // Si llegó al final, vuelve al inicio
         if (el.scrollLeft + el.offsetWidth >= el.scrollWidth - 2) {
           el.scrollLeft = 0;
         }
       }, 16);
     }
-    startAutoScroll();
+    // Pequeño delay para asegurar que el render y el ancho estén listos
+    setTimeout(startAutoScroll, 300);
     return () => {
       if (intervalRef.current) window.clearInterval(intervalRef.current);
       el.removeEventListener('touchstart', onUserScroll);
@@ -58,7 +59,7 @@ const DollarTicker: React.FC = () => {
     <div className="w-full bg-gray-900 dark:bg-gray-800 border-b border-gray-800 py-2">
       <div
         ref={scrollRef}
-        className="flex gap-2 overflow-x-auto px-2 sm:justify-center snap-x snap-mandatory scrollbar-hide"
+        className="flex gap-1 sm:gap-2 overflow-x-auto px-1 sm:px-2 sm:justify-center snap-x snap-mandatory scrollbar-hide"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {data.map((d) => (
